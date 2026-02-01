@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+}
+
+
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+  passwordHash String
+  name String?
+  createdAt DateTime @default(now())
+
+  favorites Favorite[]
+  
+}
+
+model Favorite {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  user User @relation(fields: [userId], references: [id])
+
+  cafeId String @db.ObjectId
+  cafe Cafe @relation(fields: [cafeId], references: [id]) 
+
+  createdAt DateTime @default(now())
+}
+
+// 未完成
+model Cafe {
+  id String  @id @default(auto()) @map("_id") @db.ObjectId
+  googlePlaceId String @unique
+
+  seatCapacityMax Int
+
+  // 核心連接性
+  hasWifi Boolean
+  wifiSpeedMbps     Int?     // 下載速度
+  hasPowerOutlets   Boolean  @default(false)
+  outletCoverage    OutletCoverage @default(SOME) // 插座覆蓋率
+
+  // 環境氛圍
+  noiseLevel        NoiseLevel @default(QUIET)
+  isQuietZone       Boolean    @default(false)    // 是否有專屬安靜區
+  hasErgonomicChairs Boolean   @default(false)    // 是否有人體工學椅
+  hasMonitorRental  Boolean    @default(false)    // 是否提供螢幕租借
+  hasPhoneBooth     Boolean    @default(false)    // 是否有視訊隔音間
+
+  // 吸菸相關
+  hasSmokingArea   Boolean    @default(false)    // 是否有吸菸區
+  smokingAreaType   SmokingAreaType?
+
+
+  // 消費與規範
+  minConsumption    String?    // 例如: "一杯飲品" 或 "200元"
+  timeLimitMinutes  Int        @default(0)        // 0 代表不限時
+  isBookingRequired Boolean    @default(false)
+  bookingUrl        String?
+
+  favoriteBy Favorite[]
+
+  createdAt DateTime @default(now())
+
+}
+
+enum OutletCoverage {
+  EVERY    // 每個位置都有
+  MOST     // 多數位置有
+  SOME          // 部分位置有
+  NONE          // 無
+}
+
+enum NoiseLevel {
+  SILENT        // 極度安靜 (類似圖書館)
+  QUIET         // 輕微背景音 (適合專注)
+  MODERATE      // 一般咖啡店音量 (適合討論)
+  VIBRANT       // 較為吵雜
+}
+
+enum SmokingAreaType {
+  INDOOR_SEPARATED // 合法室內吸菸室 (有獨立空調)
+  OUTDOOR_TABLE    // 戶外座位區 (可邊抽邊工作)
+  OUTDOOR_STAND    // 戶外站立吸菸區 (需離開座位)
+  ROOFTOP          // 頂樓吸菸區
+  BALCONY          // 陽台
+}

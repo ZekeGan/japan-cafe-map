@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+### 後端
 
-## Getting Started
+[x] 資料夾欄位確認 - 個人資料，編輯過的店家，我的最愛店家 - 店家資料，有插頭、WIFI、座位、座位數量、是否有小孩、工程師推薦程度等
+[] MONGODB創建資料庫，並連接
+[] 登入，和社群聯動
 
-First, run the development server:
+### 前端
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+[] 回到當前位置按鈕
+[] 顯示該區域的咖啡店
+[] 編輯該店的資訊
+[] 持續顯示最愛店家
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- GOOGOLEMAP上顯示店家圖示(GOOGLE的資料)，和我的資料庫交叉比對後，顯示不同ICON，以表現那些資料有建檔
+- 顯示我的資料庫的所有咖啡廳資料
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 如果未來考慮擴展該專案 可以進行的點子
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 拉遠地圖時顯示該範圍咖啡廳，用數字顯示該範圍數量，參考 cafe nomad
+- 如果該店家GOOGLE MAP顯示停業，如何同步資料的一致性
+  - 最方便: 使用者點擊後，同步把GOOGLE資料抓下來，我的資料則靜態
+  - 最省錢: 使用者點擊後，GOOGLE資料同步到我的資料內，每天更新一次
 
-## Learn More
+### 技術
 
-To learn more about Next.js, take a look at the following resources:
+- next
+- tailwind
+- prisma
+- chadcn ui
+- google map api
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### env
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+DATABASE_URL=
