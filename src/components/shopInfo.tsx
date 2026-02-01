@@ -15,52 +15,9 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from './ui/table'
+import { Card, CardContent } from '@/components/ui/card'
+
 import { ScrollArea } from './ui/scroll-area'
-
-const checkIfOpen = (placeDetail: any): string => {
-  const hours = placeDetail.regularOpeningHours
-  const utcOffset = placeDetail.utcOffsetMinutes // 務必在 fetchFields 包含此欄位
-
-  if (!hours || !hours.periods) return 'Unknown'
-
-  // 1. 取得咖啡廳當地的當前時間
-  const now = new Date()
-  const utcTime = now.getTime() + now.getTimezoneOffset() * 60000
-  const localTime = new Date(utcTime + utcOffset * 60000)
-
-  const day = localTime.getDay() // 0 (週日) - 6 (週六)
-  const currentTime = localTime.getHours() * 100 + localTime.getMinutes() // 轉為數字如 1430
-
-  // 2. 尋找匹配今天的營業時段
-  const isOpen = hours.periods.some((period: any) => {
-    if (period.open.day !== day) return false
-
-    const openTime = parseInt(period.open.time)
-    const closeTime = period.close ? parseInt(period.close.time) : 2359
-
-    // 處理 24 小時營業
-    if (!period.close) return true
-
-    // 處理跨子夜 (例如 18:00 - 02:00)
-    if (closeTime < openTime) {
-      return currentTime >= openTime || currentTime <= closeTime
-    }
-
-    return currentTime >= openTime && currentTime <= closeTime
-  })
-
-  return isOpen ? 'OPEN' : 'CLOSED'
-}
 
 const ShopInfo = (props: {
   shopInfo: google.maps.places.Place | null

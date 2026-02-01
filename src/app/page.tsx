@@ -1,19 +1,23 @@
 'use client'
 
+import Header from '@/components/header'
+import { LoginDialog } from '@/components/loginDialog'
 import Map from '@/components/map'
 import ShopInfo from '@/components/shopInfo'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 import { useState } from 'react'
 
 export default function Home() {
-  const [shopInfo, setShopInfo] = useState<CafeShop | null>(null)
+  const [shopInfo, setShopInfo] = useState<google.maps.places.Place | null>(
+    null
+  )
   // console.log(shopInfo)
 
   return (
     <main className="flex h-screen flex-col">
       {/* 導覽列預留區 */}
-      <header className="h-16 bg-white border-b flex items-center px-6 shadow-sm z-10">
-        <h1 className="text-xl font-bold text-gray-800">Cafe Finder</h1>
-      </header>
+      <Header />
 
       {/* 地圖區域 */}
       <section className="flex-1 w-full relative">

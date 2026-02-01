@@ -140,7 +140,7 @@ const Map: React.FC<{
 
   useEffect(() => {
     if (!map) return
-    if (hasGetPos.current === false) return
+    if (hasGetPos === false) return
     const timer = setTimeout(() => fetchCafeShops(curPos), 0)
     return () => clearTimeout(timer)
   }, [map, curPos, fetchCafeShops, hasGetPos])
