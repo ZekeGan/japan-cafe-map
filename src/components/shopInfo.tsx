@@ -26,7 +26,6 @@ const ShopInfo = (props: {
   const { shopInfo, setShopInfo } = props
   if (!shopInfo) return null
   const isOpen = false
-  console.log(shopInfo)
 
   return (
     <Drawer
@@ -46,6 +45,7 @@ const ShopInfo = (props: {
             <DrawerDescription>{shopInfo?.formattedAddress}</DrawerDescription>
           </DrawerHeader>
 
+          {/* Photo */}
           <div className="p-2">
             <Carousel className="w-full">
               <CarouselContent className="-ml-4">
@@ -84,6 +84,7 @@ const ShopInfo = (props: {
             </Carousel>
           </div>
 
+          {/* Details */}
           <div className="p-2">
             <Card className="w-full max-w-md">
               <CardContent className="space-y-4">

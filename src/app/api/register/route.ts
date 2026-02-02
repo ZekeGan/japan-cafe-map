@@ -19,10 +19,11 @@ export async function POST(req: Request) {
     const { email, password } = result.data
 
     // 2. 檢查 Email 是否已存在 (模擬資料庫查詢)
-    // const existingUser = await db.user.findUnique({ where: { email } });
-    const fakeExistingUser = email === 'test@example.com' // 測試用模擬
-
-    if (fakeExistingUser) {
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      select: { id: true }, // 只需要知道有沒有，不用回傳全部資料
+    })
+    if (!!user) {
       return NextResponse.json(
         { error: 'EMAIL_EXISTS', message: '此電子郵件已被註冊' },
         { status: 400 }
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     console.log('當前 DATABASE_URL:', process.env.DATABASE_URL)
-    // 4. 存入資料庫 (模擬)
+    // 4. 存入資料庫
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -41,9 +42,7 @@ export async function POST(req: Request) {
       },
     })
 
-    // console.log(newUser)
-
-    console.log('用戶註冊成功:', email, '加密後的密碼:', hashedPassword)
+    console.log(newUser)
 
     return NextResponse.json({ message: '註冊成功' }, { status: 201 })
   } catch (error) {

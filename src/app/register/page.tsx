@@ -9,8 +9,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { AlertCircle } from 'lucide-react' // 增加小圖標提升辨識度
 import { registerSchema, type RegisterInput } from '@/lib/validations/auth'
+import { useRouter } from 'next/navigation'
 
 export default function RegisterPage() {
+  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -41,6 +43,7 @@ export default function RegisterPage() {
       }
 
       alert('註冊成功！')
+      router.push('/login')
     } catch (err) {
       console.error('系統錯誤')
     }
@@ -51,9 +54,6 @@ export default function RegisterPage() {
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[380px]">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">建立新帳號</h1>
-          <p className="text-sm text-muted-foreground">
-            開始您的 14 天免費試用
-          </p>
         </div>
 
         <div className="grid gap-6">
@@ -69,7 +69,6 @@ export default function RegisterPage() {
                 </Label>
                 <div className="relative">
                   <Input
-                    value="111@gmail.com"
                     {...register('email')}
                     id="email"
                     type="email"

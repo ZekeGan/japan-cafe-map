@@ -2,16 +2,15 @@
 
 import {
   GoogleMap,
-  MarkerF,
   OverlayView,
   OverlayViewF,
-  OverlayViewProps,
   useJsApiLoader,
 } from '@react-google-maps/api'
-import UniversalError from './error'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { CircleQuestionMark, DoorClosed, Hamburger } from 'lucide-react'
-import { Button } from './ui/button'
+import { Coffee } from 'lucide-react'
+import { getDistance } from '@/lib/utils'
+import { mockCafeShop } from '@public/mockCafeShop'
+import clsx from 'clsx'
 
 type CafeShop = {
   data: google.maps.places.Place
@@ -20,7 +19,9 @@ type CafeShop = {
 
 const defaultCenter: google.maps.LatLngLiteral = { lat: 35.6808, lng: 139.7669 } //東京車站
 
-const UserLocationDot: React.FC<OverlayViewProps> = ({ position }) => {
+const UserLocationDot: React.FC<{ position: google.maps.LatLngLiteral }> = ({
+  position,
+}) => {
   return (
     <OverlayViewF
       position={position}
@@ -35,14 +36,37 @@ const UserLocationDot: React.FC<OverlayViewProps> = ({ position }) => {
     </OverlayViewF>
   )
 }
-const ShopUnknown: React.FC<OverlayViewProps> = ({ position }) => {
+const CafeLocationDot: React.FC<{
+  position: google.maps.LatLngLiteral
+  onClick: () => void
+  close?: boolean
+}> = ({ position, close = false, onClick }) => {
   return (
     <OverlayViewF
       position={position}
       mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
     >
-      {/* 修正位移，確保圓心對準座標 */}
-      <CircleQuestionMark />
+      <div
+        onClick={onClick}
+        className="relative -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+      >
+        <div className="flex space-x-8 p-10">
+          {/* 地圖大頭針造型 */}
+          <div className="relative">
+            <div
+              className={clsx(
+                close ? 'bg-gray-500' : 'bg-yellow-800',
+                'w-4 h-4 p-0.5  rounded-full rounded-bl-none -rotate-45 flex items-center justify-center'
+              )}
+            >
+              {/* ICON */}
+              <Coffee className="rotate-45 text-white" />
+            </div>
+            {/* 下方的陰影 */}
+            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-1 bg-gray-700 rounded-[100%] blur-[1px]"></div>
+          </div>
+        </div>
+      </div>
     </OverlayViewF>
   )
 }
@@ -63,54 +87,44 @@ const Map: React.FC<{
   const [geoError, setGeoError] = useState<string>('')
   const [hasGetPos, setHasGetPos] = useState(false)
 
+  const lastFetchPos = useRef<google.maps.LatLngLiteral | null>(null)
+
   const fetchCafeShops = useCallback(
     async (location: google.maps.LatLngLiteral) => {
       try {
+        if (
+          lastFetchPos.current &&
+          getDistance(lastFetchPos.current, location) < 500
+        ) {
+          return
+        }
+
         const { Place } = (await google.maps.importLibrary(
           'places'
         )) as google.maps.PlacesLibrary
-        const { places } = await Place.searchNearby({
-          locationRestriction: { center: location, radius: 1000 },
-          includedTypes: ['cafe'],
-          fields: ['displayName', 'location'],
-        })
-        const newPlaces = (await Promise.all(
-          places.map(async p => {
-            const isOpenNow = await p.isOpen()
-            return { data: p, isOpenNow }
-          })
-        )) as CafeShop[]
+        // const { places } = await Place.searchNearby({
+        //   locationRestriction: { center: location, radius: 500 },
+        //   includedTypes: ['cafe'],
+        //   fields: [
+        //     'id',
+        //     'location',
+        //     'displayName',
+        //     'businessStatus',
+        //     'formattedAddress',
+        //   ],
+        // })
 
-        setCafeShops(newPlaces)
+        lastFetchPos.current = location // 拿到資料後一定要更新，否則下次還會進來
+        // mock data
+        const places = mockCafeShop
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setCafeShops(places.map(p => ({ data: p })) as any[])
       } catch (err) {
         console.error('Error fetching cafe shops:', err)
       }
     },
     []
-  )
-
-  const getDetailInfo = useCallback(
-    async (placeId: string) => {
-      try {
-        const { Place } = (await google.maps.importLibrary(
-          'places'
-        )) as google.maps.PlacesLibrary
-        const detailPlace = new Place({ id: placeId })
-        const { place } = await detailPlace.fetchFields({
-          fields: [
-            'displayName',
-            'formattedAddress',
-            'photos',
-            'googleMapsURI',
-            // 'allowsDogs',
-          ],
-        })
-        setShopInfo(place)
-      } catch (err) {
-        console.error('Error fetching cafe shops:', err)
-      }
-    },
-    [setShopInfo]
   )
 
   // 獲取當前位置的函數
@@ -120,12 +134,13 @@ const Map: React.FC<{
       if (!navigator.geolocation) return setGeoError('')
       navigator.geolocation.getCurrentPosition(
         position => {
-          const newPos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          }
-          setCurPos(newPos)
-          map.panTo(newPos)
+          // const newPos = {
+          //   lat: position.coords.latitude,
+          //   lng: position.coords.longitude,
+          // }
+          setCurPos(defaultCenter)
+          // setCurPos(newPos)
+          // map.panTo(newPos)
           setGeoError('')
           setHasGetPos(true)
         },
@@ -159,93 +174,46 @@ const Map: React.FC<{
         mapTypeControl: false,
         fullscreenControl: false,
         clickableIcons: false,
-
         styles: [
           {
             featureType: 'poi',
-            // 修正：使用 labels.icon 而不是 icons
             elementType: 'labels.icon',
             stylers: [{ visibility: 'off' }],
           },
           {
             featureType: 'poi',
-            // 隱藏文字標籤
             elementType: 'labels.text',
             stylers: [{ visibility: 'off' }],
           },
         ],
       }}
     >
-      {hasGetPos && (
-        <UserLocationDot
-          position={curPos}
-          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-        />
-      )}
+      {hasGetPos && <UserLocationDot position={curPos} />}
 
       {cafeShops.map(shop => {
-        if (shop.isOpenNow === undefined) {
+        if (shop.data.businessStatus === 'OPERATIONAL') {
           return (
-            <OverlayViewF
+            <CafeLocationDot
               key={shop.data.id}
-              position={shop.data.location!}
-              mapPaneName={'floatPane'}
-            >
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-                onClick={e => {
-                  getDetailInfo(shop.data.id!)
-                }}
-              >
-                <CircleQuestionMark />
-              </Button>
-            </OverlayViewF>
+              onClick={() => setShopInfo(shop.data)}
+              position={shop.data.location as any}
+            />
           )
         }
-        if (shop.isOpenNow) {
+        if (
+          shop.data.businessStatus === 'CLOSED_TEMPORARILY' ||
+          shop.data.businessStatus === 'CLOSED_PERMANENTLY'
+        ) {
           return (
-            <OverlayViewF
+            <CafeLocationDot
               key={shop.data.id}
-              position={shop.data.location!}
-              mapPaneName={'floatPane'}
-            >
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-                onClick={e => {
-                  getDetailInfo(shop.data.id!)
-                }}
-              >
-                <Hamburger onClick={() => getDetailInfo(shop.data.id!)} />
-              </Button>
-            </OverlayViewF>
+              onClick={() => setShopInfo(shop.data)}
+              position={shop.data.location as any}
+              close
+            />
           )
         }
 
-        if (!shop.isOpenNow) {
-          return (
-            <OverlayViewF
-              key={shop.data.id}
-              position={shop.data.location!}
-              mapPaneName={'floatPane'}
-            >
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-                onClick={e => {
-                  e.stopPropagation()
-                  getDetailInfo(shop.data.id!)
-                }}
-              >
-                <DoorClosed />
-              </Button>
-            </OverlayViewF>
-          )
-        }
         return null
       })}
     </GoogleMap>
@@ -253,3 +221,77 @@ const Map: React.FC<{
 }
 
 export default Map
+
+new Set([
+  'id',
+  'resourceName',
+  'accessibilityOptions',
+  'addressComponents',
+  'adrFormatAddress',
+  'attributions',
+  'businessStatus',
+  'displayName',
+  'displayNameLanguageCode',
+  'formattedAddress',
+  'shortFormattedAddress',
+  'googleMapsURI',
+  'hasCurbsidePickup',
+  'hasDelivery',
+  'hasDineIn',
+  'hasTakeout',
+  'isReservable',
+  'servesBreakfast',
+  'servesLunch',
+  'servesDinner',
+  'servesBeer',
+  'servesWine',
+  'servesBrunch',
+  'servesVegetarianFood',
+  'iconBackgroundColor',
+  'svgIconMaskURI',
+  'internationalPhoneNumber',
+  'location',
+  'nationalPhoneNumber',
+  'regularOpeningHours',
+  'parkingOptions',
+  'paymentOptions',
+  'photos',
+  'plusCode',
+  'postalAddress',
+  'priceLevel',
+  'rating',
+  'reviews',
+  'types',
+  'userRatingCount',
+  'utcOffsetMinutes',
+  'viewport',
+  'websiteURI',
+  'editorialSummary',
+  'editorialSummaryLanguageCode',
+  'generativeSummary',
+  'reviewSummary',
+  'evChargeAmenitySummary',
+  'neighborhoodSummary',
+  'allowsDogs',
+  'hasLiveMusic',
+  'hasMenuForChildren',
+  'hasOutdoorSeating',
+  'hasRestroom',
+  'hasWiFi',
+  'isGoodForChildren',
+  'isGoodForGroups',
+  'isGoodForWatchingSports',
+  'servesCocktails',
+  'servesCoffee',
+  'servesDessert',
+  'primaryType',
+  'primaryTypeDisplayName',
+  'primaryTypeDisplayNameLanguageCode',
+  'evChargeOptions',
+  'fuelOptions',
+  'priceRange',
+  'googleMapsLinks',
+  'consumerAlert',
+  'timeZone',
+  'isPureServiceAreaBusiness',
+])
