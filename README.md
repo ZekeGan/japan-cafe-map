@@ -7,11 +7,11 @@
 
 ### 當前計畫
 
-- [] GOOGOLEMAP上顯示店家圖示(GOOGLE的資料)，和我的資料庫交叉比對後，顯示不同ICON，以表現那些資料有建檔
-- [] 顯示我的資料庫的所有咖啡廳資料
-- [x] prisma修改版本為舊版，避免問題
+- [x] GOOGOLEMAP上顯示店家圖示(GOOGLE的資料)，和我的資料庫交叉比對後，顯示不同ICON，以表現那些資料有建檔
+- [] x顯示我的資料庫的所有咖啡廳資料
 - [] 最愛店家
-- [] 修改登入token
+- [x] prisma修改版本為舊版，避免問題
+- [x] 修改登入token
 
 ### 如果未來考慮擴展該專案 可以進行的點子
 
@@ -32,3 +32,78 @@
 
 - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 - DATABASE_URL=
+- JWT_SECRET=
+
+Place.fields = [
+'id',
+'resourceName',
+'accessibilityOptions',
+'addressComponents',
+'adrFormatAddress',
+'attributions',
+'businessStatus',
+'displayName',
+'displayNameLanguageCode',
+'formattedAddress',
+'shortFormattedAddress',
+'googleMapsURI',
+'hasCurbsidePickup',
+'hasDelivery',
+'hasDineIn',
+'hasTakeout',
+'isReservable',
+'servesBreakfast',
+'servesLunch',
+'servesDinner',
+'servesBeer',
+'servesWine',
+'servesBrunch',
+'servesVegetarianFood',
+'iconBackgroundColor',
+'svgIconMaskURI',
+'internationalPhoneNumber',
+'location',
+'nationalPhoneNumber',
+'regularOpeningHours',
+'parkingOptions',
+'paymentOptions',
+'photos',
+'plusCode',
+'postalAddress',
+'priceLevel',
+'rating',
+'reviews',
+'types',
+'userRatingCount',
+'utcOffsetMinutes',
+'viewport',
+'websiteURI',
+'editorialSummary',
+'editorialSummaryLanguageCode',
+'generativeSummary',
+'reviewSummary',
+'evChargeAmenitySummary',
+'neighborhoodSummary',
+'allowsDogs',
+'hasLiveMusic',
+'hasMenuForChildren',
+'hasOutdoorSeating',
+'hasRestroom',
+'hasWiFi',
+'isGoodForChildren',
+'isGoodForGroups',
+'isGoodForWatchingSports',
+'servesCocktails',
+'servesCoffee',
+'servesDessert',
+'primaryType',
+'primaryTypeDisplayName',
+'primaryTypeDisplayNameLanguageCode',
+'evChargeOptions',
+'fuelOptions',
+'priceRange',
+'googleMapsLinks',
+'consumerAlert',
+'timeZone',
+'isPureServiceAreaBusiness',
+]

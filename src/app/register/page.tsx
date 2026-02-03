@@ -25,7 +25,7 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterInput) => {
     try {
       // 模擬 API 檢查資料庫
-      const response = await fetch('/api/register', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify(data),
       })

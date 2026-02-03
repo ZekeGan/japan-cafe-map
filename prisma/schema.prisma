@@ -30,41 +30,50 @@ model Favorite {
   createdAt DateTime @default(now())
 }
 
-// 未完成
+// 定義座標的複合型別 (適合 MongoDB)
+
 model Cafe {
-  id String  @id @default(auto()) @map("_id") @db.ObjectId
-  googlePlaceId String @unique
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  googlePlaceId String   @unique
 
-  seatCapacityMax Int
+  // --- Google Maps API 欄位 ---
+  displayName      String   // 店名
+  formattedAddress String   // 完整地址
+  businessStatus   String?  // 營業狀態 (例如: OPERATIONAL)
+  location         Location // 經緯度座標
 
-  // 核心連接性
-  hasWifi Boolean
-  wifiSpeedMbps     Int?     // 下載速度
-  hasPowerOutlets   Boolean  @default(false)
-  outletCoverage    OutletCoverage @default(SOME) // 插座覆蓋率
+  // --- 核心連接性 ---
+  seatCapacityMax Int?
+  hasWifi         Boolean?
+  wifiSpeedMbps   Int?     // 下載速度
+  hasPowerOutlets Boolean?  @default(false)
+  outletCoverage  OutletCoverage? @default(SOME) // 插座覆蓋率
 
-  // 環境氛圍
-  noiseLevel        NoiseLevel @default(QUIET)
-  isQuietZone       Boolean    @default(false)    // 是否有專屬安靜區
-  hasErgonomicChairs Boolean   @default(false)    // 是否有人體工學椅
-  hasMonitorRental  Boolean    @default(false)    // 是否提供螢幕租借
-  hasPhoneBooth     Boolean    @default(false)    // 是否有視訊隔音間
+  // --- 環境氛圍 ---
+  noiseLevel         NoiseLevel? @default(QUIET)
+  isQuietZone        Boolean?    @default(false) // 是否有專屬安靜區
+  hasErgonomicChairs Boolean?   @default(false) // 是否有人體工學椅
+  hasMonitorRental   Boolean?   @default(false) // 是否提供螢幕租借
+  hasPhoneBooth      Boolean?   @default(false) // 是否有視訊隔音間
 
-  // 吸菸相關
-  hasSmokingArea   Boolean    @default(false)    // 是否有吸菸區
-  smokingAreaType   SmokingAreaType?
+  // --- 吸菸相關 ---
+  hasSmokingArea  Boolean?       @default(false) // 是否有吸菸區
+  smokingAreaType SmokingAreaType?
 
-
-  // 消費與規範
-  minConsumption    String?    // 例如: "一杯飲品" 或 "200元"
-  timeLimitMinutes  Int        @default(0)        // 0 代表不限時
-  isBookingRequired Boolean    @default(false)
+  // --- 消費與規範 ---
+  minConsumption    String?        // 例如: "一杯飲品" 或 "200元"
+  timeLimitMinutes  Int?        @default(0)     // 0 代表不限時
+  isBookingRequired Boolean?      @default(false)
   bookingUrl        String?
 
+  // --- 關聯 ---
   favoriteBy Favorite[]
+  createdAt  DateTime @default(now())
+}
 
-  createdAt DateTime @default(now())
-
+type Location {
+  lat Float
+  lng Float
 }
 
 enum OutletCoverage {

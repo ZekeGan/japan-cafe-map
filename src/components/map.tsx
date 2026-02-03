@@ -11,6 +11,7 @@ import { Coffee } from 'lucide-react'
 import { getDistance } from '@/lib/utils'
 import { mockCafeShop } from '@public/mockCafeShop'
 import clsx from 'clsx'
+import { Cafe } from '@prisma/client'
 
 type CafeShop = {
   data: google.maps.places.Place
@@ -80,14 +81,15 @@ const Map: React.FC<{
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries: ['places'],
   })
-  const [cafeShops, setCafeShops] = useState<CafeShop[]>([])
 
   const [map, setMap] = useState<google.maps.Map | null>()
   const [curPos, setCurPos] = useState<google.maps.LatLngLiteral>(defaultCenter)
   const [geoError, setGeoError] = useState<string>('')
   const [hasGetPos, setHasGetPos] = useState(false)
-
   const lastFetchPos = useRef<google.maps.LatLngLiteral | null>(null)
+
+  const [googleCafeShops, setGoogleCafeShops] = useState<CafeShop[]>([])
+  const [cafeShop, setCafeShop] = useState<Record<string, Cafe>>({})
 
   const fetchCafeShops = useCallback(
     async (location: google.maps.LatLngLiteral) => {
@@ -113,13 +115,23 @@ const Map: React.FC<{
         //     'formattedAddress',
         //   ],
         // })
+        // mock data
+        const places = mockCafeShop ?? []
 
         lastFetchPos.current = location // 拿到資料後一定要更新，否則下次還會進來
-        // mock data
-        const places = mockCafeShop
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setCafeShops(places.map(p => ({ data: p })) as any[])
+        setGoogleCafeShops(places.map(p => ({ data: p })) as any[])
+
+        const googlePlaceIds = places.map(p => p.id)
+        // const response = await fetch('/api/map/findNearbyCafe', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ googlePlaceIds }),
+        // })
+        // const result = await response.json()
+
+        // console.log(result)
       } catch (err) {
         console.error('Error fetching cafe shops:', err)
       }
@@ -190,8 +202,8 @@ const Map: React.FC<{
     >
       {hasGetPos && <UserLocationDot position={curPos} />}
 
-      {cafeShops.map(shop => {
-        if (shop.data.businessStatus === 'OPERATIONAL') {
+      {googleCafeShops.map(shop => {
+        if (shop.data.id in cafeShop) {
           return (
             <CafeLocationDot
               key={shop.data.id}
@@ -199,11 +211,7 @@ const Map: React.FC<{
               position={shop.data.location as any}
             />
           )
-        }
-        if (
-          shop.data.businessStatus === 'CLOSED_TEMPORARILY' ||
-          shop.data.businessStatus === 'CLOSED_PERMANENTLY'
-        ) {
+        } else {
           return (
             <CafeLocationDot
               key={shop.data.id}
@@ -213,85 +221,9 @@ const Map: React.FC<{
             />
           )
         }
-
-        return null
       })}
     </GoogleMap>
   )
 }
 
 export default Map
-
-new Set([
-  'id',
-  'resourceName',
-  'accessibilityOptions',
-  'addressComponents',
-  'adrFormatAddress',
-  'attributions',
-  'businessStatus',
-  'displayName',
-  'displayNameLanguageCode',
-  'formattedAddress',
-  'shortFormattedAddress',
-  'googleMapsURI',
-  'hasCurbsidePickup',
-  'hasDelivery',
-  'hasDineIn',
-  'hasTakeout',
-  'isReservable',
-  'servesBreakfast',
-  'servesLunch',
-  'servesDinner',
-  'servesBeer',
-  'servesWine',
-  'servesBrunch',
-  'servesVegetarianFood',
-  'iconBackgroundColor',
-  'svgIconMaskURI',
-  'internationalPhoneNumber',
-  'location',
-  'nationalPhoneNumber',
-  'regularOpeningHours',
-  'parkingOptions',
-  'paymentOptions',
-  'photos',
-  'plusCode',
-  'postalAddress',
-  'priceLevel',
-  'rating',
-  'reviews',
-  'types',
-  'userRatingCount',
-  'utcOffsetMinutes',
-  'viewport',
-  'websiteURI',
-  'editorialSummary',
-  'editorialSummaryLanguageCode',
-  'generativeSummary',
-  'reviewSummary',
-  'evChargeAmenitySummary',
-  'neighborhoodSummary',
-  'allowsDogs',
-  'hasLiveMusic',
-  'hasMenuForChildren',
-  'hasOutdoorSeating',
-  'hasRestroom',
-  'hasWiFi',
-  'isGoodForChildren',
-  'isGoodForGroups',
-  'isGoodForWatchingSports',
-  'servesCocktails',
-  'servesCoffee',
-  'servesDessert',
-  'primaryType',
-  'primaryTypeDisplayName',
-  'primaryTypeDisplayNameLanguageCode',
-  'evChargeOptions',
-  'fuelOptions',
-  'priceRange',
-  'googleMapsLinks',
-  'consumerAlert',
-  'timeZone',
-  'isPureServiceAreaBusiness',
-])

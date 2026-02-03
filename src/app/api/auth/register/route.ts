@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import { registerSchema } from '@/lib/validations/auth'
 import { prisma } from '@/lib/db'
 
@@ -33,16 +33,13 @@ export async function POST(req: Request) {
     // 3. 密碼加密 (Salt rounds = 10)
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    console.log('當前 DATABASE_URL:', process.env.DATABASE_URL)
     // 4. 存入資料庫
-    const newUser = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
       },
     })
-
-    console.log(newUser)
 
     return NextResponse.json({ message: '註冊成功' }, { status: 201 })
   } catch (error) {

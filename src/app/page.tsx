@@ -1,11 +1,8 @@
 'use client'
 
-import Header from '@/components/header'
-import { LoginDialog } from '@/components/loginDialog'
+import Footer from '@/components/footer'
 import Map from '@/components/map'
 import ShopInfo from '@/components/shopInfo'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
 import { useState } from 'react'
 
 export default function Home() {
@@ -17,12 +14,14 @@ export default function Home() {
   return (
     <main className="flex h-screen flex-col">
       {/* 導覽列預留區 */}
-      <Header />
+      {/* <Header /> */}
 
       {/* 地圖區域 */}
       <section className="flex-1 w-full relative">
         <Map setShopInfo={setShopInfo} />
       </section>
+
+      <Footer />
 
       <ShopInfo
         shopInfo={shopInfo}
