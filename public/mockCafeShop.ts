@@ -5,7 +5,7 @@ export const mockCafeShop = [
       lat: 35.6835155,
       lng: 139.7666676,
     },
-    displayName: 'MARUZEN Marunouchi',
+    displayName: 'M unouchi',
     businessStatus: 'OPERATIONAL',
     formattedAddress:
       'Japan, 〒100-8203 Tokyo, Chiyoda City, Marunouchi, 1-chōme−6−４ 丸の内オアゾ 1階～4階',

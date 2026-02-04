@@ -39,7 +39,7 @@ model Cafe {
   // --- Google Maps API 欄位 ---
   displayName      String   // 店名
   formattedAddress String   // 完整地址
-  businessStatus   String?  // 營業狀態 (例如: OPERATIONAL)
+  businessStatus   BusinessStatus  // 營業狀態 (例如: OPERATIONAL)
   location         Location // 經緯度座標
 
   // --- 核心連接性 ---
@@ -74,6 +74,12 @@ model Cafe {
 type Location {
   lat Float
   lng Float
+}
+
+enum BusinessStatus {
+CLOSED_PERMANENTLY	
+CLOSED_TEMPORARILY	
+OPERATIONAL
 }
 
 enum OutletCoverage {

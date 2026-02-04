@@ -1,67 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from './ui/carousel'
-import {
   Drawer,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
-import { Card, CardContent } from '@/components/ui/card'
-
 import { ScrollArea } from './ui/scroll-area'
-import clsx from 'clsx'
+import { Card, CardContent } from '@/components/ui/card'
 import { Cafe } from '@prisma/client'
-
-// const Photo = () => {
-//   return (
-//     <div className="p-2">
-//       <Carousel className="w-full">
-//         <CarouselContent className="-ml-4">
-//           {shopInfo.photos && shopInfo.photos.length > 0 ? (
-//             shopInfo.photos.map((photo, index) => (
-//               <CarouselItem
-//                 key={index}
-//                 className="basis-1/3 pl-4" // 移除這裡的 rounded 和 overflow，改放在內部容器
-//               >
-//                 <div className="overflow-hidden rounded-md">
-//                   {/* 這裡控制圓角和裁切 */}
-//                   <AspectRatio ratio={4 / 3}>
-//                     <img
-//                       src={photo.getURI({
-//                         maxWidth: 100,
-//                         maxHeight: 100,
-//                       })}
-//                       alt={`Photo ${index + 1} of ${shopInfo.displayName}`}
-//                       className="h-full w-full object-cover" // 關鍵：撐滿容器並自動裁切比例
-//                     />
-//                   </AspectRatio>
-//                 </div>
-//               </CarouselItem>
-//             ))
-//           ) : (
-//             <CarouselItem className="w-full">
-//               <AspectRatio
-//                 ratio={6 / 3}
-//                 className="w-full bg-gray-200 flex items-center justify-center rounded-md"
-//               >
-//                 <span className="text-gray-500">No Photos Available</span>
-//               </AspectRatio>
-//             </CarouselItem>
-//           )}
-//         </CarouselContent>
-//       </Carousel>
-//     </div>
-//   )
-// }
+import { ExternalLink, Heart, MapPin, Pencil } from 'lucide-react'
+import { Button } from './ui/button'
+import Divider from './divider'
+import { useForm } from 'react-hook-form'
+import { CafeFormValues, cafeSchema } from '@/lib/validations/cafe'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 const infoItems = [
   { label: 'seat Capacity Max', value: '123' },
@@ -76,80 +29,100 @@ const ShopInfo = (props: {
   setShopInfo: (shopInfo: google.maps.places.Place | null) => void
 }) => {
   const { shopInfo, setShopInfo } = props
-  if (!shopInfo) return null
 
+  const form = useForm<CafeFormValues>({
+    resolver: zodResolver(cafeSchema),
+    defaultValues: {
+      googlePlaceId: shopInfo?.googlePlaceId || '',
+      displayName: shopInfo?.displayName || '',
+      formattedAddress: shopInfo?.formattedAddress || '',
+      businessStatus: shopInfo?.businessStatus || 'OPERATIONAL',
+      location: {
+        lat: shopInfo!.location?.lat || undefined,
+        lng: shopInfo!.location?.lng || undefined,
+      },
+    },
+  })
+  if (!shopInfo) return null
   return (
     <Drawer
       open={Boolean(shopInfo)}
-      onOpenChange={() => {}}
-      onClose={() => {
-        setShopInfo(null)
+      onOpenChange={open => {
+        if (!open) setShopInfo(null)
       }}
     >
-      <DrawerContent className="h-[80%] ">
+      <DrawerContent className="h-[80%]">
         <ScrollArea className="h-full no-scrollbar">
-          <DrawerHeader>
-            <DrawerTitle className="text-lg">
+          <DrawerHeader className="text-left">
+            <DrawerTitle className="text-md font-bold text-left">
               {shopInfo?.displayName}
             </DrawerTitle>
-            {/* 顯示營業狀態標籤 */}
-            <DrawerDescription>{shopInfo?.formattedAddress}</DrawerDescription>
+            <DrawerDescription className="sr-only">
+              Store details and connectivity information for{' '}
+              {shopInfo?.displayName}
+            </DrawerDescription>
           </DrawerHeader>
+          <div className="flex gap-3 items-center p-4">
+            <div className="w-fit">
+              <MapPin />
+            </div>
 
-          {/* Details */}
+            <div className="text-sm text-gray-600">
+              {shopInfo?.formattedAddress}
+            </div>
 
-          <div className="p-2 flex flex-col gap-5">
-            <Card className="w-full">
-              <CardContent>
-                <div className="text-lg font-bold">核心連接性</div>
-                <div>
-                  {infoItems.map(i => (
-                    <div
-                      key={i.label}
-                      className="grid grid-cols-3 border-b-2 p-2"
-                    >
-                      <div className="text-sm ">{i.label}</div>
-                      <div className="col-span-2">{i.value}</div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="w-full">
-              <CardContent>
-                <div className="text-lg font-bold">核心連接性</div>
-                <div>
-                  {infoItems.map(i => (
-                    <div
-                      key={i.label}
-                      className="grid grid-cols-3 border-b-2 p-2"
-                    >
-                      <div className="text-sm ">{i.label}</div>
-                      <div className="col-span-2">{i.value}</div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="w-full">
-              <CardContent>
-                <div className="text-lg font-bold">核心連接性</div>
-                <div>
-                  {infoItems.map(i => (
-                    <div
-                      key={i.label}
-                      className="grid grid-cols-3 border-b-2 p-2"
-                    >
-                      <div className="text-sm ">{i.label}</div>
-                      <div className="col-span-2">{i.value}</div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <Button
+              variant="link"
+              className="p-0"
+            >
+              <ExternalLink />
+            </Button>
           </div>
-
-          <div className="h-0" />
+          <Divider />
+          <div className="p-4 flex gap-2">
+            <Button
+              variant="outline"
+              className="flex align-middle gap-2"
+            >
+              <Pencil />
+              <span className="text-xs">Edit</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="flex align-middle gap-2"
+            >
+              <Heart />
+              <span className="text-xs">Fav</span>
+            </Button>
+          </div>
+          <Divider />
+          <div className="p-4 ">
+            {/* Details */}
+            <div className="flex flex-col gap-5">
+              {[1, 2, 3].map((_, idx) => (
+                <Card
+                  key={idx}
+                  className="w-full"
+                >
+                  <CardContent>
+                    <h1 className="text-lg font-bold mb-2">核心連接性</h1>
+                    <div>
+                      {infoItems.map(i => (
+                        <div
+                          key={i.label}
+                          className="grid grid-cols-3 border-b last:border-0 p-2"
+                        >
+                          <div className="text-sm text-gray-500">{i.label}</div>
+                          <div className="col-span-2 text-sm">{i.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+          <div className="h-10" /> {/* 留白避免底部被裁切 */}
         </ScrollArea>
       </DrawerContent>
     </Drawer>
