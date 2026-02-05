@@ -12,13 +12,12 @@ import { getDistance } from '@/lib/utils'
 import { mockCafeShop } from '@public/mockCafeShop'
 import clsx from 'clsx'
 import { Cafe } from '@prisma/client'
+import { defaultLagitude, defaultLongitude } from '@/constant/location'
 
 type CafeShop = {
   data: google.maps.places.Place
   isOpenNow?: boolean
 }
-
-const defaultCenter: google.maps.LatLngLiteral = { lat: 35.6808, lng: 139.7669 } //東京車站
 
 const UserLocationDot: React.FC<{ position: google.maps.LatLngLiteral }> = ({
   position,
@@ -38,7 +37,7 @@ const UserLocationDot: React.FC<{ position: google.maps.LatLngLiteral }> = ({
   )
 }
 const CafeLocationDot: React.FC<{
-  position: google.maps.LatLngLiteral
+  position: google.maps.LatLng
   onClick: () => void
   close?: boolean
 }> = ({ position, close = false, onClick }) => {
@@ -57,7 +56,7 @@ const CafeLocationDot: React.FC<{
             <div
               className={clsx(
                 close ? 'bg-gray-500' : 'bg-yellow-800',
-                'w-4 h-4 p-0.5  rounded-full rounded-bl-none -rotate-45 flex items-center justify-center'
+                'w-5 h-5 p-0.5  rounded-full rounded-bl-none -rotate-45 flex items-center justify-center'
               )}
             >
               {/* ICON */}
@@ -83,7 +82,10 @@ const Map: React.FC<{
   })
 
   const [map, setMap] = useState<google.maps.Map | null>()
-  const [curPos, setCurPos] = useState<google.maps.LatLngLiteral>(defaultCenter)
+  const [curPos, setCurPos] = useState<google.maps.LatLngLiteral>({
+    lat: defaultLagitude,
+    lng: defaultLongitude,
+  })
   const [geoError, setGeoError] = useState<string>('')
   const [hasGetPos, setHasGetPos] = useState(false)
   const lastFetchPos = useRef<google.maps.LatLngLiteral | null>(null)
@@ -150,7 +152,6 @@ const Map: React.FC<{
           //   lat: position.coords.latitude,
           //   lng: position.coords.longitude,
           // }
-          setCurPos(defaultCenter)
           // setCurPos(newPos)
           // map.panTo(newPos)
           setGeoError('')
@@ -208,7 +209,7 @@ const Map: React.FC<{
             <CafeLocationDot
               key={shop.data.id}
               onClick={() => setShopInfo(shop.data)}
-              position={shop.data.location as any}
+              position={shop.data.location!}
             />
           )
         } else {
@@ -216,7 +217,7 @@ const Map: React.FC<{
             <CafeLocationDot
               key={shop.data.id}
               onClick={() => setShopInfo(shop.data)}
-              position={shop.data.location as any}
+              position={shop.data.location!}
               close
             />
           )

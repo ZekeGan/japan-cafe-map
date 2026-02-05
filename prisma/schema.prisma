@@ -43,28 +43,24 @@ model Cafe {
   location         Location // 經緯度座標
 
   // --- 核心連接性 ---
-  seatCapacityMax Int?
-  hasWifi         Boolean?
-  wifiSpeedMbps   Int?     // 下載速度
-  hasPowerOutlets Boolean?  @default(false)
-  outletCoverage  OutletCoverage? @default(SOME) // 插座覆蓋率
+  hasWifi         Boolean? // 是否有提供 Wi-Fi
+  hasPowerOutlets Boolean?   // 是否有提供插座
+  outletCoverage  OutletCoverage?  // 插座覆蓋率
 
   // --- 環境氛圍 ---
-  noiseLevel         NoiseLevel? @default(QUIET)
-  isQuietZone        Boolean?    @default(false) // 是否有專屬安靜區
-  hasErgonomicChairs Boolean?   @default(false) // 是否有人體工學椅
-  hasMonitorRental   Boolean?   @default(false) // 是否提供螢幕租借
-  hasPhoneBooth      Boolean?   @default(false) // 是否有視訊隔音間
+  seatCapacity SeatCapacity?   // 座位數量等級
+  noiseLevel         NoiseLevel?  // 環境噪音等級
 
   // --- 吸菸相關 ---
-  hasSmokingArea  Boolean?       @default(false) // 是否有吸菸區
-  smokingAreaType SmokingAreaType?
+  hasSmokingArea  Boolean?     // 是否有吸菸區
+  smokingAreaType SmokingAreaType? // 吸菸區類型
+  cigaratteType CigaratteType[]  // 可吸菸種類
 
   // --- 消費與規範 ---
-  minConsumption    String?        // 例如: "一杯飲品" 或 "200元"
-  timeLimitMinutes  Int?        @default(0)     // 0 代表不限時
-  isBookingRequired Boolean?      @default(false)
-  bookingUrl        String?
+  minConsumption    String?      // 例如: "一杯飲品" 或 "200元"
+  timeLimitMinutes  Int?         // 0 代表不限時
+  isBookingRequired Boolean?     // 是否需要預約
+  bookingUrl        String?      // 預約連結
 
   // --- 關聯 ---
   favoriteBy Favorite[]
@@ -82,11 +78,18 @@ CLOSED_TEMPORARILY
 OPERATIONAL
 }
 
+enum SeatCapacity {
+  MINIMAL   // 極少座位 (例如：1-5, 適合外帶或個人)
+  LIMITED   // 少量座位 (例如：6-15, 小型店面)
+  STANDARD  // 一般規模 (例如：16-30, 標準咖啡店)
+  GENEROUS  // 空間寬敞 (例如：31+, 適合多人或久坐)
+}
+
 enum OutletCoverage {
   EVERY    // 每個位置都有
   MOST     // 多數位置有
-  SOME          // 部分位置有
-  NONE          // 無
+  SOME     // 部分位置有
+  NONE     // 無
 }
 
 enum NoiseLevel {
@@ -96,10 +99,17 @@ enum NoiseLevel {
   VIBRANT       // 較為吵雜
 }
 
+
+
 enum SmokingAreaType {
-  INDOOR_SEPARATED // 合法室內吸菸室 (有獨立空調)
-  OUTDOOR_TABLE    // 戶外座位區 (可邊抽邊工作)
-  OUTDOOR_STAND    // 戶外站立吸菸區 (需離開座位)
-  ROOFTOP          // 頂樓吸菸區
-  BALCONY          // 陽台
+  INDOOR_SEPARATED // 室內吸菸室 
+  INDOOR_TABLE // 座位上可抽(室內)
+  OUTDOOR    // 戶外
+}
+
+enum CigaratteType {
+  TRADITIONAL // 傳統香菸
+  ELECTRONIC  // 電子煙
+  VAPE  // 電子煙
+  OTHER      // 其他類型
 }
