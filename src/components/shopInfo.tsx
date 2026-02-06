@@ -16,7 +16,6 @@ import {
   BatteryLow,
   BatteryMedium,
   Check,
-  Cigarette,
   CircleDollarSign,
   Clock,
   Coffee,
@@ -26,7 +25,6 @@ import {
   MapPin,
   Pencil,
   Tent,
-  User,
   Volume,
   Volume1,
   Volume2,
@@ -36,21 +34,20 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Divider from '@/components/divider'
-import { useForm } from 'react-hook-form'
-import { CafeFormValues, cafeSchema } from '@/lib/validations/cafe'
+import { Controller, useForm } from 'react-hook-form'
+import { ReportFormValues, reportSchema } from '@/lib/validations/report'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { defaultLagitude, defaultLongitude } from '@/constant/location'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Item,
   ItemActions,
   ItemContent,
-  ItemDescription,
   ItemMedia,
   ItemTitle,
 } from '@/components/ui/item'
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
 import Link from 'next/link'
+import { useAuth } from '@/context/authContext'
 
 const SmallLabel = ({ str }: { str: string }) => {
   return <div className="text-[9px] font-bold ">{str}</div>
@@ -61,21 +58,58 @@ const ShopInfo = (props: {
   setShopInfo: (shopInfo: google.maps.places.Place | null) => void
 }) => {
   const { shopInfo, setShopInfo } = props
+  const { user } = useAuth()
 
-  const form = useForm<CafeFormValues>({
-    resolver: zodResolver(cafeSchema),
+  const hasUser = Boolean(user?.id)
+
+  const form = useForm<ReportFormValues>({
+    resolver: zodResolver(reportSchema),
     defaultValues: {
-      googlePlaceId: shopInfo?.googlePlaceId || '',
-      displayName: shopInfo?.displayName || '',
-      formattedAddress: shopInfo?.formattedAddress || '',
-      businessStatus: shopInfo?.businessStatus || 'OPERATIONAL',
-      location: {
-        lat: shopInfo?.location?.lat || defaultLagitude,
-        lng: shopInfo?.location?.lng || defaultLongitude,
-      },
-      cigaratteType: shopInfo?.cigaratteType || [],
+      cafeId: shopInfo?.id || '',
+      userId: user?.id || '',
+      // googlePlaceId: shopInfo?.googlePlaceId || '',
+      // displayName: shopInfo?.displayName || '',
+      // formattedAddress: shopInfo?.formattedAddress || '',
+      // businessStatus: shopInfo?.businessStatus || 'OPERATIONAL',
+      // location: {
+      //   lat: shopInfo?.location?.lat || defaultLagitude,
+      //   lng: shopInfo?.location?.lng || defaultLongitude,
+      // },
+
+      hasWifi: shopInfo?.hasWifi || false,
+      hasPowerOutlets: shopInfo?.hasWifi || false,
+      outletCoverage: shopInfo?.outletCoverage || 'SOME',
+
+      seatCapacity: shopInfo?.seatCapacity || 'LIMITED',
+      noiseLevel: shopInfo?.noiseLevel || 'SILENT',
+
+      minConsumption: shopInfo?.minConsumption || true,
+      timeLimit: shopInfo?.timeLimit || false,
+      isBookingRequired: shopInfo?.isBookingRequired || false,
+
+      hasSmokingArea: shopInfo?.hasSmokingArea || false,
+      smokingAreaType: shopInfo?.smokingAreaType || 'INDOOR_SEPARATED',
+      allowCigaretteType: shopInfo?.allowCigaretteType || ['TRADITIONAL'],
     },
   })
+
+  const [isEditing, setIsEditing] = useState(true)
+
+  const onSubmit = async (data: ReportFormValues) => {
+    console.log('提交的資料:', data)
+    // 這裡呼叫 API 更新後端
+    // const response = await fetch('/api/report', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(data),
+    // })
+    // const result = await response.json()
+    // console.log('後端回應:', result)
+
+    // setIsEditing(false)
+  }
 
   const shopDetails = useMemo(() => {
     if (!shopInfo) return []
@@ -108,10 +142,9 @@ const ShopInfo = (props: {
           { label: '最低消費', value: shopInfo?.minConsumption || null },
           {
             label: '時間限制(分鐘)',
-            value: shopInfo?.timeLimitMinutes || null,
+            value: shopInfo?.timeLimit || null,
           },
           { label: '是否需要預約', value: shopInfo?.isBookingRequired || null },
-          { label: '預約連結', value: shopInfo?.bookingUrl || null },
         ],
       },
     ]
@@ -170,433 +203,471 @@ const ShopInfo = (props: {
             </Button>
           </div>
           <Divider />
-          {/* Edit Prompt */}
           <div className="p-4 w-full ">
-            {/* 請求 */}
-            <div>
-              <h1 className="text-center text-md font-bold mb-2">
-                是否幫忙編輯該商店資訊
-              </h1>
-              <div className="flex justify-center gap-4">
-                <Button
-                  variant="outline"
-                  className="flex align-middle gap-2 "
-                >
-                  <Pencil />
-                  <span className="text-xs">Yes</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex align-middle gap-2 "
-                >
-                  <X />
-                  <span className="text-xs">No</span>
-                </Button>
-              </div>
-            </div>
-            {/* 問題 */}
-            <div className="flex flex-col gap-4 pb-20">
-              {/* 設施 */}
+            {!isEditing ? (
               <div>
-                <h1 className="text-lg mb-2">設施</h1>
-                <div className="flex flex-col gap-2">
-                  {/* 是否有WIFI */}
-                  <Item
+                <h1 className="text-center text-md font-bold mb-2">
+                  是否幫忙編輯該商店資訊
+                </h1>
+                <div className="flex justify-center gap-4">
+                  <Button
                     variant="outline"
-                    className="p-2"
+                    className="gap-2"
+                    onClick={() => setIsEditing(true)}
                   >
-                    <ItemContent>
-                      <ItemTitle>是否有WIFI</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem
-                          value="all"
-                          aria-label="Toggle all"
-                        >
-                          <Check />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="missed"
-                          aria-label="Toggle missed"
-                        >
-                          <X />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
-                  {/* 是否有插座 */}
-                  <Item
+                    <Pencil className="w-4 h-4" /> <span>Yes</span>
+                  </Button>
+                  <Button
                     variant="outline"
-                    className="p-2"
+                    className="gap-2"
+                    onClick={() => setShopInfo(null)}
                   >
-                    <ItemContent>
-                      <ItemTitle>是否有插座</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem
-                          value="all"
-                          aria-label="Toggle all"
-                        >
-                          <Check />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="missed"
-                          aria-label="Toggle missed"
-                        >
-                          <X />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
-                  {/* 插座覆蓋率 */}
-                  <Item
-                    variant="outline"
-                    className="p-2"
-                  >
-                    <ItemContent>
-                      <ItemTitle>插座覆蓋率</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem
-                          value="none"
-                          aria-label="Toggle all"
-                        >
-                          <Battery />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="some"
-                          aria-label="Toggle missed"
-                        >
-                          <BatteryLow />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="most"
-                          aria-label="Toggle missed"
-                        >
-                          <BatteryMedium />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="every"
-                          aria-label="Toggle missed"
-                        >
-                          <BatteryFull />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
+                    <X className="w-4 h-4" /> <span>No</span>
+                  </Button>
                 </div>
               </div>
-              {/* 環境 */}
-              <div>
-                <h1 className="text-lg mb-2">環境</h1>
-                <div className="flex flex-col gap-2">
-                  {/* 座位數量 */}
-                  <Item
-                    variant="outline"
-                    className="p-2"
-                  >
-                    <ItemContent>
-                      <ItemTitle>座位數量</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem
-                          value="none"
-                          aria-label="Toggle all"
-                        >
-                          <SmallLabel str="1-5" />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="some"
-                          aria-label="Toggle missed"
-                        >
-                          <SmallLabel str="6-15" />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="most"
-                          aria-label="Toggle missed"
-                        >
-                          <SmallLabel str="16-30" />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="every"
-                          aria-label="Toggle missed"
-                        >
-                          <SmallLabel str="31+" />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
-                  {/* 噪音等級 */}
-                  <Item
-                    variant="outline"
-                    className="p-2"
-                  >
-                    <ItemContent>
-                      <ItemTitle>噪音等級</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem
-                          value="none"
-                          aria-label="Toggle all"
-                        >
-                          <VolumeX />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="some"
-                          aria-label="Toggle missed"
-                        >
-                          <Volume />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="most"
-                          aria-label="Toggle missed"
-                        >
-                          <Volume1 />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="every"
-                          aria-label="Toggle missed"
-                        >
-                          <Volume2 />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
+            ) : (
+              <form
+                className="flex flex-col gap-4 pb-20"
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
+                {/* 設施 */}
+                <div>
+                  <h1 className="text-lg mb-2">設施</h1>
+                  <div className="flex flex-col gap-2">
+                    {/* 是否有WIFI */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>是否有WIFI</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="hasWifi"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Check />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <X />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                    {/* 是否有插座 */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>是否有插座</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="hasPowerOutlets"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Check />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <X />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                    {/* 插座覆蓋率 */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>插座覆蓋率</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="outletCoverage"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="NONE">
+                                <Battery />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="SOME">
+                                <BatteryLow />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="MOST">
+                                <BatteryMedium />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="EVERY">
+                                <BatteryFull />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                  </div>
                 </div>
-              </div>
-              {/* 消費 */}
-              <div>
-                <h1 className="text-lg mb-2">消費</h1>
-                <div className="flex flex-col gap-2">
-                  {/* 是否需要預約 */}
-                  <Item
-                    variant="outline"
-                    className="p-2"
-                  >
-                    <ItemContent>
-                      <ItemTitle>是否需要預約</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem
-                          value="true"
-                          aria-label="Toggle all"
-                        >
-                          <Check />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="false"
-                          aria-label="Toggle missed"
-                        >
-                          <X />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
-                  {/* 使用時間 */}
-                  <Item
-                    variant="outline"
-                    className="p-2"
-                  >
-                    <ItemContent>
-                      <ItemTitle>使用時間</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroup
-                          type="single"
-                          variant="outline"
-                        >
-                          <ToggleGroupItem
-                            value="some"
-                            aria-label="Toggle missed"
-                          >
-                            <Infinity />
-                          </ToggleGroupItem>
-                          <ToggleGroupItem value="none">
-                            <Clock />
-                          </ToggleGroupItem>
-                        </ToggleGroup>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
-                  {/* 低消 */}
-                  <Item
-                    variant="outline"
-                    className="p-2"
-                  >
-                    <ItemContent>
-                      <ItemTitle>低消</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem
-                          value="none"
-                          aria-label="Toggle all"
-                        >
-                          <Coffee />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="most"
-                          aria-label="Toggle missed"
-                        >
-                          <CircleDollarSign />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
+                {/* 環境 */}
+                <div>
+                  <h1 className="text-lg mb-2">環境</h1>
+                  <div className="flex flex-col gap-2">
+                    {/* 座位數量 */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>座位數量</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="seatCapacity"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="MINIMAL">
+                                <SmallLabel str="1-5" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="LIMITED">
+                                <SmallLabel str="6-15" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="STANDARD">
+                                <SmallLabel str="16-30" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="GENEROUS">
+                                <SmallLabel str="31+" />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                    {/* 噪音等級 */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>噪音等級</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="noiseLevel"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="SILENT">
+                                <VolumeX />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="QUIET">
+                                <Volume />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="MODERATE">
+                                <Volume1 />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="VIBRANT ">
+                                <Volume2 />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                  </div>
                 </div>
-              </div>
-              {/* 吸菸 */}
-              <div>
-                <h1 className="text-lg mb-2">吸菸</h1>
-                <div className="flex flex-col gap-2">
-                  {/* 是否有WIFI */}
-                  <Item
-                    variant="outline"
-                    className="p-2"
-                  >
-                    <ItemContent>
-                      <ItemTitle>是否有吸菸區</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem
-                          value="true"
-                          aria-label="Toggle all"
-                        >
-                          <Check />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="false"
-                          aria-label="Toggle missed"
-                        >
-                          <X />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
-                  {/* 吸菸區種類 */}
-                  <Item
-                    variant="outline"
-                    className="p-2"
-                  >
-                    <ItemContent>
-                      <ItemTitle>吸菸區類型</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="single"
-                        variant="outline"
-                      >
-                        <ToggleGroup
-                          type="single"
-                          variant="outline"
-                        >
-                          <ToggleGroupItem
-                            value="some"
-                            aria-label="Toggle missed"
-                          >
-                            <Armchair />
-                          </ToggleGroupItem>
-                          <ToggleGroupItem
-                            value="none"
-                            aria-label="Toggle all"
-                          >
-                            <Warehouse />
-                          </ToggleGroupItem>
-                          <ToggleGroupItem
-                            value="most"
-                            aria-label="Toggle missed"
-                          >
-                            <Tent />
-                          </ToggleGroupItem>
-                        </ToggleGroup>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
-                  {/* 可吸食香菸種類 */}
-                  <Item
-                    variant="outline"
-                    className="p-2"
-                  >
-                    <ItemContent>
-                      <ItemTitle>可吸食香菸種類</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToggleGroup
-                        type="multiple"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem
-                          value="none"
-                          aria-label="Toggle all"
-                        >
-                          <SmallLabel str="傳統" />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="most"
-                          aria-label="Toggle missed"
-                        >
-                          <SmallLabel str="加熱菸" />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem
-                          value="every"
-                          aria-label="Toggle missed"
-                        >
-                          <SmallLabel str="電子菸" />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </ItemActions>
-                  </Item>
+                {/* 消費 */}
+                <div>
+                  <h1 className="text-lg mb-2">消費</h1>
+                  <div className="flex flex-col gap-2">
+                    {/* 是否需要預約 */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>是否需要預約</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="isBookingRequired"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Check />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <X />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                    {/* 使用時間 */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>使用時間</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="timeLimit"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="false">
+                                <Infinity />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="true">
+                                <Clock />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                    {/* 低消 */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>低消</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="minConsumption"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Coffee />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <CircleDollarSign />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                  </div>
                 </div>
-              </div>
+                {/* 吸菸 */}
+                <div>
+                  <h1 className="text-lg mb-2">吸菸</h1>
+                  <div className="flex flex-col gap-2">
+                    {/* 是否有WIFI */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>是否有吸菸區</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="hasSmokingArea"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Check />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <X />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                    {/* 吸菸區種類 */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>吸菸區類型</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="smokingAreaType"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="INDOOR_TABLE">
+                                <Armchair />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="INDOOR_SEPARATED">
+                                <Warehouse />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="OUTDOOR">
+                                <Tent />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                    {/* 可吸食香菸種類 */}
+                    <Item
+                      variant="outline"
+                      className="p-2"
+                    >
+                      <ItemContent>
+                        <ItemTitle>可吸食香菸種類</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <Controller
+                          name="allowCigaretteType"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="multiple"
+                              variant="outline"
+                              value={field.value || []}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="TRADITIONAL">
+                                <SmallLabel str="傳統" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="ELECTRONIC">
+                                <SmallLabel str="加熱菸" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="VAPE">
+                                <SmallLabel str="電子菸" />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      </ItemActions>
+                    </Item>
+                  </div>
+                </div>
 
-              <Button
-                className="mt-10"
-                type="submit"
-              >
-                送出
-              </Button>
-              <Button
-                type="submit"
-                variant="outline"
-              >
-                取消
-              </Button>
-            </div>
+                <Button type="submit">送出</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditing(false)}
+                >
+                  取消
+                </Button>
+              </form>
+            )}
           </div>
           <Divider />
           {/* Details */}
