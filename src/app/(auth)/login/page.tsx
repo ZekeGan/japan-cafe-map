@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { loginSchema, type LoginInput } from '@/lib/validations/auth'
 import { useAuth } from '@/context/authContext'
+import { FORGOT_PASSWORD, HOME, REGISTER } from '@/constant/router'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -45,7 +46,7 @@ export default function LoginPage() {
       // 登入成功處理 (例如儲存 Token 或更新 Context)
 
       await refreshUser()
-      router.push('/') // 跳轉至後台或首頁
+      router.push(HOME) // 跳轉至後台或首頁
     } catch (err) {
       setError('root', { message: '系統連線錯誤，請稍後再試' })
     }
@@ -89,7 +90,7 @@ export default function LoginPage() {
             <div className="flex items-center justify-between">
               <Label htmlFor="password">密碼</Label>
               <Link
-                href="/forgot-password"
+                href={FORGOT_PASSWORD}
                 // size="sm"
                 className="text-xs text-primary underline-offset-4 hover:underline"
               >
@@ -121,7 +122,7 @@ export default function LoginPage() {
         <p className="px-8 text-center text-sm text-muted-foreground">
           還沒有帳號？{' '}
           <Link
-            href="/register"
+            href={REGISTER}
             className="underline underline-offset-4 hover:text-primary"
           >
             立即註冊

@@ -1,0 +1,7 @@
+export const HOME = '/'
+export const PROFILE = '/profile'
+export const MAP = '/map'
+export const FAVOTITE = '/favorite'
+export const LOGIN = '/login'
+export const REGISTER = '/register'
+export const FORGOT_PASSWORD = '/forgot-password'

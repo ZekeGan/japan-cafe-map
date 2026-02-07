@@ -20,6 +20,8 @@ export async function POST(request: Request) {
           update: {}, // 如果已存在，不更新任何欄位 (保留你的擴充資料)
           create: {
             googlePlaceId: p.id,
+            googleMapsURI: p.googleMapsURI,
+            shortFormattedAddress: p.shortFormattedAddress,
             displayName: p.displayName,
             formattedAddress: p.formattedAddress,
             businessStatus: p.businessStatus,

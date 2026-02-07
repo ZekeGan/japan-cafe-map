@@ -1,6 +1,6 @@
 import Footer from '@/components/footer'
 
-const LoginLayout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main className="flex h-screen flex-col ">
       <section className="flex-1">{children}</section>
@@ -12,4 +12,4 @@ const LoginLayout = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export default LoginLayout
+export default Layout

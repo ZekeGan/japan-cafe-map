@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { AlertCircle } from 'lucide-react' // 增加小圖標提升辨識度
 import { registerSchema, type RegisterInput } from '@/lib/validations/auth'
 import { useRouter } from 'next/navigation'
+import { LOGIN } from '@/constant/router'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -43,7 +44,7 @@ export default function RegisterPage() {
       }
 
       alert('註冊成功！')
-      router.push('/login')
+      router.push(LOGIN)
     } catch (err) {
       console.error('系統錯誤')
     }
@@ -153,7 +154,7 @@ export default function RegisterPage() {
             className="w-full"
             asChild
           >
-            <Link href="/login">返回登入</Link>
+            <Link href={LOGIN}>返回登入</Link>
           </Button>
         </div>
       </div>

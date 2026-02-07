@@ -11,12 +11,7 @@ export async function GET(
     // 嘗試從資料庫尋找，包含關聯的 reports
     const cafe = await prisma.cafe.findUnique({
       where: {
-        // 這裡你可以根據需求決定是用資料庫自增 ID 還是 Google ID
-        // 如果傳入的是 MongoDB 的 ObjectId：
-        id: id,
-
-        // 或者如果你想支援用 Google ID 查：
-        // googlePlaceId: id
+        googlePlaceId: id,
       },
       include: {
         reports: {

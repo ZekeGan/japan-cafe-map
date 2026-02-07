@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { LOGIN } from '@/constant/router'
 import { useAuth } from '@/context/authContext'
 import { LogOut, User } from 'lucide-react' // 使用 lucide-react 增加圖示感
 import { useRouter } from 'next/navigation'
@@ -32,7 +33,7 @@ export default function ProfilePage() {
     if (res.ok) {
       // 2. 清除成功後，將頁面導向首頁或登入頁
       // router.refresh() 可以強制讓 Server Component 重新檢查登入狀態
-      router.push('/login')
+      router.push(LOGIN)
     }
   }
 

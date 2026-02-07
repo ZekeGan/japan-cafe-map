@@ -3,44 +3,41 @@
 import { useAuth } from '@/context/authContext'
 import { Heart, House, User } from 'lucide-react'
 import Link from 'next/link'
+import { Button } from './ui/button'
+import { HOME, LOGIN, MAP, PROFILE } from '@/constant/router'
 
 const Footer = () => {
   const { user } = useAuth()
 
   return (
-    <footer className="h-16 bg-white border-b flex items-center justify-between px-6 shadow-sm z-10">
+    <footer className="bg-white shadow-sm z-10 grid grid-cols-3 py-1">
       <Link
-        href="/"
-        className="text-sm"
+        href={MAP}
+        className="flex flex-col items-center gap-1"
       >
-        <div className=" flex flex-col items-center">
-          <House />
-          <div className="text-xs font-bold">地圖</div>
-        </div>
+        <House className="w-5" />
+        <div className="text-xs font-bold">地圖</div>
       </Link>
       {user ? (
         <>
           <Link
-            href="/favorite"
-            className="text-sm"
+            href={HOME}
+            className="flex flex-col items-center gap-1"
           >
-            <div className=" flex flex-col items-center">
-              <Heart />
-              <div className="text-xs font-bold">我的最愛</div>
-            </div>
+            <Heart className="w-5" />
+            <div className="text-xs font-bold">最愛</div>
           </Link>
+
           <Link
-            href="/profile"
-            className="text-sm"
+            href={PROFILE}
+            className="flex flex-col items-center gap-1"
           >
-            <div className=" flex flex-col items-center">
-              <User />
-              <div className="text-xs font-bold">我</div>
-            </div>
+            <User className="w-5" />
+            <div className="text-xs font-bold">我</div>
           </Link>
         </>
       ) : (
-        <Link href="/login">
+        <Link href={LOGIN}>
           <div className="text-xs font-bold">Login</div>
         </Link>
       )}

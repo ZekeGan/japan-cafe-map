@@ -17,7 +17,6 @@ model User {
 
   favorites Favorite[]
   reports   Report[]
-  
 }
 
 model Favorite {
@@ -39,8 +38,10 @@ model Cafe {
 
   // --- Google Maps API 欄位 ---
   googlePlaceId String   @unique
+  googleMapsURI             String   // Google Maps 連結
   displayName      String   // 店名
   formattedAddress String   // 完整地址
+  shortFormattedAddress String  
   businessStatus   BusinessStatus  // 營業狀態 (例如: OPERATIONAL)
   location         Location // 經緯度座標
 

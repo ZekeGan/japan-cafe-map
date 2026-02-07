@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import {
@@ -98,42 +99,47 @@ const Map: React.FC<{
           return
         }
 
-        const { Place } = (await google.maps.importLibrary(
-          'places'
-        )) as google.maps.PlacesLibrary
-        const { places } = await Place.searchNearby({
-          locationRestriction: { center: location, radius: 500 },
-          includedTypes: ['cafe'],
-          fields: [
-            'id',
-            'location',
-            'displayName',
-            'businessStatus',
-            'formattedAddress',
-          ],
-        })
-        lastFetchPos.current = location
+        // const { Place } = (await google.maps.importLibrary(
+        //   'places'
+        // )) as google.maps.PlacesLibrary
+        // const { places } = await Place.searchNearby({
+        //   locationRestriction: { center: location, radius: 500 },
+        //   includedTypes: ['cafe'],
+        //   fields: [
+        //     'id',
+        //     'location',
+        //     'displayName',
+        //     'businessStatus',
+        //     'formattedAddress',
+        //     'googleMapsURI',
+        //     'shortFormattedAddress',
+        //   ],
+        // })
+        // lastFetchPos.current = location
+        // console.log(places)
+        // const formatData = places
+        //   .map(d => ({
+        //     id: d.id,
+        //     location: {
+        //       lat: d.location?.lat(),
+        //       lng: d.location?.lng(),
+        //     },
+        //     googleMapsURI: d.googleMapsURI,
+        //     shortFormattedAddress: (d as any).shortFormattedAddress,
+        //     displayName: d.displayName,
+        //     businessStatus: d.businessStatus,
+        //     formattedAddress: d.formattedAddress,
+        //   }))
+        //   .filter(
+        //     p =>
+        //       p.id &&
+        //       p.location.lat &&
+        //       p.location.lng &&
+        //       p.displayName &&
+        //       p.formattedAddress
+        //   )
 
-        // mock data
-        const formatData = places
-          .map(d => ({
-            id: d.id,
-            location: {
-              lat: d.location?.lat(),
-              lng: d.location?.lng(),
-            },
-            displayName: d.displayName,
-            businessStatus: d.businessStatus,
-            formattedAddress: d.formattedAddress,
-          }))
-          .filter(
-            p =>
-              p.id &&
-              p.location.lat &&
-              p.location.lng &&
-              p.displayName &&
-              p.formattedAddress
-          )
+        const formatData = mockCafeShop
 
         const response = await fetch('/api/cafe/query', {
           method: 'POST',
@@ -151,7 +157,7 @@ const Map: React.FC<{
   )
 
   const openInfoWindow = async (shop: Cafe) => {
-    const res = await fetch(`/api/cafe/${shop.id}`)
+    const res = await fetch(`/api/cafe/${shop.googlePlaceId}`)
     const data = await res.json()
     setShopInfo(data)
   }
