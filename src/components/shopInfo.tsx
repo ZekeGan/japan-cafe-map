@@ -34,10 +34,10 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Divider from '@/components/divider'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { ReportFormValues, reportSchema } from '@/lib/validations/report'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Item,
   ItemActions,
@@ -54,30 +54,24 @@ const SmallLabel = ({ str }: { str: string }) => {
 }
 
 const ShopInfo = (props: {
-  shopInfo: Cafe | null
-  setShopInfo: (shopInfo: google.maps.places.Place | null) => void
+  shopInfo: Cafe
+  setShopInfo: (shopInfo: Cafe | null) => void
 }) => {
   const { shopInfo, setShopInfo } = props
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
 
   const hasUser = Boolean(user?.id)
+  const hasReported =
+    user?.reports.some(report => report.cafeId === shopInfo?.id) || false
 
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
       cafeId: shopInfo?.id || '',
       userId: user?.id || '',
-      // googlePlaceId: shopInfo?.googlePlaceId || '',
-      // displayName: shopInfo?.displayName || '',
-      // formattedAddress: shopInfo?.formattedAddress || '',
-      // businessStatus: shopInfo?.businessStatus || 'OPERATIONAL',
-      // location: {
-      //   lat: shopInfo?.location?.lat || defaultLagitude,
-      //   lng: shopInfo?.location?.lng || defaultLongitude,
-      // },
 
       hasWifi: shopInfo?.hasWifi || false,
-      hasPowerOutlets: shopInfo?.hasWifi || false,
+      hasPowerOutlets: shopInfo?.hasPowerOutlets || false,
       outletCoverage: shopInfo?.outletCoverage || 'SOME',
 
       seatCapacity: shopInfo?.seatCapacity || 'LIMITED',
@@ -96,17 +90,14 @@ const ShopInfo = (props: {
   const [isEditing, setIsEditing] = useState(true)
 
   const onSubmit = async (data: ReportFormValues) => {
-    console.log('提交的資料:', data)
-    // 這裡呼叫 API 更新後端
-    // const response = await fetch('/api/report', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(data),
-    // })
-    // const result = await response.json()
-    // console.log('後端回應:', result)
+    await fetch('/api/report', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    await refreshUser()
 
     // setIsEditing(false)
   }
@@ -192,483 +183,491 @@ const ShopInfo = (props: {
               </ItemActions>
             </Item>
           </div>
-          {/* toolbar */}
-          <div className="p-4 flex gap-2">
-            <Button
-              variant="outline"
-              className="flex align-middle gap-2"
-            >
-              <Heart />
-              <span className="text-xs">Fav</span>
-            </Button>
-          </div>
-          <Divider />
-          <div className="p-4 w-full ">
-            {!isEditing ? (
-              <div>
-                <h1 className="text-center text-md font-bold mb-2">
-                  是否幫忙編輯該商店資訊
-                </h1>
-                <div className="flex justify-center gap-4">
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    <Pencil className="w-4 h-4" /> <span>Yes</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    onClick={() => setShopInfo(null)}
-                  >
-                    <X className="w-4 h-4" /> <span>No</span>
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <form
-                className="flex flex-col gap-4 pb-20"
-                onSubmit={form.handleSubmit(onSubmit)}
-              >
-                {/* 設施 */}
-                <div>
-                  <h1 className="text-lg mb-2">設施</h1>
-                  <div className="flex flex-col gap-2">
-                    {/* 是否有WIFI */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>是否有WIFI</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="hasWifi"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={String(field.value)}
-                              onValueChange={val =>
-                                field.onChange(
-                                  val === 'true'
-                                    ? true
-                                    : val === 'false'
-                                      ? false
-                                      : null
-                                )
-                              }
-                            >
-                              <ToggleGroupItem value="true">
-                                <Check />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="false">
-                                <X />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                    {/* 是否有插座 */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>是否有插座</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="hasPowerOutlets"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={String(field.value)}
-                              onValueChange={val =>
-                                field.onChange(
-                                  val === 'true'
-                                    ? true
-                                    : val === 'false'
-                                      ? false
-                                      : null
-                                )
-                              }
-                            >
-                              <ToggleGroupItem value="true">
-                                <Check />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="false">
-                                <X />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                    {/* 插座覆蓋率 */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>插座覆蓋率</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="outletCoverage"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={field.value || ''}
-                              onValueChange={field.onChange}
-                            >
-                              <ToggleGroupItem value="NONE">
-                                <Battery />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="SOME">
-                                <BatteryLow />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="MOST">
-                                <BatteryMedium />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="EVERY">
-                                <BatteryFull />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                  </div>
-                </div>
-                {/* 環境 */}
-                <div>
-                  <h1 className="text-lg mb-2">環境</h1>
-                  <div className="flex flex-col gap-2">
-                    {/* 座位數量 */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>座位數量</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="seatCapacity"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={field.value || ''}
-                              onValueChange={field.onChange}
-                            >
-                              <ToggleGroupItem value="MINIMAL">
-                                <SmallLabel str="1-5" />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="LIMITED">
-                                <SmallLabel str="6-15" />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="STANDARD">
-                                <SmallLabel str="16-30" />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="GENEROUS">
-                                <SmallLabel str="31+" />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                    {/* 噪音等級 */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>噪音等級</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="noiseLevel"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={field.value || ''}
-                              onValueChange={field.onChange}
-                            >
-                              <ToggleGroupItem value="SILENT">
-                                <VolumeX />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="QUIET">
-                                <Volume />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="MODERATE">
-                                <Volume1 />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="VIBRANT ">
-                                <Volume2 />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                  </div>
-                </div>
-                {/* 消費 */}
-                <div>
-                  <h1 className="text-lg mb-2">消費</h1>
-                  <div className="flex flex-col gap-2">
-                    {/* 是否需要預約 */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>是否需要預約</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="isBookingRequired"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={String(field.value)}
-                              onValueChange={val =>
-                                field.onChange(
-                                  val === 'true'
-                                    ? true
-                                    : val === 'false'
-                                      ? false
-                                      : null
-                                )
-                              }
-                            >
-                              <ToggleGroupItem value="true">
-                                <Check />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="false">
-                                <X />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                    {/* 使用時間 */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>使用時間</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="timeLimit"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={String(field.value)}
-                              onValueChange={val =>
-                                field.onChange(
-                                  val === 'true'
-                                    ? true
-                                    : val === 'false'
-                                      ? false
-                                      : null
-                                )
-                              }
-                            >
-                              <ToggleGroupItem value="false">
-                                <Infinity />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="true">
-                                <Clock />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                    {/* 低消 */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>低消</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="minConsumption"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={String(field.value)}
-                              onValueChange={val =>
-                                field.onChange(
-                                  val === 'true'
-                                    ? true
-                                    : val === 'false'
-                                      ? false
-                                      : null
-                                )
-                              }
-                            >
-                              <ToggleGroupItem value="true">
-                                <Coffee />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="false">
-                                <CircleDollarSign />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                  </div>
-                </div>
-                {/* 吸菸 */}
-                <div>
-                  <h1 className="text-lg mb-2">吸菸</h1>
-                  <div className="flex flex-col gap-2">
-                    {/* 是否有WIFI */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>是否有吸菸區</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="hasSmokingArea"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={String(field.value)}
-                              onValueChange={val =>
-                                field.onChange(
-                                  val === 'true'
-                                    ? true
-                                    : val === 'false'
-                                      ? false
-                                      : null
-                                )
-                              }
-                            >
-                              <ToggleGroupItem value="true">
-                                <Check />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="false">
-                                <X />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                    {/* 吸菸區種類 */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>吸菸區類型</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="smokingAreaType"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={field.value || ''}
-                              onValueChange={field.onChange}
-                            >
-                              <ToggleGroupItem value="INDOOR_TABLE">
-                                <Armchair />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="INDOOR_SEPARATED">
-                                <Warehouse />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="OUTDOOR">
-                                <Tent />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                    {/* 可吸食香菸種類 */}
-                    <Item
-                      variant="outline"
-                      className="p-2"
-                    >
-                      <ItemContent>
-                        <ItemTitle>可吸食香菸種類</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <Controller
-                          name="allowCigaretteType"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="multiple"
-                              variant="outline"
-                              value={field.value || []}
-                              onValueChange={field.onChange}
-                            >
-                              <ToggleGroupItem value="TRADITIONAL">
-                                <SmallLabel str="傳統" />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="ELECTRONIC">
-                                <SmallLabel str="加熱菸" />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="VAPE">
-                                <SmallLabel str="電子菸" />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      </ItemActions>
-                    </Item>
-                  </div>
-                </div>
-
-                <Button type="submit">送出</Button>
+          {hasUser && (
+            <>
+              {/* 工具列 */}
+              <section className="p-4 flex gap-2">
                 <Button
-                  type="button"
                   variant="outline"
-                  onClick={() => setIsEditing(false)}
+                  className="flex align-middle gap-2"
                 >
-                  取消
+                  <Heart />
+                  <span className="text-xs">Fav</span>
                 </Button>
-              </form>
-            )}
-          </div>
+              </section>
+
+              {/* 提供資料 */}
+              {!hasReported && (
+                <section className="p-4 w-full ">
+                  {!isEditing ? (
+                    <div>
+                      <h1 className="text-center text-md font-bold mb-2">
+                        是否幫忙編輯該商店資訊
+                      </h1>
+                      <div className="flex justify-center gap-4">
+                        <Button
+                          variant="outline"
+                          className="gap-2"
+                          onClick={() => setIsEditing(true)}
+                        >
+                          <Pencil className="w-4 h-4" /> <span>Yes</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="gap-2"
+                          onClick={() => setShopInfo(null)}
+                        >
+                          <X className="w-4 h-4" /> <span>No</span>
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <form
+                      className="flex flex-col gap-4 pb-20"
+                      onSubmit={form.handleSubmit(onSubmit)}
+                    >
+                      {/* 設施 */}
+                      <div>
+                        <h1 className="text-lg mb-2">設施</h1>
+                        <div className="flex flex-col gap-2">
+                          {/* 是否有WIFI */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>是否有WIFI</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="hasWifi"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={String(field.value)}
+                                    onValueChange={val =>
+                                      field.onChange(
+                                        val === 'true'
+                                          ? true
+                                          : val === 'false'
+                                            ? false
+                                            : null
+                                      )
+                                    }
+                                  >
+                                    <ToggleGroupItem value="true">
+                                      <Check />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="false">
+                                      <X />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                          {/* 是否有插座 */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>是否有插座</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="hasPowerOutlets"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={String(field.value)}
+                                    onValueChange={val =>
+                                      field.onChange(
+                                        val === 'true'
+                                          ? true
+                                          : val === 'false'
+                                            ? false
+                                            : null
+                                      )
+                                    }
+                                  >
+                                    <ToggleGroupItem value="true">
+                                      <Check />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="false">
+                                      <X />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                          {/* 插座覆蓋率 */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>插座覆蓋率</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="outletCoverage"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={field.value || ''}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <ToggleGroupItem value="NONE">
+                                      <Battery />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="SOME">
+                                      <BatteryLow />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="MOST">
+                                      <BatteryMedium />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="EVERY">
+                                      <BatteryFull />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                        </div>
+                      </div>
+                      {/* 環境 */}
+                      <div>
+                        <h1 className="text-lg mb-2">環境</h1>
+                        <div className="flex flex-col gap-2">
+                          {/* 座位數量 */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>座位數量</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="seatCapacity"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={field.value || ''}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <ToggleGroupItem value="MINIMAL">
+                                      <SmallLabel str="1-5" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="LIMITED">
+                                      <SmallLabel str="6-15" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="STANDARD">
+                                      <SmallLabel str="16-30" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="GENEROUS">
+                                      <SmallLabel str="31+" />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                          {/* 噪音等級 */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>噪音等級</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="noiseLevel"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={field.value || ''}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <ToggleGroupItem value="SILENT">
+                                      <VolumeX />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="QUIET">
+                                      <Volume />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="MODERATE">
+                                      <Volume1 />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="VIBRANT ">
+                                      <Volume2 />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                        </div>
+                      </div>
+                      {/* 消費 */}
+                      <div>
+                        <h1 className="text-lg mb-2">消費</h1>
+                        <div className="flex flex-col gap-2">
+                          {/* 是否需要預約 */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>是否需要預約</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="isBookingRequired"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={String(field.value)}
+                                    onValueChange={val =>
+                                      field.onChange(
+                                        val === 'true'
+                                          ? true
+                                          : val === 'false'
+                                            ? false
+                                            : null
+                                      )
+                                    }
+                                  >
+                                    <ToggleGroupItem value="true">
+                                      <Check />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="false">
+                                      <X />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                          {/* 使用時間 */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>使用時間</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="timeLimit"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={String(field.value)}
+                                    onValueChange={val =>
+                                      field.onChange(
+                                        val === 'true'
+                                          ? true
+                                          : val === 'false'
+                                            ? false
+                                            : null
+                                      )
+                                    }
+                                  >
+                                    <ToggleGroupItem value="false">
+                                      <Infinity />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="true">
+                                      <Clock />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                          {/* 低消 */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>低消</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="minConsumption"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={String(field.value)}
+                                    onValueChange={val =>
+                                      field.onChange(
+                                        val === 'true'
+                                          ? true
+                                          : val === 'false'
+                                            ? false
+                                            : null
+                                      )
+                                    }
+                                  >
+                                    <ToggleGroupItem value="true">
+                                      <Coffee />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="false">
+                                      <CircleDollarSign />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                        </div>
+                      </div>
+                      {/* 吸菸 */}
+                      <div>
+                        <h1 className="text-lg mb-2">吸菸</h1>
+                        <div className="flex flex-col gap-2">
+                          {/* 是否有WIFI */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>是否有吸菸區</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="hasSmokingArea"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={String(field.value)}
+                                    onValueChange={val =>
+                                      field.onChange(
+                                        val === 'true'
+                                          ? true
+                                          : val === 'false'
+                                            ? false
+                                            : null
+                                      )
+                                    }
+                                  >
+                                    <ToggleGroupItem value="true">
+                                      <Check />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="false">
+                                      <X />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                          {/* 吸菸區種類 */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>吸菸區類型</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="smokingAreaType"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="single"
+                                    variant="outline"
+                                    value={field.value || ''}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <ToggleGroupItem value="INDOOR_TABLE">
+                                      <Armchair />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="INDOOR_SEPARATED">
+                                      <Warehouse />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="OUTDOOR">
+                                      <Tent />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                          {/* 可吸食香菸種類 */}
+                          <Item
+                            variant="outline"
+                            className="p-2"
+                          >
+                            <ItemContent>
+                              <ItemTitle>可吸食香菸種類</ItemTitle>
+                            </ItemContent>
+                            <ItemActions>
+                              <Controller
+                                name="allowCigaretteType"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <ToggleGroup
+                                    type="multiple"
+                                    variant="outline"
+                                    value={field.value || []}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <ToggleGroupItem value="TRADITIONAL">
+                                      <SmallLabel str="傳統" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="ELECTRONIC">
+                                      <SmallLabel str="加熱菸" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="VAPE">
+                                      <SmallLabel str="電子菸" />
+                                    </ToggleGroupItem>
+                                  </ToggleGroup>
+                                )}
+                              />
+                            </ItemActions>
+                          </Item>
+                        </div>
+                      </div>
+
+                      <Button type="submit">送出</Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsEditing(false)}
+                      >
+                        取消
+                      </Button>
+                    </form>
+                  )}
+                </section>
+              )}
+              <Divider />
+            </>
+          )}
           <Divider />
           {/* Details */}
           <div className="p-4 ">

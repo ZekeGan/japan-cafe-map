@@ -17,7 +17,13 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: payload.sub as string },
-      select: { id: true, email: true, name: true }, // 不要回傳密碼
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        favorites: true,
+        reports: true,
+      },
     })
 
     return NextResponse.json({ user })

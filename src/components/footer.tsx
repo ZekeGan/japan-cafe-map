@@ -1,3 +1,5 @@
+'use client'
+
 import { useAuth } from '@/context/authContext'
 import { Heart, House, User } from 'lucide-react'
 import Link from 'next/link'
@@ -16,7 +18,7 @@ const Footer = () => {
           <div className="text-xs font-bold">地圖</div>
         </div>
       </Link>
-      {user?.id ? (
+      {user ? (
         <>
           <Link
             href="/favorite"
@@ -28,7 +30,7 @@ const Footer = () => {
             </div>
           </Link>
           <Link
-            href="/favorite"
+            href="/profile"
             className="text-sm"
           >
             <div className=" flex flex-col items-center">

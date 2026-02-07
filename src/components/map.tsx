@@ -14,12 +14,7 @@ import clsx from 'clsx'
 import { Cafe } from '@prisma/client'
 import { defaultLagitude, defaultLongitude } from '@/constant/location'
 
-type CafeShop = {
-  data: google.maps.places.Place
-  isOpenNow?: boolean
-}
-
-const UserLocationDot: React.FC<{ position: google.maps.LatLngLiteral }> = ({
+const UserLocationDot: React.FC<{ position: Cafe['location'] }> = ({
   position,
 }) => {
   return (
@@ -36,8 +31,9 @@ const UserLocationDot: React.FC<{ position: google.maps.LatLngLiteral }> = ({
     </OverlayViewF>
   )
 }
+
 const CafeLocationDot: React.FC<{
-  position: google.maps.LatLng
+  position: Cafe['location']
   onClick: () => void
   close?: boolean
 }> = ({ position, close = false, onClick }) => {
@@ -72,7 +68,7 @@ const CafeLocationDot: React.FC<{
 }
 
 const Map: React.FC<{
-  setShopInfo: (shopInfo: google.maps.places.Place) => void
+  setShopInfo: (shopInfo: Cafe) => void
 }> = ({ setShopInfo }) => {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map',
@@ -90,8 +86,7 @@ const Map: React.FC<{
   const [hasGetPos, setHasGetPos] = useState(false)
   const lastFetchPos = useRef<google.maps.LatLngLiteral | null>(null)
 
-  const [googleCafeShops, setGoogleCafeShops] = useState<CafeShop[]>([])
-  const [cafeShop, setCafeShop] = useState<Record<string, Cafe>>({})
+  const [cafeShops, setCafeShops] = useState<Cafe[]>([])
 
   const fetchCafeShops = useCallback(
     async (location: google.maps.LatLngLiteral) => {
@@ -106,40 +101,60 @@ const Map: React.FC<{
         const { Place } = (await google.maps.importLibrary(
           'places'
         )) as google.maps.PlacesLibrary
-        // const { places } = await Place.searchNearby({
-        //   locationRestriction: { center: location, radius: 500 },
-        //   includedTypes: ['cafe'],
-        //   fields: [
-        //     'id',
-        //     'location',
-        //     'displayName',
-        //     'businessStatus',
-        //     'formattedAddress',
-        //   ],
-        // })
+        const { places } = await Place.searchNearby({
+          locationRestriction: { center: location, radius: 500 },
+          includedTypes: ['cafe'],
+          fields: [
+            'id',
+            'location',
+            'displayName',
+            'businessStatus',
+            'formattedAddress',
+          ],
+        })
+        lastFetchPos.current = location
+
         // mock data
-        const places = mockCafeShop ?? []
+        const formatData = places
+          .map(d => ({
+            id: d.id,
+            location: {
+              lat: d.location?.lat(),
+              lng: d.location?.lng(),
+            },
+            displayName: d.displayName,
+            businessStatus: d.businessStatus,
+            formattedAddress: d.formattedAddress,
+          }))
+          .filter(
+            p =>
+              p.id &&
+              p.location.lat &&
+              p.location.lng &&
+              p.displayName &&
+              p.formattedAddress
+          )
 
-        lastFetchPos.current = location // 拿到資料後一定要更新，否則下次還會進來
+        const response = await fetch('/api/cafe/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formatData),
+        })
+        const dbCafes: Cafe[] = await response.json()
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setGoogleCafeShops(places.map(p => ({ data: p })) as any[])
-
-        const googlePlaceIds = places.map(p => p.id)
-        // const response = await fetch('/api/map/findNearbyCafe', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ googlePlaceIds }),
-        // })
-        // const result = await response.json()
-
-        // console.log(result)
+        setCafeShops(dbCafes)
       } catch (err) {
         console.error('Error fetching cafe shops:', err)
       }
     },
     []
   )
+
+  const openInfoWindow = async (shop: Cafe) => {
+    const res = await fetch(`/api/cafe/${shop.id}`)
+    const data = await res.json()
+    setShopInfo(data)
+  }
 
   // 獲取當前位置的函數
   useEffect(() => {
@@ -203,21 +218,21 @@ const Map: React.FC<{
     >
       {hasGetPos && <UserLocationDot position={curPos} />}
 
-      {googleCafeShops.map(shop => {
-        if (shop.data.id in cafeShop) {
+      {cafeShops.map(shop => {
+        if (shop.businessStatus === 'OPERATIONAL') {
           return (
             <CafeLocationDot
-              key={shop.data.id}
-              onClick={() => setShopInfo(shop.data)}
-              position={shop.data.location!}
+              key={shop.id}
+              onClick={() => openInfoWindow(shop)}
+              position={shop.location!}
             />
           )
         } else {
           return (
             <CafeLocationDot
-              key={shop.data.id}
-              onClick={() => setShopInfo(shop.data)}
-              position={shop.data.location!}
+              key={shop.id}
+              onClick={() => openInfoWindow(shop)}
+              position={shop.location!}
               close
             />
           )

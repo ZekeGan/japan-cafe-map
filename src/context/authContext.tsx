@@ -1,5 +1,6 @@
 'use client'
 
+import { Favorite, Report, User } from '@prisma/client'
 import {
   createContext,
   useContext,
@@ -8,14 +9,13 @@ import {
   ReactNode,
 } from 'react'
 
-type User = {
-  id: string
-  email: string
-  name?: string
-} | null
+type UserData = Omit<User, 'password'> & {
+  favorites: Favorite[]
+  reports: Report[]
+}
 
 interface AuthContextType {
-  user: User
+  user: UserData | null
   isLoading: boolean
   refreshUser: () => Promise<void>
 }
@@ -23,7 +23,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User>(null)
+  const [user, setUser] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const refreshUser = async () => {

@@ -1,7 +1,16 @@
-// app/api/cafes/route.ts
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
+export async function GET() {
+  try {
+    const cafes = await prisma.cafe.findMany()
+    return NextResponse.json(cafes, { status: 200 })
+  } catch (error) {
+    return NextResponse.json({ error: '無法取得資料' }, { status: 500 })
+  }
+}
+
+// 建立新的咖啡店資料
 export async function POST(req: Request) {
   try {
     const body = await req.json()

@@ -9,10 +9,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { loginSchema, type LoginInput } from '@/lib/validations/auth'
+import { useAuth } from '@/context/authContext'
 
 export default function LoginPage() {
   const router = useRouter()
-
+  const { refreshUser } = useAuth()
   const {
     register,
     handleSubmit,
@@ -29,13 +30,10 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
-
       const result = await response.json()
 
       if (!response.ok) {
-        // 根據後端定義的 INVALID_CREDENTIALS 處理錯誤
         if (result.error === 'INVALID_CREDENTIALS') {
-          // 通常為了安全性，我們會把錯誤顯示在密碼欄位或頂部，不標註是 Email 還是密碼錯
           setError('root', {
             message: '帳號或密碼錯誤，請重新輸入',
           })
@@ -45,9 +43,9 @@ export default function LoginPage() {
       }
 
       // 登入成功處理 (例如儲存 Token 或更新 Context)
-      console.log('登入成功:', result.user)
+
+      await refreshUser()
       router.push('/') // 跳轉至後台或首頁
-      router.refresh()
     } catch (err) {
       setError('root', { message: '系統連線錯誤，請稍後再試' })
     }

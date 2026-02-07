@@ -1,0 +1,90 @@
+'use client'
+
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { useAuth } from '@/context/authContext'
+import { LogOut, User } from 'lucide-react' // 使用 lucide-react 增加圖示感
+import { useRouter } from 'next/navigation'
+
+export default function ProfilePage() {
+  // const { data: session, status } = useSession()
+  const router = useRouter()
+  const { user, isLoading } = useAuth()
+
+  // 處理載入狀態
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">讀取中...</div>
+    )
+  }
+
+  const handleLogout = async () => {
+    // 1. 呼叫後端 API 清除 Cookie
+    const res = await fetch('/api/auth/logout', { method: 'POST' })
+
+    if (res.ok) {
+      // 2. 清除成功後，將頁面導向首頁或登入頁
+      // router.refresh() 可以強制讓 Server Component 重新檢查登入狀態
+      router.push('/login')
+    }
+  }
+
+  // 如果未登入的保護處理（實務上建議用 middleware）
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>請先登入後再查看個人資料。</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-slate-50 p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-1 flex flex-col items-center">
+          {/* 大頭貼預留位置 */}
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <User className="w-10 h-10 text-primary" />
+          </div>
+          <CardTitle className="text-2xl font-bold">個人資料</CardTitle>
+          <CardDescription>管理您的帳號資訊與設定</CardDescription>
+        </CardHeader>
+
+        <CardContent className="grid gap-4">
+          <div className="flex flex-col space-y-1 border-b pb-4">
+            <span className="text-sm font-medium text-muted-foreground">
+              使用者名稱
+            </span>
+            <span className="text-lg font-semibold">
+              {user?.name || '未設定名稱'}
+            </span>
+          </div>
+          <div className="flex flex-col space-y-1">
+            <span className="text-sm font-medium text-muted-foreground">
+              電子信箱
+            </span>
+            <span className="text-lg font-semibold">{user?.email}</span>
+          </div>
+        </CardContent>
+
+        <CardFooter>
+          <Button
+            variant="destructive"
+            className="w-full flex items-center justify-center gap-2"
+            onClick={() => handleLogout()} // 登出後導回首頁
+          >
+            <LogOut className="w-4 h-4" />
+            登出帳號
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  )
+}

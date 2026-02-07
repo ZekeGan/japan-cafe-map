@@ -1,4 +1,4 @@
-export const mockCafeShop = [
+export const mockCafeShop: google.maps.places.Place[] = [
   {
     id: 'ChIJ2TZSCfmLGGAR26O97vWyYcE',
     location: {
