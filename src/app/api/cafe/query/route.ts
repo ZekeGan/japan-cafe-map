@@ -3,9 +3,10 @@ import prisma from '@/lib/db'
 import { Cafe } from '@prisma/client'
 import { NextResponse } from 'next/server'
 
+// create new cafe, or find cafe
 export async function POST(request: Request) {
   try {
-    const places: Cafe[] = await request.json() // 建議傳入整個基本物件陣列
+    const places: Cafe[] = await request.json()
 
     if (!Array.isArray(places)) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 })

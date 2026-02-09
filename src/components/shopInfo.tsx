@@ -26,12 +26,15 @@ import {
   Coins,
   ExternalLink,
   Heart,
+  HousePlug,
   Infinity,
   MapPin,
   NotebookPen,
   NotebookPenIcon,
   Pencil,
   PersonStanding,
+  Plug,
+  PlugZap,
   Tent,
   Volume,
   Volume1,
@@ -119,8 +122,7 @@ const BooleanDisplayCard = ({
   )
 }
 
-const ShopInfo = (props: { shopInfo: Cafe }) => {
-  const { shopInfo } = props
+const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
   const { user, refreshUser } = useAuth()
 
   const hasUser = Boolean(user?.id)
@@ -220,6 +222,10 @@ const ShopInfo = (props: { shopInfo: Cafe }) => {
       },
     ]
   }, [shopInfo])
+
+  useEffect(() => {
+    if (!shopInfo) form.reset()
+  }, [form, shopInfo])
 
   if (!shopInfo) return null
 
@@ -758,6 +764,20 @@ const ShopInfo = (props: { shopInfo: Cafe }) => {
               offIcon={<CircleDollarSign />}
               onLabel="一杯飲料"
               offLabel="須高消"
+            />
+            <BooleanDisplayCard
+              onOff={shopInfo?.minConsumption || false}
+              onIcon={<HousePlug />}
+              offIcon={<PlugZap />}
+              onLabel="有插座"
+              offLabel="無插座"
+            />
+            <BooleanDisplayCard
+              onOff={!shopInfo?.minConsumption || false}
+              onIcon={<HousePlug />}
+              offIcon={<PlugZap />}
+              onLabel="有插座"
+              offLabel="無插座"
             />
           </section>
           {shopDetails.map(section => {

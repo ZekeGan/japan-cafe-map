@@ -5,9 +5,11 @@ export async function POST() {
   try {
     const cookieStore = await cookies()
 
-    // 刪除名為 'auth_token' 的 Cookie
-    // 實際上是送出一個 Set-Cookie 表頭，將過期時間設為過去
-    cookieStore.delete('auth_token')
+    // 必須與登入時設定的名稱 'auth-token' 完全一致
+    cookieStore.delete({
+      name: 'auth-token',
+      path: '/', // 登入時有設定 path: '/', 這裡也要對應
+    })
 
     return NextResponse.json({ message: '登出成功' }, { status: 200 })
   } catch (error) {

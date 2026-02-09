@@ -14,6 +14,8 @@ import { mockCafeShop } from '@public/mockCafeShop'
 import clsx from 'clsx'
 import { Cafe } from '@prisma/client'
 import { defaultLagitude, defaultLongitude } from '@/constant/location'
+import { useRouter } from 'next/navigation'
+import Loading from '../app/loading'
 
 const UserLocationDot: React.FC<{ position: Cafe['location'] }> = ({
   position,
@@ -71,6 +73,7 @@ const CafeLocationDot: React.FC<{
 const Map: React.FC<{
   setShopInfo: (shopInfo: Cafe) => void
 }> = ({ setShopInfo }) => {
+  const router = useRouter()
   const { isLoaded } = useJsApiLoader({
     id: 'google-map',
     version: 'beta',
@@ -120,24 +123,16 @@ const Map: React.FC<{
         // const formatData = places
         //   .map(d => ({
         //     id: d.id,
-        //     location: {
-        //       lat: d.location?.lat(),
-        //       lng: d.location?.lng(),
-        //     },
         //     googleMapsURI: d.googleMapsURI,
         //     shortFormattedAddress: (d as any).shortFormattedAddress,
         //     displayName: d.displayName,
         //     businessStatus: d.businessStatus,
         //     formattedAddress: d.formattedAddress,
+        //     location: {
+        //       lat: d.location?.lat(),
+        //       lng: d.location?.lng(),
+        //     },
         //   }))
-        //   .filter(
-        //     p =>
-        //       p.id &&
-        //       p.location.lat &&
-        //       p.location.lng &&
-        //       p.displayName &&
-        //       p.formattedAddress
-        //   )
 
         const formatData = mockCafeShop
 
@@ -157,9 +152,11 @@ const Map: React.FC<{
   )
 
   const openInfoWindow = async (shop: Cafe) => {
-    const res = await fetch(`/api/cafe/${shop.googlePlaceId}`)
-    const data = await res.json()
-    setShopInfo(data)
+    const res = await fetch(`/api/cafe/${shop.id}`)
+    if (res.ok) {
+      const data = await res.json()
+      setShopInfo(data)
+    }
   }
 
   // 獲取當前位置的函數
@@ -194,7 +191,7 @@ const Map: React.FC<{
     return () => clearTimeout(timer)
   }, [map, curPos, fetchCafeShops, hasGetPos])
 
-  if (!isLoaded) return <div>Loading...</div>
+  if (!isLoaded) return <Loading />
 
   return (
     <GoogleMap

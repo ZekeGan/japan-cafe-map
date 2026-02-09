@@ -2,22 +2,17 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  req: Request,
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params // 這裡的 id 對應資料夾名稱 [id]
+    // 這裡的 id 對應資料夾名稱 [id]
+    const { id } = await props.params
 
     // 嘗試從資料庫尋找，包含關聯的 reports
     const cafe = await prisma.cafe.findUnique({
       where: {
-        googlePlaceId: id,
-      },
-      include: {
-        reports: {
-          orderBy: { createdAt: 'desc' }, // 順便把評論按時間排序
-          take: 10, // 拿最近 10 筆
-        },
+        id,
       },
     })
 

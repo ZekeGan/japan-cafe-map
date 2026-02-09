@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { loginSchema, type LoginInput } from '@/lib/validations/auth'
 import { useAuth } from '@/context/authContext'
-import { FORGOT_PASSWORD, HOME, REGISTER } from '@/constant/router'
+import { FORGOT_PASSWORD, HOME, MAP, REGISTER } from '@/constant/router'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -46,7 +46,7 @@ export default function LoginPage() {
       // 登入成功處理 (例如儲存 Token 或更新 Context)
 
       await refreshUser()
-      router.push(HOME) // 跳轉至後台或首頁
+      router.push(MAP) // 跳轉至後台或首頁
     } catch (err) {
       setError('root', { message: '系統連線錯誤，請稍後再試' })
     }

@@ -1,3 +1,4 @@
+import DetailLayout from '@/components/container/detailLayout'
 import ShopInfo from '@/components/shopInfo'
 import { Button } from '@/components/ui/button'
 import { MAP } from '@/constant/router'
@@ -16,8 +17,7 @@ export default async function CafePage({
   // 1. 直接從資料庫抓取，不要 fetch 自己！
   const data = await prisma.cafe.findUnique({
     where: {
-      // 這裡要確認你的 Prisma Schema 裡是用 id 還是 googlePlaceId
-      googlePlaceId: id,
+      id,
     },
   })
 
@@ -27,18 +27,8 @@ export default async function CafePage({
   }
 
   return (
-    <div>
-      <section className="border-b-2 px-4 py-1 flex align-middle">
-        <Button
-          variant="ghost"
-          size="icon-lg"
-        >
-          <Link href={MAP}>
-            <ChevronLeft />
-          </Link>
-        </Button>
-      </section>
+    <DetailLayout href={MAP}>
       <ShopInfo shopInfo={data} />
-    </div>
+    </DetailLayout>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import Loading from '@/app/loading'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -17,14 +18,10 @@ import { useRouter } from 'next/navigation'
 export default function ProfilePage() {
   // const { data: session, status } = useSession()
   const router = useRouter()
-  const { user, isLoading } = useAuth()
+  const { user, isLoading, refreshUser } = useAuth()
 
   // 處理載入狀態
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">讀取中...</div>
-    )
-  }
+  if (isLoading) return <Loading />
 
   const handleLogout = async () => {
     // 1. 呼叫後端 API 清除 Cookie
@@ -33,21 +30,13 @@ export default function ProfilePage() {
     if (res.ok) {
       // 2. 清除成功後，將頁面導向首頁或登入頁
       // router.refresh() 可以強制讓 Server Component 重新檢查登入狀態
+      refreshUser()
       router.push(LOGIN)
     }
   }
 
-  // 如果未登入的保護處理（實務上建議用 middleware）
-  if (!user) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p>請先登入後再查看個人資料。</p>
-      </div>
-    )
-  }
-
   return (
-    <div className="flex justify-center items-center min-h-screen bg-slate-50 p-4">
+    <div className="h-full justify-center items-center bg-slate-50 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1 flex flex-col items-center">
           {/* 大頭貼預留位置 */}
