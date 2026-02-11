@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { FAVOTITE, LOGIN, PROFILE } from './constant/router'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // 1. 取得 Cookie
   const token = request.cookies.get('auth-token')?.value
 

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -343,8 +342,9 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
           {shopInfo?.displayName}
         </span>
       </div>
+
       {/* 地址 */}
-      <div className="px-4">
+      <div className="px-4 pb-4">
         <Item
           variant="outline"
           className="rounded-4xl"
@@ -367,9 +367,10 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
           </ItemActions>
         </Item>
       </div>
+
       {/* 工具列 */}
       {hasUser && (
-        <section className="p-4 flex gap-2">
+        <section className="px-4 pb-4 flex gap-2">
           <Button
             variant="outline"
             className={clsx(
@@ -383,418 +384,426 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
           </Button>
         </section>
       )}
-      <Divider />
+
       {/* Details */}
-      {shopInfo && <ShopDetail shopInfo={shopInfo} />}
-      <Divider />
+      {shopInfo && (
+        <>
+          <Divider />
+          <ShopDetail shopInfo={shopInfo} />
+        </>
+      )}
+
       {/* 表單 */}
       {hasUser && !hasReported && (
-        <section className="p-4 w-full mb-10">
-          {!isEditing ? (
-            <div className="flex justify-center gap-4 ">
-              <Button
-                variant="outline"
-                className="rounded-full w-full"
-                onClick={() => setIsEditing(true)}
-              >
-                <Pencil className="w-4 h-4" />{' '}
-                <span className="font-bold text-md">幫助編輯店家資訊</span>
-              </Button>
-            </div>
-          ) : (
-            <Card className="p-4">
-              <form
-                className="flex flex-col gap-8" // 稍微增加區塊間距
-                onSubmit={form.handleSubmit(onSubmit)}
-              >
-                {/* 設施區塊 */}
-                <section className="flex flex-col gap-3">
-                  <h1 className="text-lg font-bold mb-2">設施</h1>
+        <>
+          <Divider />
+          <section className="p-4 w-full mb-10">
+            {!isEditing ? (
+              <div className="flex justify-center gap-4 ">
+                <Button
+                  variant="outline"
+                  className="rounded-full w-full"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Pencil className="w-4 h-4" />{' '}
+                  <span className="font-bold text-md">幫助編輯店家資訊</span>
+                </Button>
+              </div>
+            ) : (
+              <Card className="p-4">
+                <form
+                  className="flex flex-col gap-8" // 稍微增加區塊間距
+                  onSubmit={form.handleSubmit(onSubmit)}
+                >
+                  {/* 設施區塊 */}
+                  <section className="flex flex-col gap-3">
+                    <h1 className="text-lg font-bold mb-2">設施</h1>
 
-                  <EditItem
-                    title="是否有WIFI"
-                    component={
-                      <Controller
-                        name="hasWifi"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={String(field.value)}
-                            onValueChange={val =>
-                              field.onChange(
-                                val === 'true'
-                                  ? true
-                                  : val === 'false'
-                                    ? false
-                                    : null
-                              )
-                            }
-                          >
-                            <ToggleGroupItem value="true">
-                              <Check />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="false">
-                              <X />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
+                    <EditItem
+                      title="是否有WIFI"
+                      component={
+                        <Controller
+                          name="hasWifi"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Check />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <X />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
 
-                  <EditItem
-                    title="是否有插座"
-                    component={
-                      <Controller
-                        name="hasPowerOutlets"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={String(field.value)}
-                            onValueChange={val =>
-                              field.onChange(
-                                val === 'true'
-                                  ? true
-                                  : val === 'false'
-                                    ? false
-                                    : null
-                              )
-                            }
-                          >
-                            <ToggleGroupItem value="true">
-                              <Check />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="false">
-                              <X />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
+                    <EditItem
+                      title="是否有插座"
+                      component={
+                        <Controller
+                          name="hasPowerOutlets"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Check />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <X />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
 
-                  <EditItem
-                    title="插座覆蓋率"
-                    component={
-                      <Controller
-                        name="outletCoverage"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={field.value || ''}
-                            onValueChange={field.onChange}
-                          >
-                            <ToggleGroupItem value="NONE">
-                              <Battery />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="SOME">
-                              <BatteryLow />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="MOST">
-                              <BatteryMedium />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="EVERY">
-                              <BatteryFull />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
-                </section>
+                    <EditItem
+                      title="插座覆蓋率"
+                      component={
+                        <Controller
+                          name="outletCoverage"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="NONE">
+                                <Battery />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="SOME">
+                                <BatteryLow />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="MOST">
+                                <BatteryMedium />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="EVERY">
+                                <BatteryFull />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
+                  </section>
 
-                {/* 環境區塊 */}
-                <section className="flex flex-col gap-3">
-                  <h1 className="text-lg font-bold mb-2">環境</h1>
+                  {/* 環境區塊 */}
+                  <section className="flex flex-col gap-3">
+                    <h1 className="text-lg font-bold mb-2">環境</h1>
 
-                  <EditItem
-                    title="座位數量"
-                    component={
-                      <Controller
-                        name="seatCapacity"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={field.value || ''}
-                            onValueChange={field.onChange}
-                          >
-                            <ToggleGroupItem value="MINIMAL">
-                              <SmallLabel str="1-5" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="LIMITED">
-                              <SmallLabel str="6-15" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="STANDARD">
-                              <SmallLabel str="16-30" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="GENEROUS">
-                              <SmallLabel str="31+" />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
+                    <EditItem
+                      title="座位數量"
+                      component={
+                        <Controller
+                          name="seatCapacity"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="MINIMAL">
+                                <SmallLabel str="1-5" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="LIMITED">
+                                <SmallLabel str="6-15" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="STANDARD">
+                                <SmallLabel str="16-30" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="GENEROUS">
+                                <SmallLabel str="31+" />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
 
-                  <EditItem
-                    title="噪音等級"
-                    component={
-                      <Controller
-                        name="noiseLevel"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={field.value || ''}
-                            onValueChange={field.onChange}
-                          >
-                            <ToggleGroupItem value="SILENT">
-                              <VolumeX />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="QUIET">
-                              <Volume />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="MODERATE">
-                              <Volume1 />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="VIBRANT">
-                              <Volume2 />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
-                </section>
+                    <EditItem
+                      title="噪音等級"
+                      component={
+                        <Controller
+                          name="noiseLevel"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="SILENT">
+                                <VolumeX />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="QUIET">
+                                <Volume />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="MODERATE">
+                                <Volume1 />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="VIBRANT">
+                                <Volume2 />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
+                  </section>
 
-                {/* 消費區塊 */}
-                <section className="flex flex-col gap-3">
-                  <h1 className="text-lg font-bold mb-2">消費</h1>
+                  {/* 消費區塊 */}
+                  <section className="flex flex-col gap-3">
+                    <h1 className="text-lg font-bold mb-2">消費</h1>
 
-                  <EditItem
-                    title="是否需要預約"
-                    component={
-                      <Controller
-                        name="isBookingRequired"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={String(field.value)}
-                            onValueChange={val =>
-                              field.onChange(
-                                val === 'true'
-                                  ? true
-                                  : val === 'false'
-                                    ? false
-                                    : null
-                              )
-                            }
-                          >
-                            <ToggleGroupItem value="true">
-                              <Check />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="false">
-                              <X />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
+                    <EditItem
+                      title="是否需要預約"
+                      component={
+                        <Controller
+                          name="isBookingRequired"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Check />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <X />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
 
-                  <EditItem
-                    title="使用時間限制"
-                    component={
-                      <Controller
-                        name="timeLimit"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={String(field.value)}
-                            onValueChange={val =>
-                              field.onChange(
-                                val === 'true'
-                                  ? true
-                                  : val === 'false'
-                                    ? false
-                                    : null
-                              )
-                            }
-                          >
-                            <ToggleGroupItem value="false">
-                              <Infinity />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="true">
-                              <Clock />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
+                    <EditItem
+                      title="使用時間限制"
+                      component={
+                        <Controller
+                          name="timeLimit"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="false">
+                                <Infinity />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="true">
+                                <Clock />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
 
-                  <EditItem
-                    title="低消限制"
-                    component={
-                      <Controller
-                        name="minConsumption"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={String(field.value)}
-                            onValueChange={val =>
-                              field.onChange(
-                                val === 'true'
-                                  ? true
-                                  : val === 'false'
-                                    ? false
-                                    : null
-                              )
-                            }
-                          >
-                            <ToggleGroupItem value="true">
-                              <Coffee />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="false">
-                              <CircleDollarSign />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
-                </section>
+                    <EditItem
+                      title="低消限制"
+                      component={
+                        <Controller
+                          name="minConsumption"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Coffee />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <CircleDollarSign />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
+                  </section>
 
-                {/* 吸菸區區塊 */}
-                <section className="flex flex-col gap-3">
-                  <h1 className="text-lg font-bold mb-2">吸菸設定</h1>
+                  {/* 吸菸區區塊 */}
+                  <section className="flex flex-col gap-3">
+                    <h1 className="text-lg font-bold mb-2">吸菸設定</h1>
 
-                  <EditItem
-                    title="是否有吸菸區"
-                    component={
-                      <Controller
-                        name="hasSmokingArea"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={String(field.value)}
-                            onValueChange={val =>
-                              field.onChange(
-                                val === 'true'
-                                  ? true
-                                  : val === 'false'
-                                    ? false
-                                    : null
-                              )
-                            }
-                          >
-                            <ToggleGroupItem value="true">
-                              <Check />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="false">
-                              <X />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
+                    <EditItem
+                      title="是否有吸菸區"
+                      component={
+                        <Controller
+                          name="hasSmokingArea"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={String(field.value)}
+                              onValueChange={val =>
+                                field.onChange(
+                                  val === 'true'
+                                    ? true
+                                    : val === 'false'
+                                      ? false
+                                      : null
+                                )
+                              }
+                            >
+                              <ToggleGroupItem value="true">
+                                <Check />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="false">
+                                <X />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
 
-                  <EditItem
-                    title="吸菸區類型"
-                    component={
-                      <Controller
-                        name="smokingAreaType"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={field.value || ''}
-                            onValueChange={field.onChange}
-                          >
-                            <ToggleGroupItem value="INDOOR_TABLE">
-                              <Armchair />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="INDOOR_SEPARATED">
-                              <Warehouse />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="OUTDOOR">
-                              <Tent />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
+                    <EditItem
+                      title="吸菸區類型"
+                      component={
+                        <Controller
+                          name="smokingAreaType"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="single"
+                              variant="outline"
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="INDOOR_TABLE">
+                                <Armchair />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="INDOOR_SEPARATED">
+                                <Warehouse />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="OUTDOOR">
+                                <Tent />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
 
-                  <EditItem
-                    title="可吸食種類"
-                    component={
-                      <Controller
-                        name="allowCigaretteType"
-                        control={form.control}
-                        render={({ field }) => (
-                          <ToggleGroup
-                            type="multiple"
-                            variant="outline"
-                            value={field.value || []}
-                            onValueChange={field.onChange}
-                          >
-                            <ToggleGroupItem value="TRADITIONAL">
-                              <SmallLabel str="傳統" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="ELECTRONIC">
-                              <SmallLabel str="加熱菸" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="VAPE">
-                              <SmallLabel str="電子菸" />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        )}
-                      />
-                    }
-                  />
-                </section>
+                    <EditItem
+                      title="可吸食種類"
+                      component={
+                        <Controller
+                          name="allowCigaretteType"
+                          control={form.control}
+                          render={({ field }) => (
+                            <ToggleGroup
+                              type="multiple"
+                              variant="outline"
+                              value={field.value || []}
+                              onValueChange={field.onChange}
+                            >
+                              <ToggleGroupItem value="TRADITIONAL">
+                                <SmallLabel str="傳統" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="ELECTRONIC">
+                                <SmallLabel str="加熱菸" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="VAPE">
+                                <SmallLabel str="電子菸" />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          )}
+                        />
+                      }
+                    />
+                  </section>
 
-                {/* 按鈕組 */}
-                <div className="flex flex-col gap-2 mt-4">
-                  <Button
-                    type="submit"
-                    className="w-full"
-                  >
-                    送出
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsEditing(false)}
-                    className="w-full"
-                  >
-                    取消
-                  </Button>
-                </div>
-              </form>
-            </Card>
-          )}
-        </section>
+                  {/* 按鈕組 */}
+                  <div className="flex flex-col gap-2 mt-4">
+                    <Button
+                      type="submit"
+                      className="w-full"
+                    >
+                      送出
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsEditing(false)}
+                      className="w-full"
+                    >
+                      取消
+                    </Button>
+                  </div>
+                </form>
+              </Card>
+            )}
+          </section>
+        </>
       )}
     </ScrollArea>
   )

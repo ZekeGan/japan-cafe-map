@@ -1,0 +1,4 @@
+# 忽略 shadcn/ui 自動生成的組件目錄
+src/components/ui/
+# 如果你是用平級目錄
+components/ui/
