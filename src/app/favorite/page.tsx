@@ -75,12 +75,14 @@ const FavoriteCafe = () => {
                       {shop.hasWifi && (
                         <Badge variant="secondary">有WIFI</Badge>
                       )}
-                      {shop.hasSmokingArea && (
-                        <Badge variant="secondary">有吸菸區</Badge>
-                      )}
-                      {shop.hasPowerOutlets && (
-                        <Badge variant="secondary">有插頭</Badge>
-                      )}
+                      {shop.smokingAreaType &&
+                        shop.smokingAreaType !== 'NONE' && (
+                          <Badge variant="secondary">有吸菸區</Badge>
+                        )}
+                      {shop.outletCoverage &&
+                        shop.outletCoverage !== 'NONE' && (
+                          <Badge variant="secondary">有插座</Badge>
+                        )}
                     </div>
                   </div>
                 </ItemContent>

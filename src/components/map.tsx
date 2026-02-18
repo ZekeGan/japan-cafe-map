@@ -21,6 +21,7 @@ import {
   CircleDollarSign,
   Clock,
   Coffee,
+  Heart,
   Infinity,
   Navigation,
   Plug,
@@ -36,6 +37,7 @@ import Loading from './loading'
 import { Button } from './ui/button'
 import { Toggle } from './ui/toggle'
 import { ScrollArea, ScrollBar } from './ui/scroll-area'
+import { useAuth } from '@/context/authContext'
 
 const FETCH_RADIUS = 500 // meters
 const GEOLOCATION_OPTIONS: PositionOptions = {
@@ -85,7 +87,8 @@ const CafeLocationDot: React.FC<{
   position: Cafe['location']
   onClick?: () => void
   close?: boolean
-}> = ({ position, close = false, onClick }) => {
+  fav?: boolean
+}> = ({ position, close = false, fav = false, onClick }) => {
   if (!position) return null
 
   return (
@@ -109,14 +112,21 @@ const CafeLocationDot: React.FC<{
           <div className="relative">
             <div
               className={clsx(
-                close ? 'bg-gray-500' : 'bg-yellow-800',
+                close ? 'bg-gray-500' : fav ? 'bg-red-500' : 'bg-yellow-600',
                 'w-5 h-5 p-0.5 rounded-full rounded-bl-none -rotate-45 flex items-center justify-center shadow-md'
               )}
             >
-              <Coffee
-                className="rotate-45 text-white"
-                size={16}
-              />
+              {fav ? (
+                <Heart
+                  className="rotate-45 text-white"
+                  size={16}
+                />
+              ) : (
+                <Coffee
+                  className="rotate-45 text-white"
+                  size={16}
+                />
+              )}
             </div>
             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-1 bg-gray-700 rounded-[100%] blur-[1px]" />
           </div>
@@ -262,6 +272,19 @@ const Map: React.FC<{
     libraries: ['places'],
   })
 
+  const { user } = useAuth()
+  const favList = useMemo(
+    () =>
+      user?.favorites.reduce(
+        (acc, item) => {
+          acc[item.cafeId] = true
+          return acc
+        },
+        {} as Record<string, boolean>
+      ),
+    [user]
+  )
+
   const [map, setMap] = useState<google.maps.Map | null>()
   const {
     position: userPosition,
@@ -345,10 +368,11 @@ const Map: React.FC<{
             onClick={() => clickMapDot(shop)}
             position={shop.location!}
             close={shop.businessStatus !== 'OPERATIONAL'}
+            fav={favList && favList[shop.id]}
           />
         )
       })
-  }, [cafeShops, clickMapDot, filters])
+  }, [cafeShops, clickMapDot, favList, filters])
 
   const filterList: {
     key: keyof typeof initialFilters

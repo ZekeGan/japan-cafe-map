@@ -181,7 +181,18 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
             {/* 標題與標籤 */}
             <div className="flex justify-between items-center mb-4">
               <div className="text-md font-medium">噪音等級</div>
-              {noiseLevel && <Badge>{noiseLevel}</Badge>}
+              {noiseLevel && (
+                <Badge>
+                  {
+                    {
+                      SILENT: '寧靜',
+                      QUIET: '輕微',
+                      MODERATE: '適中',
+                      VIBRANT: '熱鬧',
+                    }[noiseLevel]
+                  }
+                </Badge>
+              )}
             </div>
 
             {/* 動態長條圖 */}
