@@ -1,9 +1,10 @@
 'use client'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Cafe, NoiseLevel } from '@prisma/client'
+import { Cafe } from '@prisma/client'
 import {
   Armchair,
+  Ban,
   Battery,
   BatteryFull,
   BatteryLow,
@@ -46,12 +47,19 @@ import {
   ItemMedia,
   ItemTitle,
 } from '@/components/ui/item'
-import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import Link from 'next/link'
 import { useAuth } from '@/context/authContext'
 import clsx from 'clsx'
-import { Badge } from './ui/badge'
-import { Card } from './ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+
+interface FeatureItemProps {
+  icon?: React.ReactNode // 改為選填
+  label: React.ReactNode
+  className?: string
+  isEmpty?: boolean
+}
 
 const SmallLabel = ({ str }: { str: string }) => {
   return <div className="text-[9px] font-bold ">{str}</div>
@@ -74,14 +82,34 @@ const EditItem = ({
   )
 }
 
+const FeatureItem = ({
+  icon,
+  label,
+  className = '',
+  isEmpty = false,
+}: FeatureItemProps) => {
+  return (
+    <Item
+      variant="muted"
+      className={`rounded-4xl ${className} ${isEmpty ? 'opacity-50' : ''}`}
+    >
+      {/* 只有當 icon 存在時才渲染 Media 區塊 */}
+      {icon && (
+        <ItemMedia className={isEmpty ? 'text-gray-300' : ''}>{icon}</ItemMedia>
+      )}
+      <ItemContent className="w-full">
+        <div className={isEmpty ? 'text-gray-300' : ''}>{label}</div>
+      </ItemContent>
+    </Item>
+  )
+}
+
 const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
   const {
-    hasPowerOutlets,
     outletCoverage,
     hasWifi,
     seatCapacity,
     noiseLevel,
-    hasSmokingArea,
     smokingAreaType,
     allowCigaretteType,
     minConsumption,
@@ -92,176 +120,164 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
   return (
     <section className="p-4 grid grid-cols-2 gap-2">
       {/* WIFI */}
-      <Item
-        variant="muted"
-        className="rounded-4xl"
-      >
-        <ItemMedia>{hasWifi ? <Wifi /> : <WifiOff />}</ItemMedia>
-        <ItemContent>
-          <ItemTitle>{hasWifi ? '提供WIFI' : '不提供WIFI'}</ItemTitle>
-        </ItemContent>
-      </Item>
+      <FeatureItem
+        isEmpty={hasWifi === null}
+        icon={hasWifi ? <Wifi /> : <WifiOff />}
+        label={
+          hasWifi === null ? 'NO DATA' : hasWifi ? '提供WIFI' : '不提供WIFI'
+        }
+      />
 
       {/* 插座 */}
-      <Item
-        variant="muted"
-        className="rounded-4xl"
-      >
-        <ItemMedia>{hasPowerOutlets ? <Plug /> : <Unplug />}</ItemMedia>
-        <ItemContent>
-          <ItemTitle>
-            {
-              {
-                EVERY: '每個', // 每個位置都有
-                MOST: '多數', // 多數位置有
-                SOME: '部分', // 部分位置有
-                NONE: '沒有', // 無,
-                default: '沒有',
-              }[outletCoverage ?? 'default']
-            }{' '}
-            位置有
-          </ItemTitle>
-        </ItemContent>
-      </Item>
+      <FeatureItem
+        isEmpty={outletCoverage === null}
+        icon={
+          outletCoverage && outletCoverage !== 'NONE' ? <Plug /> : <Unplug />
+        }
+        label={
+          outletCoverage
+            ? `${{ EVERY: '每個', MOST: '多數', SOME: '部分', NONE: '沒有' }[outletCoverage]} 位置有`
+            : 'NO DATA'
+        }
+      />
 
       {/* 座位 */}
-      <Item
-        variant="muted"
-        className=" rounded-4xl"
-      >
-        <ItemMedia>
-          <Armchair />
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>
-            {
-              {
-                MINIMAL: '1-5', // 極少座位 (例如：1-5, 適合外帶或個人)
-                LIMITED: '6-15', // 少量座位 (例如：6-15, 小型店面)
-                STANDARD: '16-30', // 一般規模 (例如：16-30, 標準咖啡店)
-                GENEROUS: '31+', // 空間寬敞 (例如：31+, 適合多人或久坐)
-                default: 'NO DATA',
-              }[seatCapacity ?? 'default']
-            }{' '}
-            個位置
-          </ItemTitle>
-        </ItemContent>
-      </Item>
+      <FeatureItem
+        isEmpty={!seatCapacity}
+        icon={<Armchair />}
+        label={
+          seatCapacity
+            ? `${
+                {
+                  MINIMAL: '1-5',
+                  LIMITED: '6-15',
+                  STANDARD: '16-30',
+                  GENEROUS: '31+',
+                }[seatCapacity]
+              } 個位置`
+            : 'NO DATA'
+        }
+      />
 
       {/* 預約 */}
-      <Item
-        variant="muted"
-        className=" rounded-4xl"
-      >
-        <ItemMedia>
-          {isBookingRequired ? <Calendar /> : <CalendarOff />}
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>{isBookingRequired ? '需要預約' : '不需要預約'}</ItemTitle>
-        </ItemContent>
-      </Item>
+      <FeatureItem
+        isEmpty={isBookingRequired === null}
+        icon={isBookingRequired ? <Calendar /> : <CalendarOff />}
+        label={
+          isBookingRequired === null
+            ? 'NO DATA'
+            : isBookingRequired
+              ? '需要預約'
+              : '不需要預約'
+        }
+      />
 
       {/* 噪音 */}
-      <Item
-        variant="muted"
-        className="col-span-2 rounded-4xl"
-      >
-        <ItemContent>
-          <div className="flex justify-between items-center mb-4">
-            <div className="text-md">噪音等級</div>
-            <Badge>{noiseLevel ?? 'NO DATA'}</Badge>
-          </div>
-          <div className="flex items-center justify-between">
-            {Array.from({ length: 40 }).map((_, idx) => {
-              const param: Record<NoiseLevel | 'default', number> = {
-                SILENT: 5,
-                QUIET: 10,
-                MODERATE: 20,
-                VIBRANT: 30,
-                default: 0,
-              }
-              const randomHeight =
-                Math.floor(
-                  // eslint-disable-next-line react-hooks/purity
-                  Math.random() * param[noiseLevel ?? 'default']
-                ) + 5
+      <FeatureItem
+        className="col-span-2"
+        isEmpty={!noiseLevel}
+        label={
+          <>
+            {/* 標題與標籤 */}
+            <div className="flex justify-between items-center mb-4">
+              <div className="text-md font-medium">噪音等級</div>
+              {noiseLevel && <Badge>{noiseLevel}</Badge>}
+            </div>
 
-              return (
-                <div
-                  key={idx}
-                  className="w-1 bg-black rounded-full "
-                  style={{ height: `${randomHeight}px` }}
-                />
-              )
-            })}
-          </div>
-        </ItemContent>
-      </Item>
+            {/* 動態長條圖 */}
+            <div className="flex items-end justify-between h-10">
+              {/* 固定的容器高度讓對齊更美 */}
+              {Array.from({ length: 40 }).map((_, idx) => {
+                const param: Record<string, number> = {
+                  SILENT: 5,
+                  QUIET: 10,
+                  MODERATE: 20,
+                  VIBRANT: 30,
+                  default: 0,
+                }
+
+                const baseHeight = noiseLevel
+                  ? param[noiseLevel]
+                  : param.default
+                // eslint-disable-next-line react-hooks/purity
+                const randomHeight = Math.floor(Math.random() * baseHeight) + 5
+
+                return (
+                  <div
+                    key={idx}
+                    className={`w-1 rounded-full ${noiseLevel ? 'bg-black' : 'bg-gray-300'}`}
+                    style={{ height: `${randomHeight}px` }}
+                  />
+                )
+              })}
+            </div>
+          </>
+        }
+      />
 
       {/* 低消 */}
-      <Item
-        variant="muted"
-        className="rounded-4xl"
-      >
-        <ItemMedia>
-          {minConsumption ? <CircleDollarSign /> : <Coffee />}
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>
-            {minConsumption ? '飲料加餐點' : '一杯飲料即可'}
-          </ItemTitle>
-        </ItemContent>
-      </Item>
+      <FeatureItem
+        isEmpty={minConsumption === null}
+        icon={minConsumption ? <CircleDollarSign /> : <Coffee />}
+        label={
+          minConsumption === null
+            ? 'NO DATA'
+            : minConsumption
+              ? '飲料加餐點'
+              : '一杯飲料即可'
+        }
+      />
 
       {/* 限時 */}
-      <Item
-        variant="muted"
-        className="rounded-4xl"
-      >
-        <ItemMedia>{timeLimit ? <Infinity /> : <Clock />}</ItemMedia>
-        <ItemContent>
-          <ItemTitle>{timeLimit ? '無限制' : '有時限'}</ItemTitle>
-        </ItemContent>
-      </Item>
+      <FeatureItem
+        isEmpty={timeLimit === null}
+        icon={timeLimit ? <Infinity /> : <Clock />}
+        label={timeLimit === null ? 'NO DATA' : timeLimit ? '無時限' : '有時限'}
+      />
 
       {/* 抽菸 */}
-      <Item
-        variant="muted"
-        className="col-span-2 rounded-4xl"
-      >
-        <ItemMedia>
-          {hasSmokingArea ? <Cigarette /> : <CigaretteOff />}
-        </ItemMedia>
-        <ItemContent>
-          <div className="flex justify-between items-center">
+      <FeatureItem
+        className="col-span-2"
+        isEmpty={smokingAreaType === null}
+        icon={
+          smokingAreaType && smokingAreaType !== 'NONE' ? (
+            <Cigarette />
+          ) : (
+            <CigaretteOff />
+          )
+        }
+        label={
+          <div className="flex justify-between items-center w-full">
             <div>
               {
                 {
                   INDOOR_SEPARATED: '專門吸菸區內可抽',
                   INDOOR_TABLE: '座位可抽',
                   OUTDOOR: '戶外可抽',
+                  NONE: '不可抽菸',
                   default: 'NO DATA',
                 }[smokingAreaType ?? 'default']
               }
             </div>
-            <div className="flex items-center gap-1">
-              {allowCigaretteType.map(d => (
-                <Badge key={d}>
-                  {
-                    {
-                      TRADITIONAL: '紙菸', // 傳統香菸
-                      ELECTRONIC: '加熱菸', // 加熱菸
-                      VAPE: '電子菸', // 電子煙
-                      OTHER: '其他', // 其他類型
-                      default: '其他',
-                    }[d ?? 'default']
-                  }
-                </Badge>
-              ))}
-            </div>
+            {smokingAreaType &&
+              smokingAreaType !== 'NONE' &&
+              allowCigaretteType && (
+                <div className="flex items-center gap-1">
+                  {allowCigaretteType.map(d => (
+                    <Badge key={d}>
+                      {{
+                        TRADITIONAL: '紙菸',
+                        ELECTRONIC: '加熱菸',
+                        VAPE: '電子菸',
+                        OTHER: '其他',
+                      }[d] || '其他'}
+                    </Badge>
+                  ))}
+                </div>
+              )}
           </div>
-        </ItemContent>
-      </Item>
+        }
+      />
     </section>
   )
 }
@@ -284,7 +300,6 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
       userId: user?.id || '',
 
       hasWifi: shopInfo?.hasWifi || null,
-      hasPowerOutlets: shopInfo?.hasPowerOutlets || null,
       outletCoverage: shopInfo?.outletCoverage || null,
 
       seatCapacity: shopInfo?.seatCapacity || null,
@@ -294,7 +309,6 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
       timeLimit: shopInfo?.timeLimit || null,
       isBookingRequired: shopInfo?.isBookingRequired || null,
 
-      hasSmokingArea: shopInfo?.hasSmokingArea || null,
       smokingAreaType: shopInfo?.smokingAreaType || null,
       allowCigaretteType: shopInfo?.allowCigaretteType || [],
     },
@@ -452,7 +466,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                       }
                     />
 
-                    <EditItem
+                    {/* <EditItem
                       title="是否有插座"
                       component={
                         <Controller
@@ -483,7 +497,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                           )}
                         />
                       }
-                    />
+                    /> */}
 
                     <EditItem
                       title="插座覆蓋率"
@@ -499,7 +513,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               onValueChange={field.onChange}
                             >
                               <ToggleGroupItem value="NONE">
-                                <Battery />
+                                <Ban />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="SOME">
                                 <BatteryLow />
@@ -692,7 +706,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                   <section className="flex flex-col gap-3">
                     <h1 className="text-lg font-bold mb-2">吸菸設定</h1>
 
-                    <EditItem
+                    {/* <EditItem
                       title="是否有吸菸區"
                       component={
                         <Controller
@@ -723,7 +737,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                           )}
                         />
                       }
-                    />
+                    /> */}
 
                     <EditItem
                       title="吸菸區類型"
@@ -738,6 +752,9 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               value={field.value || ''}
                               onValueChange={field.onChange}
                             >
+                              <ToggleGroupItem value="NONE">
+                                <Ban />
+                              </ToggleGroupItem>
                               <ToggleGroupItem value="INDOOR_TABLE">
                                 <Armchair />
                               </ToggleGroupItem>
@@ -805,6 +822,8 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
           </section>
         </>
       )}
+
+      <div className=" h-8" />
     </ScrollArea>
   )
 }

@@ -16,13 +16,11 @@ export const reportSchema = z.object({
   userId: z.string().min(1),
 
   hasWifi: z.boolean().nullable(),
-  hasPowerOutlets: z.boolean().nullable(),
   outletCoverage: z.enum(OutletCoverage).nullable(),
 
   seatCapacity: z.enum(SeatCapacity).nullable(),
   noiseLevel: z.enum(NoiseLevel).nullable(),
 
-  hasSmokingArea: z.boolean().nullable(),
   smokingAreaType: z.enum(SmokingAreaType).nullable(),
   allowCigaretteType: z.enum(CigaratteType).array(),
 

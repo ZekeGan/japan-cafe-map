@@ -47,7 +47,6 @@ model Cafe {
 
   // --- 核心連接性 ---
   hasWifi         Boolean? // 是否有提供 Wi-Fi
-  hasPowerOutlets Boolean?   // 是否有提供插座
   outletCoverage  OutletCoverage?  // 插座覆蓋率
 
   // --- 環境氛圍 ---
@@ -55,7 +54,6 @@ model Cafe {
   noiseLevel         NoiseLevel?  // 環境噪音等級
 
   // --- 吸菸相關 ---
-  hasSmokingArea  Boolean?     // 是否有吸菸區
   smokingAreaType SmokingAreaType? // 吸菸區類型
   allowCigaretteType CigaratteType[]  // 可吸菸種類
 
@@ -75,7 +73,6 @@ model Report {
 
 // --- 核心連接性 ---
   hasWifi         Boolean? // 是否有提供 Wi-Fi
-  hasPowerOutlets Boolean?   // 是否有提供插座
   outletCoverage  OutletCoverage?  // 插座覆蓋率
 
   // --- 環境氛圍 ---
@@ -83,7 +80,6 @@ model Report {
   noiseLevel         NoiseLevel?  // 環境噪音等級
 
   // --- 吸菸相關 ---
-  hasSmokingArea  Boolean?     // 是否有吸菸區
   smokingAreaType SmokingAreaType? // 吸菸區類型
   allowCigaretteType CigaratteType[]  // 可吸菸種類
 
@@ -139,6 +135,7 @@ enum SmokingAreaType {
   INDOOR_SEPARATED // 室內吸菸室 
   INDOOR_TABLE // 座位上可抽(室內)
   OUTDOOR    // 戶外
+  NONE // 沒有吸菸區
 }
 
 enum CigaratteType {

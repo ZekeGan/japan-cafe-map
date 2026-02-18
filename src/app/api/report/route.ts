@@ -30,8 +30,6 @@ export async function POST(request: Request) {
         where: { id: cafeId },
         data: {
           hasWifi: stats.getMajority('hasWifi'),
-          hasPowerOutlets: stats.getMajority('hasPowerOutlets'),
-          hasSmokingArea: stats.getMajority('hasSmokingArea'),
           minConsumption: stats.getMajority('minConsumption'),
           timeLimit: stats.getMajority('timeLimit'),
           isBookingRequired: stats.getMajority('isBookingRequired'),

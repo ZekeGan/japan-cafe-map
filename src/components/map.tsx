@@ -16,11 +16,14 @@ import {
 } from 'react'
 import {
   Book,
+  CalendarOffIcon,
   Cigarette,
   CircleDollarSign,
   Clock,
   Coffee,
+  Infinity,
   Navigation,
+  Plug,
   Scroll,
   Wifi,
 } from 'lucide-react'
@@ -277,7 +280,7 @@ const Map: React.FC<{
     setMap(mapInstance)
   }, [])
 
-  const initialFilters: Partial<Cafe> = {
+  const initialFilters = {
     hasWifi: false,
     hasSmokingArea: false,
     hasPowerOutlets: false,
@@ -318,8 +321,18 @@ const Map: React.FC<{
       .filter(shop => {
         if (isNoFilterActive) return true
         if (filters.hasWifi && shop.hasWifi) return true
-        if (filters.hasSmokingArea && shop.hasSmokingArea) return true
-        if (filters.hasPowerOutlets && shop.hasPowerOutlets) return true
+        if (
+          filters.hasSmokingArea &&
+          shop.smokingAreaType &&
+          shop.smokingAreaType !== 'NONE'
+        )
+          return true
+        if (
+          filters.hasPowerOutlets &&
+          shop.outletCoverage &&
+          shop.outletCoverage !== 'NONE'
+        )
+          return true
         if (filters.timeLimit && shop.timeLimit) return true
         if (filters.isBookingRequired && shop.isBookingRequired) return true
         if (filters.minConsumption && shop.minConsumption) return true
@@ -337,7 +350,11 @@ const Map: React.FC<{
       })
   }, [cafeShops, clickMapDot, filters])
 
-  const filterList: { key: keyof Cafe; icon: ReactNode; label: string }[] = [
+  const filterList: {
+    key: keyof typeof initialFilters
+    icon: ReactNode
+    label: string
+  }[] = [
     {
       key: 'hasSmokingArea',
       icon: <Cigarette />,
@@ -349,14 +366,20 @@ const Map: React.FC<{
       label: 'WIFI',
     },
     {
+      key: 'hasPowerOutlets',
+      icon: <Plug />,
+      label: '插座',
+    },
+
+    {
       key: 'timeLimit',
-      icon: <Clock />,
-      label: '有時限',
+      icon: <Infinity />,
+      label: '無時限',
     },
     {
       key: 'isBookingRequired',
-      icon: <Book />,
-      label: '要預約',
+      icon: <CalendarOffIcon />,
+      label: '無預約',
     },
     {
       key: 'minConsumption',

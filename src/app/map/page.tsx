@@ -26,7 +26,7 @@ export default function Page() {
           if (!open) setShopInfo(null)
         }}
       >
-        <DrawerContent className="h-[90%]">
+        <DrawerContent className="h-[80%]">
           <VisuallyHidden.Root>
             <DrawerTitle className="sr-only">shopInfo</DrawerTitle>
           </VisuallyHidden.Root>
