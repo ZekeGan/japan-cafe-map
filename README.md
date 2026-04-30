@@ -1,108 +1,97 @@
-### 當前計畫
+# ☕ Japan Cafe Map
 
-- [] 顯示該區域的咖啡店
-- [] 持續顯示最愛店家(換個顯示的ICON)
-- [] 取回店家資料時，用GOOGLEMAP順便更新店家資料
-- [x] 回到當前位置按鈕
-- [x] 編輯該店的資訊
-- [x] GOOGOLEMAP上顯示店家圖示(GOOGLE的資料)，和我的資料庫交叉比對後，顯示不同ICON，以表現那些資料有建檔
-- [x] 最愛店家
-- [x] prisma修改版本為舊版，避免問題
-- [x] 修改登入token
+> A crowdsourced map application for discovering **engineer-friendly cafes** across Japan — with real-time Google Maps data and community-driven amenity ratings.
 
-### 如果未來考慮擴展該專案 可以進行的點子
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Google Maps API](https://img.shields.io/badge/Google%20Maps%20API-4285F4?style=flat&logo=googlemaps&logoColor=white)
 
-- 拉遠地圖時顯示該範圍咖啡廳，用數字顯示該範圍數量，參考 cafe nomad，(MarkerClusterer)
-- 如果該店家GOOGLE MAP顯示停業，如何同步資料的一致性
-  - 最方便: 使用者點擊後，同步把GOOGLE資料抓下來，我的資料則靜態
-  - 最省錢: 使用者點擊後，GOOGLE資料同步到我的資料內，每天更新一次
+---
 
-### 技術
+## Overview
 
-- next
-- tailwind
-- prisma
-- chadcn ui
-- google map api
+Japan Cafe Map solves a real problem for remote workers and developers in Japan: **finding cafes where you can actually work**. While Google Maps tells you where a cafe is, it doesn't tell you whether it has outlets, Wi-Fi, or a noise level you can tolerate for a 3-hour deep work session.
 
-### env
+This app bridges that gap by pulling cafe data directly from Google Maps and layering it with **community-submitted, engineer-focused ratings** — so you can find the perfect spot before you leave home.
 
-- NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
-- DATABASE_URL=
-- JWT_SECRET=
+---
 
-### other
+## Features
 
-Place.fields = [
-'id',
-'resourceName',
-'accessibilityOptions',
-'addressComponents',
-'adrFormatAddress',
-'attributions',
-'businessStatus',
-'displayName',
-'displayNameLanguageCode',
-'formattedAddress',
-'shortFormattedAddress',
-'googleMapsURI',
-'hasCurbsidePickup',
-'hasDelivery',
-'hasDineIn',
-'hasTakeout',
-'isReservable',
-'servesBreakfast',
-'servesLunch',
-'servesDinner',
-'servesBeer',
-'servesWine',
-'servesBrunch',
-'servesVegetarianFood',
-'iconBackgroundColor',
-'svgIconMaskURI',
-'internationalPhoneNumber',
-'location',
-'nationalPhoneNumber',
-'regularOpeningHours',
-'parkingOptions',
-'paymentOptions',
-'photos',
-'plusCode',
-'postalAddress',
-'priceLevel',
-'rating',
-'reviews',
-'types',
-'userRatingCount',
-'utcOffsetMinutes',
-'viewport',
-'websiteURI',
-'editorialSummary',
-'editorialSummaryLanguageCode',
-'generativeSummary',
-'reviewSummary',
-'evChargeAmenitySummary',
-'neighborhoodSummary',
-'allowsDogs',
-'hasLiveMusic',
-'hasMenuForChildren',
-'hasOutdoorSeating',
-'hasRestroom',
-'hasWiFi',
-'isGoodForChildren',
-'isGoodForGroups',
-'isGoodForWatchingSports',
-'servesCocktails',
-'servesCoffee',
-'servesDessert',
-'primaryType',
-'primaryTypeDisplayName',
-'primaryTypeDisplayNameLanguageCode',
-'evChargeOptions',
-'fuelOptions',
-'priceRange',
-'googleMapsLinks',
-'consumerAlert',
-'timeZone',
-'isPureServiceAreaBusiness',
-]
+- 🗺️ **Google Maps Integration** — Fetches real cafe listings using the Google Places API, including name, address, photos, and opening hours
+- ⭐ **Community Ratings** — Users can rate cafes on attributes that matter to developers:
+  - 🔌 Power outlets availability
+  - 📶 Wi-Fi quality
+  - 🔇 Noise level
+  - 🪑 Seating comfort
+  - ⏱️ Time limit policy
+- 🔍 **Filter & Discover** — Browse and filter cafes by amenity scores to find spots that match your working style
+- 📍 **Location-aware** — Centers the map on your current location for quick nearby searches
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js, TypeScript, React |
+| Styling | shadcn / Tailwind CSS |
+| Maps | Google Maps JavaScript API, Places API |
+| Backend | Next.js API Routes |
+| Database | MongoDB / Prisma |
+| Deployment | Vercel |
+
+---
+
+## Architecture Highlights
+
+- **Server-side data fetching** from Google Places API to avoid exposing API keys on the client
+- **Optimistic UI updates** for rating submissions to keep interactions snappy
+- **Aggregated scoring system** — individual ratings are averaged and displayed as composite amenity scores per cafe
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- A [Google Cloud](https://console.cloud.google.com/) project with the **Maps JavaScript API** and **Places API** enabled
+
+### Installation
+
+```bash
+git clone https://github.com/ZekeGan/japan-cafe-map.git
+cd japan-cafe-map
+npm install
+```
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+NEXTAUTH_SECRET=your_nextauth_secret
+DATABASE_URL=your_database_connection_string
+```
+
+### Run Locally
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the app.
+
+---
+
+## Motivation
+
+As a developer who works from cafes frequently, I found myself doing the same research over and over before visiting a new spot. I built this to create a community resource where engineers in Japan can share and discover workspace-friendly cafes — the kind of information that Google Maps simply doesn't provide.
+
+---
+
+## Author
+
+**Zeke Gan** — [GitHub](https://github.com/ZekeGan)
