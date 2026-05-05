@@ -1,0 +1,210 @@
+{
+  "common": {
+    "noData": "無資料",
+    "yes": "是",
+    "no": "否",
+    "submit": "送出",
+    "cancel": "取消",
+    "map": "地圖",
+    "favorite": "最愛",
+    "profile": "個人資料",
+    "login": "登入",
+    "loading": "載入中..."
+  },
+  "map": {
+    "filter": {
+      "smokingArea": "吸菸室",
+      "wifi": "WIFI",
+      "powerOutlets": "插座",
+      "timeLimit": "無時限",
+      "noBookingRequired": "無預約",
+      "minConsumption": "一杯飲料"
+    },
+    "error": {
+      "geolocationNotSupported": "您的瀏覽器不支援定位功能",
+      "fetchCafesFailed": "載入附近咖啡廳失敗，請稍後再試",
+      "fetchShopInfoFailed": "載入店家資訊失敗"
+    },
+    "aria": {
+      "cafeLocation": "咖啡廳位置",
+      "closed": "（已關閉）"
+    },
+    "button": {
+      "searchThisArea": "搜尋此區域",
+      "relocate": "重新定位"
+    }
+  },
+  "shopInfo": {
+    "error": {
+      "toggleFavoriteFailed": "操作失敗"
+    },
+    "button": {
+      "editInfo": "幫助編輯店家資訊"
+    },
+    "wifi": {
+      "available": "提供WIFI",
+      "unavailable": "不提供WIFI"
+    },
+    "outlet": {
+      "EVERY": "每個位置有插座",
+      "MOST": "多數位置有插座",
+      "SOME": "部分位置有插座",
+      "NONE": "沒有位置有插座"
+    },
+    "seat": {
+      "MINIMAL": "1-5 個位置",
+      "LIMITED": "6-15 個位置",
+      "STANDARD": "16-30 個位置",
+      "GENEROUS": "31+ 個位置"
+    },
+    "noise": {
+      "label": "噪音等級",
+      "SILENT": "寧靜",
+      "QUIET": "輕微",
+      "MODERATE": "適中",
+      "VIBRANT": "吵雜"
+    },
+    "minConsumption": {
+      "required": "須加購套餐",
+      "oneDrink": "一杯飲料即可"
+    },
+    "timeLimit": {
+      "unlimited": "無時限",
+      "limited": "有時限"
+    },
+    "booking": {
+      "required": "需要預約",
+      "notRequired": "不需要預約"
+    },
+    "smoking": {
+      "INDOOR_SEPARATED": "專門吸菸區內可抽",
+      "INDOOR_TABLE": "座位可抽",
+      "OUTDOOR": "戶外可抽",
+      "NONE": "不可抽菸"
+    },
+    "cigaretteType": {
+      "TRADITIONAL": "紙菸",
+      "ELECTRONIC": "加熱菸",
+      "VAPE": "電子菸",
+      "OTHER": "其他"
+    },
+    "businessStatus": {
+      "OPERATIONAL": "營業中",
+      "CLOSED_TEMPORARILY": "暫時關閉",
+      "CLOSED_PERMANENTLY": "永久關閉"
+    },
+    "form": {
+      "section": {
+        "facility": "設施",
+        "environment": "環境",
+        "consumption": "消費",
+        "smoking": "吸菸"
+      },
+      "field": {
+        "hasWifi": "是否有WIFI",
+        "outletCoverage": "插座覆蓋率",
+        "seatCapacity": "座位數量",
+        "noiseLevel": "噪音等級",
+        "isBookingRequired": "是否需要預約",
+        "timeLimit": "使用時間限制",
+        "minConsumption": "是否需要低消",
+        "smokingAreaType": "吸菸區類型",
+        "allowCigaretteType": "可吸食種類"
+      },
+      "outlet": {
+        "NONE": "無",
+        "SOME": "少",
+        "MOST": "多",
+        "EVERY": "全"
+      },
+      "timeLimit": {
+        "unlimited": "無限",
+        "limited": "限時"
+      },
+      "minConsumption": {
+        "required": "須加購套餐",
+        "oneDrink": "只需一杯飲料"
+      },
+      "smokingAreaType": {
+        "NONE": "禁止吸菸",
+        "INDOOR_TABLE": "座位可抽",
+        "INDOOR_SEPARATED": "室內專區",
+        "OUTDOOR": "室外"
+      },
+      "cigaretteType": {
+        "TRADITIONAL": "傳統",
+        "ELECTRONIC": "加熱菸",
+        "VAPE": "電子菸"
+      }
+    }
+  },
+  "profile": {
+    "title": "個人資料",
+    "usernameLabel": "使用者名稱",
+    "defaultName": "未設定名稱",
+    "emailLabel": "電子信箱",
+    "logout": "登出帳號"
+  },
+  "auth": {
+    "forgotPassword": {
+      "title": "遺忘密碼",
+      "emailPlaceholder": "請輸入您的電子郵件地址",
+      "successMessage": "重設連結已發送到您的信箱",
+      "errorMessage": "發生錯誤，請稍後再試"
+    },
+    "login": {
+      "title": "歡迎回來",
+      "email": "電子郵件",
+      "password": "密碼",
+      "forgotPassword": "忘記密碼？",
+      "submitting": "登入中...",
+      "noAccount": "還沒有帳號？",
+      "registerNow": "立即註冊",
+      "error": {
+        "invalid": "帳號或密碼錯誤，請重新輸入",
+        "system": "系統連線錯誤，請稍後再試",
+        "failed": "登入失敗"
+      }
+    },
+    "register": {
+      "title": "建立新帳號",
+      "email": "電子郵件",
+      "password": "密碼",
+      "confirmPassword": "確認密碼",
+      "checking": "檢查中...",
+      "backToLogin": "返回登入",
+      "success": "註冊成功！",
+      "error": {
+        "emailExists": "此電子郵件已被註冊，請嘗試登入或更換帳號",
+        "system": "系統錯誤"
+      }
+    },
+    "resetPassword": {
+      "title": "設定新密碼",
+      "passwordPlaceholder": "請輸入新密碼",
+      "confirmPasswordPlaceholder": "請再次輸入新密碼",
+      "success": "密碼重設成功，正在導回登入頁面...",
+      "error": "連結已過期或無效"
+    },
+    "passwordRule": {
+      "title": "密碼規則：",
+      "length": "至少 8 個字元",
+      "complexity": "包含大小寫字母與數字"
+    }
+  },
+  "favorite": {
+    "title": "收藏清單",
+    "wifi": "有Wi-Fi",
+    "smoking": "有吸菸區",
+    "outlet": "有插座",
+    "noData": "尚無收藏的咖啡廳"
+  },
+  "error": {
+    "notFound": {
+      "title": "404",
+      "description": "哎呀！沒有這頁面...",
+      "backHome": "回首頁",
+      "goMap": "去地圖找找"
+    }
+  }
+}

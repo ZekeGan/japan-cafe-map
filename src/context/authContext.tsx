@@ -54,7 +54,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 }
 
-// 建立一個方便使用的 Hook
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (context === undefined) {

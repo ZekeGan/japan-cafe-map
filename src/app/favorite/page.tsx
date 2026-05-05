@@ -1,10 +1,7 @@
 'use client'
 
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Cafe } from '@prisma/client'
-
 import { useCallback, useEffect, useState } from 'react'
-
 import { useAuth } from '@/context/authContext'
 import { useRouter } from 'next/navigation'
 import { MAP } from '@/constant/router'
@@ -14,8 +11,10 @@ import { Link2, Trash } from 'lucide-react'
 import { Item, ItemActions, ItemContent, ItemTitle } from '@/components/ui/item'
 import DetailLayout from '@/components/container/detailLayout'
 import { Badge } from '@/components/ui/badge'
+import { useTranslation } from '@/context/languageContext'
 
 const FavoriteCafe = () => {
+  const { t } = useTranslation() // 初始化翻譯函數
   const router = useRouter()
   const { user, refreshUser } = useAuth()
   const [cafeShops, setCafeShops] = useState<Cafe[] | null>(null)
@@ -30,7 +29,6 @@ const FavoriteCafe = () => {
     if (res.ok) {
       const data = await res.json()
       setCafeShops(data)
-      console.log(data)
     }
   }, [user])
 
@@ -41,9 +39,9 @@ const FavoriteCafe = () => {
     })
 
     if (response.ok) {
-      const result = await response.json()
-      console.log(result)
       refreshUser()
+      // 移除後重新取得清單以更新 UI
+      fetchCafeShop()
     }
   }
 
@@ -52,63 +50,66 @@ const FavoriteCafe = () => {
       router.push(MAP)
       return
     }
-    const timeout = setTimeout(() => fetchCafeShop(), 0)
-    return () => clearTimeout(timeout)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchCafeShop()
   }, [fetchCafeShop, router, user])
 
   if (!user) return null
 
   return (
     <DetailLayout href={MAP}>
-      <ScrollArea className="h-full no-scrollbar">
-        <section className="p-2 flex flex-col gap-2">
-          {cafeShops &&
-            cafeShops.map(shop => (
-              <Item
-                key={shop.id}
-                variant="outline"
-              >
-                <ItemContent>
-                  <ItemTitle>{shop.displayName}</ItemTitle>
-                  <div>
-                    <div className="flex gap-2">
-                      {shop.hasWifi && (
-                        <Badge variant="secondary">有WIFI</Badge>
+      <section className="p-2 flex flex-col gap-2">
+        {cafeShops && cafeShops.length > 0 ? (
+          cafeShops.map(shop => (
+            <Item
+              key={shop.id}
+              variant="outline"
+            >
+              <ItemContent>
+                <ItemTitle>{shop.displayName}</ItemTitle>
+                <div>
+                  <div className="flex gap-2">
+                    {shop.hasWifi && (
+                      <Badge variant="secondary">{t.favorite.wifi}</Badge>
+                    )}
+                    {shop.smokingAreaType &&
+                      shop.smokingAreaType !== 'NONE' && (
+                        <Badge variant="secondary">{t.favorite.smoking}</Badge>
                       )}
-                      {shop.smokingAreaType &&
-                        shop.smokingAreaType !== 'NONE' && (
-                          <Badge variant="secondary">有吸菸區</Badge>
-                        )}
-                      {shop.outletCoverage &&
-                        shop.outletCoverage !== 'NONE' && (
-                          <Badge variant="secondary">有插座</Badge>
-                        )}
-                    </div>
+                    {shop.outletCoverage && shop.outletCoverage !== 'NONE' && (
+                      <Badge variant="secondary">{t.favorite.outlet}</Badge>
+                    )}
                   </div>
-                </ItemContent>
+                </div>
+              </ItemContent>
 
-                <ItemActions>
-                  <Button
-                    variant="ghost"
-                    size="icon-lg"
-                  >
-                    <Link href={`/map/${shop.id}`}>
-                      <Link2 />
-                    </Link>
-                  </Button>
-                  <Button
-                    onClick={() => removeFavorite(shop)}
-                    variant="ghost"
-                    size="icon-lg"
-                    className="text-red-500"
-                  >
-                    <Trash />
-                  </Button>
-                </ItemActions>
-              </Item>
-            ))}
-        </section>
-      </ScrollArea>
+              <ItemActions>
+                <Button
+                  variant="ghost"
+                  size="icon-lg"
+                  asChild
+                >
+                  <Link href={`/map/${shop.id}`}>
+                    <Link2 />
+                  </Link>
+                </Button>
+                <Button
+                  onClick={() => removeFavorite(shop)}
+                  variant="ghost"
+                  size="icon-lg"
+                  className="text-red-500"
+                >
+                  <Trash />
+                </Button>
+              </ItemActions>
+            </Item>
+          ))
+        ) : (
+          <div className="text-center py-10 text-muted-foreground">
+            {t.favorite.noData}
+          </div>
+        )}
+      </section>
     </DetailLayout>
   )
 }

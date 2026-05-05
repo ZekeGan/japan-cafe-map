@@ -1,9 +1,9 @@
 ### 當前計畫
 
-- [] 移動到沒有資料的地方時，點擊按鈕顯示該區域的咖啡店
 - [] 取回店家資料時，用GOOGLEMAP順便更新店家資料
-- [] 更改PROFILE UI
 
+- [x] 移動到沒有資料的地方時，點擊按鈕顯示該區域的咖啡店
+- [x] 更改PROFILE UI
 - [x] 持續顯示最愛店家(換個顯示的ICON)
 - [x] 回到當前位置按鈕
 - [x] 編輯該店的資訊
@@ -12,14 +12,12 @@
 - [x] prisma修改版本為舊版，避免問題
 - [x] 修改登入token
 
-
 ### 如果未來考慮擴展該專案 可以進行的點子
 
 - 拉遠地圖時顯示該範圍咖啡廳，用數字顯示該範圍數量，參考 cafe nomad，(MarkerClusterer)
 - 如果該店家GOOGLE MAP顯示停業，如何同步資料的一致性
   - 最方便: 使用者點擊後，同步把GOOGLE資料抓下來，我的資料則靜態
   - 最省錢: 使用者點擊後，GOOGLE資料同步到我的資料內，每天更新一次
-
 
 ### 技術
 
@@ -29,13 +27,11 @@
 - chadcn ui
 - google map api
 
-
 ### env
 
 - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 - DATABASE_URL=
 - JWT_SECRET=
-
 
 ### other
 

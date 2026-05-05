@@ -1,8 +1,7 @@
 'use client'
 
-import React from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation' // 登入成功後跳轉
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
@@ -10,9 +9,18 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { loginSchema, type LoginInput } from '@/lib/validations/auth'
 import { useAuth } from '@/context/authContext'
-import { FORGOT_PASSWORD, HOME, MAP, REGISTER } from '@/constant/router'
+import { FORGOT_PASSWORD, MAP, REGISTER } from '@/constant/router'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { useTranslation } from '@/context/languageContext'
 
 export default function LoginPage() {
+  const { t } = useTranslation() // 初始化翻譯函數
   const router = useRouter()
   const { refreshUser } = useAuth()
   const {
@@ -36,36 +44,33 @@ export default function LoginPage() {
       if (!response.ok) {
         if (result.error === 'INVALID_CREDENTIALS') {
           setError('root', {
-            message: '帳號或密碼錯誤，請重新輸入',
+            message: t.auth.login.error.invalid, // 錯誤訊息語系化
           })
           return
         }
-        throw new Error(result.message || '登入失敗')
+        throw new Error(result.message || t.auth.login.error.failed)
       }
 
-      // 登入成功處理 (例如儲存 Token 或更新 Context)
-
       await refreshUser()
-      router.push(MAP) // 跳轉至後台或首頁
+      router.push(MAP)
     } catch (err) {
-      setError('root', { message: '系統連線錯誤，請稍後再試' })
+      setError('root', { message: t.auth.login.error.system })
     }
   }
 
   return (
-    <div className="container relative min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">歡迎回來</h1>
-        <p className="text-sm text-muted-foreground">
-          請輸入您的帳號密碼進行登入
-        </p>
-      </div>
-      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid gap-4"
-        >
-          {/* 顯示全域錯誤訊息 (例如帳密錯誤) */}
+    <Card className="shadow-lg">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold">
+          {t.auth.login.title}
+        </CardTitle>
+      </CardHeader>
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="grid gap-4"
+      >
+        <CardContent className="flex flex-col justify-center space-y-6">
           {errors.root && (
             <div className="bg-destructive/15 p-3 rounded-md text-destructive text-sm font-medium">
               {errors.root.message}
@@ -73,7 +78,7 @@ export default function LoginPage() {
           )}
 
           <div className="grid gap-2">
-            <Label htmlFor="email">電子郵件</Label>
+            <Label htmlFor="email">{t.auth.login.email}</Label>
             <Input
               {...register('email')}
               id="email"
@@ -88,13 +93,12 @@ export default function LoginPage() {
 
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">密碼</Label>
+              <Label htmlFor="password">{t.auth.login.password}</Label>
               <Link
                 href={FORGOT_PASSWORD}
-                // size="sm"
                 className="text-xs text-primary underline-offset-4 hover:underline"
               >
-                忘記密碼？
+                {t.auth.login.forgotPassword}
               </Link>
             </div>
             <Input
@@ -109,26 +113,28 @@ export default function LoginPage() {
               </p>
             )}
           </div>
+        </CardContent>
 
+        <CardFooter>
           <Button
             type="submit"
             className="w-full"
             disabled={isSubmitting}
           >
-            {isSubmitting ? '登入中...' : '登入'}
+            {isSubmitting ? t.auth.login.submitting : t.common.submit}
           </Button>
-        </form>
+        </CardFooter>
+      </form>
 
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          還沒有帳號？{' '}
-          <Link
-            href={REGISTER}
-            className="underline underline-offset-4 hover:text-primary"
-          >
-            立即註冊
-          </Link>
-        </p>
-      </div>
-    </div>
+      <p className="px-8 pb-6 text-center text-sm text-muted-foreground">
+        {t.auth.login.noAccount}{' '}
+        <Link
+          href={REGISTER}
+          className="underline underline-offset-4 hover:text-primary"
+        >
+          {t.auth.login.registerNow}
+        </Link>
+      </p>
+    </Card>
   )
 }

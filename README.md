@@ -32,14 +32,14 @@ This app bridges that gap by pulling cafe data directly from Google Maps and lay
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js, TypeScript, React |
-| Styling | shadcn / Tailwind CSS |
-| Maps | Google Maps JavaScript API, Places API |
-| Backend | Next.js API Routes |
-| Database | MongoDB / Prisma |
-| Deployment | Vercel |
+| Layer      | Technology                             |
+| ---------- | -------------------------------------- |
+| Frontend   | Next.js, TypeScript, React             |
+| Styling    | shadcn / Tailwind CSS                  |
+| Maps       | Google Maps JavaScript API, Places API |
+| Backend    | Next.js API Routes                     |
+| Database   | MongoDB / Prisma                       |
+| Deployment | Vercel                                 |
 
 ---
 
@@ -63,7 +63,7 @@ This app bridges that gap by pulling cafe data directly from Google Maps and lay
 ```bash
 git clone https://github.com/ZekeGan/japan-cafe-map.git
 cd japan-cafe-map
-npm install
+pnpm install
 ```
 
 ### Environment Variables
@@ -71,24 +71,18 @@ npm install
 Create a `.env.local` file in the root directory:
 
 ```env
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-NEXTAUTH_SECRET=your_nextauth_secret
-DATABASE_URL=your_database_connection_string
+- NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+- DATABASE_URL=
+- JWT_SECRET=
 ```
 
 ### Run Locally
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the app.
-
----
-
-## Motivation
-
-As a developer who works from cafes frequently, I found myself doing the same research over and over before visiting a new spot. I built this to create a community resource where engineers in Japan can share and discover workspace-friendly cafes — the kind of information that Google Maps simply doesn't provide.
 
 ---
 

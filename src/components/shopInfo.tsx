@@ -4,14 +4,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Cafe } from '@prisma/client'
 import {
   Armchair,
-  Ban,
-  Battery,
-  BatteryFull,
-  BatteryLow,
-  BatteryMedium,
   Calendar,
   CalendarOff,
-  Check,
   Cigarette,
   CigaretteOff,
   CircleDollarSign,
@@ -23,16 +17,9 @@ import {
   MapPin,
   Pencil,
   Plug,
-  Tent,
   Unplug,
-  Volume,
-  Volume1,
-  Volume2,
-  VolumeX,
-  Warehouse,
   Wifi,
   WifiOff,
-  X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Divider from '@/components/divider'
@@ -53,16 +40,17 @@ import { useAuth } from '@/context/authContext'
 import clsx from 'clsx'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { useTranslation } from '@/context/languageContext'
 
 interface FeatureItemProps {
-  icon?: React.ReactNode // 改為選填
+  icon?: React.ReactNode
   label: React.ReactNode
   className?: string
   isEmpty?: boolean
 }
 
 const SmallLabel = ({ str }: { str: string }) => {
-  return <div className="text-[9px] font-bold ">{str}</div>
+  return <div className="text-xs font-bold">{str}</div>
 }
 
 const EditItem = ({
@@ -75,9 +63,9 @@ const EditItem = ({
   return (
     <Item className="p-2">
       <ItemContent>
-        <ItemTitle>{title}</ItemTitle>
+        <ItemTitle className="pb-1 text-sm">{title}</ItemTitle>
+        {component}
       </ItemContent>
-      <ItemActions>{component}</ItemActions>
     </Item>
   )
 }
@@ -93,18 +81,20 @@ const FeatureItem = ({
       variant="muted"
       className={`rounded-4xl ${className} ${isEmpty ? 'opacity-50' : ''}`}
     >
-      {/* 只有當 icon 存在時才渲染 Media 區塊 */}
       {icon && (
-        <ItemMedia className={isEmpty ? 'text-gray-300' : ''}>{icon}</ItemMedia>
+        <ItemMedia className={isEmpty ? 'text-gray-400' : ''}>{icon}</ItemMedia>
       )}
       <ItemContent className="w-full">
-        <div className={isEmpty ? 'text-gray-300' : ''}>{label}</div>
+        <div className={isEmpty ? 'text-gray-400' : ''}>{label}</div>
       </ItemContent>
     </Item>
   )
 }
 
 const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
+  const { t } = useTranslation()
+  const s = t.shopInfo
+
   const {
     outletCoverage,
     hasWifi,
@@ -124,7 +114,11 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
         isEmpty={hasWifi === null}
         icon={hasWifi ? <Wifi /> : <WifiOff />}
         label={
-          hasWifi === null ? 'NO DATA' : hasWifi ? '提供WIFI' : '不提供WIFI'
+          hasWifi === null
+            ? t.common.noData
+            : hasWifi
+              ? s.wifi.available
+              : s.wifi.unavailable
         }
       />
 
@@ -136,8 +130,8 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
         }
         label={
           outletCoverage
-            ? `${{ EVERY: '每個', MOST: '多數', SOME: '部分', NONE: '沒有' }[outletCoverage]} 位置有`
-            : 'NO DATA'
+            ? s.outlet[outletCoverage as keyof typeof s.outlet]
+            : t.common.noData
         }
       />
 
@@ -147,15 +141,8 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
         icon={<Armchair />}
         label={
           seatCapacity
-            ? `${
-                {
-                  MINIMAL: '1-5',
-                  LIMITED: '6-15',
-                  STANDARD: '16-30',
-                  GENEROUS: '31+',
-                }[seatCapacity]
-              } 個位置`
-            : 'NO DATA'
+            ? s.seat[seatCapacity as keyof typeof s.seat]
+            : t.common.noData
         }
       />
 
@@ -165,10 +152,10 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
         icon={isBookingRequired ? <Calendar /> : <CalendarOff />}
         label={
           isBookingRequired === null
-            ? 'NO DATA'
+            ? t.common.noData
             : isBookingRequired
-              ? '需要預約'
-              : '不需要預約'
+              ? s.booking.required
+              : s.booking.notRequired
         }
       />
 
@@ -178,26 +165,14 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
         isEmpty={!noiseLevel}
         label={
           <>
-            {/* 標題與標籤 */}
             <div className="flex justify-between items-center mb-4">
-              <div className="text-md font-medium">噪音等級</div>
+              <div className="text-md font-medium">{s.noise.label}</div>
               {noiseLevel && (
-                <Badge>
-                  {
-                    {
-                      SILENT: '寧靜',
-                      QUIET: '輕微',
-                      MODERATE: '適中',
-                      VIBRANT: '熱鬧',
-                    }[noiseLevel]
-                  }
-                </Badge>
+                <Badge>{s.noise[noiseLevel as keyof typeof s.noise]}</Badge>
               )}
             </div>
 
-            {/* 動態長條圖 */}
             <div className="flex items-end justify-between h-10">
-              {/* 固定的容器高度讓對齊更美 */}
               {Array.from({ length: 40 }).map((_, idx) => {
                 const param: Record<string, number> = {
                   SILENT: 5,
@@ -232,10 +207,10 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
         icon={minConsumption ? <CircleDollarSign /> : <Coffee />}
         label={
           minConsumption === null
-            ? 'NO DATA'
+            ? t.common.noData
             : minConsumption
-              ? '飲料加餐點'
-              : '一杯飲料即可'
+              ? s.minConsumption.required
+              : s.minConsumption.oneDrink
         }
       />
 
@@ -243,7 +218,13 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
       <FeatureItem
         isEmpty={timeLimit === null}
         icon={timeLimit ? <Infinity /> : <Clock />}
-        label={timeLimit === null ? 'NO DATA' : timeLimit ? '無時限' : '有時限'}
+        label={
+          timeLimit === null
+            ? t.common.noData
+            : timeLimit
+              ? s.timeLimit.unlimited
+              : s.timeLimit.limited
+        }
       />
 
       {/* 抽菸 */}
@@ -260,15 +241,10 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
         label={
           <div className="flex justify-between items-center w-full">
             <div>
-              {
-                {
-                  INDOOR_SEPARATED: '專門吸菸區內可抽',
-                  INDOOR_TABLE: '座位可抽',
-                  OUTDOOR: '戶外可抽',
-                  NONE: '不可抽菸',
-                  default: 'NO DATA',
-                }[smokingAreaType ?? 'default']
-              }
+              {smokingAreaType
+                ? (s.smoking[smokingAreaType as keyof typeof s.smoking] ??
+                  t.common.noData)
+                : t.common.noData}
             </div>
             {smokingAreaType &&
               smokingAreaType !== 'NONE' &&
@@ -276,12 +252,8 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
                 <div className="flex items-center gap-1">
                   {allowCigaretteType.map(d => (
                     <Badge key={d}>
-                      {{
-                        TRADITIONAL: '紙菸',
-                        ELECTRONIC: '加熱菸',
-                        VAPE: '電子菸',
-                        OTHER: '其他',
-                      }[d] || '其他'}
+                      {s.cigaretteType[d as keyof typeof s.cigaretteType] ??
+                        s.cigaretteType.OTHER}
                     </Badge>
                   ))}
                 </div>
@@ -295,6 +267,9 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
 
 const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
   const { user, refreshUser } = useAuth()
+  const { t } = useTranslation()
+  const s = t.shopInfo
+  const f = s.form
 
   const hasUser = Boolean(user?.id)
   const hasReported =
@@ -309,17 +284,13 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
     defaultValues: {
       cafeId: shopInfo?.id || '',
       userId: user?.id || '',
-
       hasWifi: shopInfo?.hasWifi || null,
       outletCoverage: shopInfo?.outletCoverage || null,
-
       seatCapacity: shopInfo?.seatCapacity || null,
       noiseLevel: shopInfo?.noiseLevel || null,
-
       minConsumption: shopInfo?.minConsumption || null,
       timeLimit: shopInfo?.timeLimit || null,
       isBookingRequired: shopInfo?.isBookingRequired || null,
-
       smokingAreaType: shopInfo?.smokingAreaType || null,
       allowCigaretteType: shopInfo?.allowCigaretteType || [],
     },
@@ -328,9 +299,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
   const onSubmit = async (data: ReportFormValues) => {
     await fetch('/api/report', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
     await refreshUser()
@@ -349,7 +318,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
         refreshUser()
       }
     } catch (error) {
-      console.error('操作失敗', error)
+      console.error(s.error.toggleFavoriteFailed, error)
     }
   }
 
@@ -362,14 +331,23 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
   return (
     <ScrollArea className="h-full no-scrollbar">
       {/* 店名 */}
-      <div className="p-4">
-        <span className="text-md font-bold text-left">
+      <section className="p-4 flex flex-col gap-2">
+        <span className="text-xl font-bold text-left">
           {shopInfo?.displayName}
         </span>
-      </div>
+        <span className="text-sm text-destructive">
+          {
+            {
+              OPERATIONAL: '',
+              CLOSED_TEMPORARILY: s.businessStatus.CLOSED_TEMPORARILY,
+              CLOSED_PERMANENTLY: s.businessStatus.CLOSED_PERMANENTLY,
+            }[shopInfo?.businessStatus]
+          }
+        </span>
+      </section>
 
       {/* 地址 */}
-      <div className="px-4 pb-4">
+      <section className="px-4 pb-4">
         <Item
           variant="outline"
           className="rounded-4xl"
@@ -391,7 +369,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
             </Button>
           </ItemActions>
         </Item>
-      </div>
+      </section>
 
       {/* 工具列 */}
       {hasUser && (
@@ -404,8 +382,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
             )}
             onClick={() => toggleFavorite()}
           >
-            <Heart className={clsx(hasFavorited && 'fill-current ')} />
-            <span className="text-xs">Fav</span>
+            <Heart className={clsx(hasFavorited && 'fill-current')} />
           </Button>
         </section>
       )}
@@ -424,28 +401,30 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
           <Divider />
           <section className="p-4 w-full mb-10">
             {!isEditing ? (
-              <div className="flex justify-center gap-4 ">
+              <div className="flex justify-center gap-4">
                 <Button
                   variant="outline"
                   className="rounded-full w-full"
                   onClick={() => setIsEditing(true)}
                 >
-                  <Pencil className="w-4 h-4" />{' '}
-                  <span className="font-bold text-md">幫助編輯店家資訊</span>
+                  <Pencil className="w-4 h-4" />
+                  <span className="font-bold text-md">{s.button.editInfo}</span>
                 </Button>
               </div>
             ) : (
               <Card className="p-4">
                 <form
-                  className="flex flex-col gap-8" // 稍微增加區塊間距
+                  className="flex flex-col gap-8"
                   onSubmit={form.handleSubmit(onSubmit)}
                 >
-                  {/* 設施區塊 */}
+                  {/* 設施 */}
                   <section className="flex flex-col gap-3">
-                    <h1 className="text-lg font-bold mb-2">設施</h1>
+                    <h1 className="text-lg font-bold mb-2">
+                      {f.section.facility}
+                    </h1>
 
                     <EditItem
-                      title="是否有WIFI"
+                      title={f.field.hasWifi}
                       component={
                         <Controller
                           name="hasWifi"
@@ -466,10 +445,10 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               }
                             >
                               <ToggleGroupItem value="true">
-                                <Check />
+                                <SmallLabel str={t.common.yes} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="false">
-                                <X />
+                                <SmallLabel str={t.common.no} />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           )}
@@ -477,41 +456,8 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                       }
                     />
 
-                    {/* <EditItem
-                      title="是否有插座"
-                      component={
-                        <Controller
-                          name="hasPowerOutlets"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={String(field.value)}
-                              onValueChange={val =>
-                                field.onChange(
-                                  val === 'true'
-                                    ? true
-                                    : val === 'false'
-                                      ? false
-                                      : null
-                                )
-                              }
-                            >
-                              <ToggleGroupItem value="true">
-                                <Check />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="false">
-                                <X />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      }
-                    /> */}
-
                     <EditItem
-                      title="插座覆蓋率"
+                      title={f.field.outletCoverage}
                       component={
                         <Controller
                           name="outletCoverage"
@@ -524,16 +470,16 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               onValueChange={field.onChange}
                             >
                               <ToggleGroupItem value="NONE">
-                                <Ban />
+                                <SmallLabel str={f.outlet.NONE} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="SOME">
-                                <BatteryLow />
+                                <SmallLabel str={f.outlet.SOME} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="MOST">
-                                <BatteryMedium />
+                                <SmallLabel str={f.outlet.MOST} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="EVERY">
-                                <BatteryFull />
+                                <SmallLabel str={f.outlet.EVERY} />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           )}
@@ -542,12 +488,14 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                     />
                   </section>
 
-                  {/* 環境區塊 */}
+                  {/* 環境 */}
                   <section className="flex flex-col gap-3">
-                    <h1 className="text-lg font-bold mb-2">環境</h1>
+                    <h1 className="text-lg font-bold mb-2">
+                      {f.section.environment}
+                    </h1>
 
                     <EditItem
-                      title="座位數量"
+                      title={f.field.seatCapacity}
                       component={
                         <Controller
                           name="seatCapacity"
@@ -578,7 +526,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                     />
 
                     <EditItem
-                      title="噪音等級"
+                      title={f.field.noiseLevel}
                       component={
                         <Controller
                           name="noiseLevel"
@@ -591,16 +539,16 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               onValueChange={field.onChange}
                             >
                               <ToggleGroupItem value="SILENT">
-                                <VolumeX />
+                                <SmallLabel str={s.noise.SILENT} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="QUIET">
-                                <Volume />
+                                <SmallLabel str={s.noise.QUIET} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="MODERATE">
-                                <Volume1 />
+                                <SmallLabel str={s.noise.MODERATE} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="VIBRANT">
-                                <Volume2 />
+                                <SmallLabel str={s.noise.VIBRANT} />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           )}
@@ -609,12 +557,14 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                     />
                   </section>
 
-                  {/* 消費區塊 */}
+                  {/* 消費 */}
                   <section className="flex flex-col gap-3">
-                    <h1 className="text-lg font-bold mb-2">消費</h1>
+                    <h1 className="text-lg font-bold mb-2">
+                      {f.section.consumption}
+                    </h1>
 
                     <EditItem
-                      title="是否需要預約"
+                      title={f.field.isBookingRequired}
                       component={
                         <Controller
                           name="isBookingRequired"
@@ -635,10 +585,10 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               }
                             >
                               <ToggleGroupItem value="true">
-                                <Check />
+                                <SmallLabel str={t.common.yes} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="false">
-                                <X />
+                                <SmallLabel str={t.common.no} />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           )}
@@ -647,7 +597,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                     />
 
                     <EditItem
-                      title="使用時間限制"
+                      title={f.field.timeLimit}
                       component={
                         <Controller
                           name="timeLimit"
@@ -668,10 +618,10 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               }
                             >
                               <ToggleGroupItem value="false">
-                                <Infinity />
+                                <SmallLabel str={f.timeLimit.unlimited} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="true">
-                                <Clock />
+                                <SmallLabel str={f.timeLimit.limited} />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           )}
@@ -680,7 +630,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                     />
 
                     <EditItem
-                      title="低消限制"
+                      title={f.field.minConsumption}
                       component={
                         <Controller
                           name="minConsumption"
@@ -701,10 +651,10 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               }
                             >
                               <ToggleGroupItem value="true">
-                                <Coffee />
+                                <SmallLabel str={f.minConsumption.required} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="false">
-                                <CircleDollarSign />
+                                <SmallLabel str={f.minConsumption.oneDrink} />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           )}
@@ -713,45 +663,14 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                     />
                   </section>
 
-                  {/* 吸菸區區塊 */}
+                  {/* 吸菸 */}
                   <section className="flex flex-col gap-3">
-                    <h1 className="text-lg font-bold mb-2">吸菸設定</h1>
-
-                    {/* <EditItem
-                      title="是否有吸菸區"
-                      component={
-                        <Controller
-                          name="hasSmokingArea"
-                          control={form.control}
-                          render={({ field }) => (
-                            <ToggleGroup
-                              type="single"
-                              variant="outline"
-                              value={String(field.value)}
-                              onValueChange={val =>
-                                field.onChange(
-                                  val === 'true'
-                                    ? true
-                                    : val === 'false'
-                                      ? false
-                                      : null
-                                )
-                              }
-                            >
-                              <ToggleGroupItem value="true">
-                                <Check />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="false">
-                                <X />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
-                          )}
-                        />
-                      }
-                    /> */}
+                    <h1 className="text-lg font-bold mb-2">
+                      {f.section.smoking}
+                    </h1>
 
                     <EditItem
-                      title="吸菸區類型"
+                      title={f.field.smokingAreaType}
                       component={
                         <Controller
                           name="smokingAreaType"
@@ -764,16 +683,20 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               onValueChange={field.onChange}
                             >
                               <ToggleGroupItem value="NONE">
-                                <Ban />
+                                <SmallLabel str={f.smokingAreaType.NONE} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="INDOOR_TABLE">
-                                <Armchair />
+                                <SmallLabel
+                                  str={f.smokingAreaType.INDOOR_TABLE}
+                                />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="INDOOR_SEPARATED">
-                                <Warehouse />
+                                <SmallLabel
+                                  str={f.smokingAreaType.INDOOR_SEPARATED}
+                                />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="OUTDOOR">
-                                <Tent />
+                                <SmallLabel str={f.smokingAreaType.OUTDOOR} />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           )}
@@ -782,7 +705,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                     />
 
                     <EditItem
-                      title="可吸食種類"
+                      title={f.field.allowCigaretteType}
                       component={
                         <Controller
                           name="allowCigaretteType"
@@ -795,13 +718,13 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                               onValueChange={field.onChange}
                             >
                               <ToggleGroupItem value="TRADITIONAL">
-                                <SmallLabel str="傳統" />
+                                <SmallLabel str={f.cigaretteType.TRADITIONAL} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="ELECTRONIC">
-                                <SmallLabel str="加熱菸" />
+                                <SmallLabel str={f.cigaretteType.ELECTRONIC} />
                               </ToggleGroupItem>
                               <ToggleGroupItem value="VAPE">
-                                <SmallLabel str="電子菸" />
+                                <SmallLabel str={f.cigaretteType.VAPE} />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           )}
@@ -816,7 +739,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                       type="submit"
                       className="w-full"
                     >
-                      送出
+                      {t.common.submit}
                     </Button>
                     <Button
                       type="button"
@@ -824,7 +747,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                       onClick={() => setIsEditing(false)}
                       className="w-full"
                     >
-                      取消
+                      {t.common.cancel}
                     </Button>
                   </div>
                 </form>
@@ -834,7 +757,7 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
         </>
       )}
 
-      <div className=" h-8" />
+      <div className="h-8" />
     </ScrollArea>
   )
 }

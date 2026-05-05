@@ -4,9 +4,9 @@
 import { useAuth } from '@/context/authContext'
 import { Heart, House, LogIn, User } from 'lucide-react'
 import Link from 'next/link'
-import { Button } from './ui/button'
-import { FAVOTITE, HOME, LOGIN, MAP, PROFILE } from '@/constant/router'
-import { cloneElement, ElementType, ReactElement, ReactNode } from 'react'
+import { FAVOTITE, LOGIN, MAP, PROFILE } from '@/constant/router'
+import { cloneElement, ReactElement } from 'react'
+import { useTranslation } from '@/context/languageContext'
 
 const Item = ({
   href,
@@ -22,7 +22,6 @@ const Item = ({
       href={href}
       className="flex flex-col items-center gap-1"
     >
-      {/* 使用 as any 避開屬性檢查 */}
       {cloneElement(icon, {
         className: 'w-5',
       } as any)}
@@ -32,13 +31,14 @@ const Item = ({
 }
 
 const Footer = () => {
+  const { t } = useTranslation() // 初始化翻譯功能
   const { user } = useAuth()
 
   return (
-    <footer className="bg-white shadow-sm z-10 grid grid-cols-3 py-1">
+    <footer className="bg-white shadow-sm z-10 grid grid-cols-3 py-1 h-13">
       <Item
         href={MAP}
-        label="地圖"
+        label={t.common.map}
         icon={<House />}
       />
 
@@ -46,12 +46,12 @@ const Footer = () => {
         <>
           <Item
             href={FAVOTITE}
-            label="最愛"
+            label={t.common.favorite}
             icon={<Heart />}
           />
           <Item
             href={PROFILE}
-            label="我"
+            label={t.common.profile}
             icon={<User />}
           />
         </>
@@ -60,7 +60,7 @@ const Footer = () => {
           <div />
           <Item
             href={LOGIN}
-            label="登入"
+            label={t.common.login}
             icon={<LogIn />}
           />
         </>

@@ -15,31 +15,27 @@ import {
   useState,
 } from 'react'
 import {
-  Book,
   CalendarOffIcon,
   Cigarette,
-  CircleDollarSign,
-  Clock,
   Coffee,
   Heart,
   Infinity,
   Navigation,
   Plug,
-  Scroll,
   Wifi,
 } from 'lucide-react'
 import { getDistance } from '@/lib/utils'
-import { mockCafeShop } from '@public/mockCafeShop'
 import clsx from 'clsx'
 import { Cafe } from '@prisma/client'
 import { defaultLagitude, defaultLongitude } from '@/constant/location'
-import Loading from './loading'
-import { Button } from './ui/button'
-import { Toggle } from './ui/toggle'
-import { ScrollArea, ScrollBar } from './ui/scroll-area'
+import Loading from '@/components/loading'
+import { Button } from '@/components/ui/button'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { useAuth } from '@/context/authContext'
+import { useTranslation } from '@/context/languageContext'
 
-const FETCH_RADIUS = 500 // meters
+const ZOOM_THRESHOLD = 15
+const FETCH_RADIUS = 800 // meters
 const GEOLOCATION_OPTIONS: PositionOptions = {
   enableHighAccuracy: true,
   timeout: 10000,
@@ -73,7 +69,6 @@ const UserLocationDot: React.FC<{ position: Cafe['location'] }> = ({
       position={position}
       mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
     >
-      {/* 修正位移，確保圓心對準座標 */}
       <div className="relative -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
         <div className="h-5 w-5 bg-white rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(0,0,0,0.2)]">
           <div className="h-3.5 w-3.5 bg-[#4285F4] rounded-full border-[0.5px] border-blue-700" />
@@ -88,7 +83,8 @@ const CafeLocationDot: React.FC<{
   onClick?: () => void
   close?: boolean
   fav?: boolean
-}> = ({ position, close = false, fav = false, onClick }) => {
+  ariaLabel: string
+}> = ({ position, close = false, fav = false, onClick, ariaLabel }) => {
   if (!position) return null
 
   return (
@@ -106,7 +102,7 @@ const CafeLocationDot: React.FC<{
             onClick?.()
           }
         }}
-        aria-label={`Cafe location${close ? ' (closed)' : ''}`}
+        aria-label={ariaLabel}
       >
         <div className="flex space-x-8 p-10">
           <div className="relative">
@@ -136,7 +132,7 @@ const CafeLocationDot: React.FC<{
   )
 }
 
-const useGeolocation = () => {
+const useGeolocation = (t: ReturnType<typeof useTranslation>['t']) => {
   const [position, setPosition] = useState<google.maps.LatLngLiteral>({
     lat: defaultLagitude,
     lng: defaultLongitude,
@@ -146,10 +142,10 @@ const useGeolocation = () => {
 
   const handlePosition = useCallback(() => {
     const successHandler = (pos: GeolocationPosition) => {
-      // setPosition({
-      //   lat: pos.coords.latitude,
-      //   lng: pos.coords.longitude,
-      // })
+      setPosition({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      })
       setError('')
       setIsLoading(false)
     }
@@ -168,24 +164,32 @@ const useGeolocation = () => {
     )
   }, [])
 
+  const renewPostion = useCallback(() => {
+    setPosition({
+      lat: position.lat,
+      lng: position.lng,
+    })
+  }, [position.lat, position.lng])
+
   useEffect(() => {
     if (!navigator.geolocation) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setError('Geolocation is not supported by your browser')
+      setError(t.map.error.geolocationNotSupported)
       setIsLoading(false)
       return
     }
 
     handlePosition()
-  }, [handlePosition])
+  }, [handlePosition, t])
 
-  return { position, error, isLoading, handlePosition }
+  return { position, error, isLoading, handlePosition, renewPostion }
 }
 
 const useCafeShops = (
   map: google.maps.Map | null | undefined,
   currentPosition: google.maps.LatLngLiteral,
-  hasGeolocation: boolean
+  hasGeolocation: boolean,
+  errorMessage: string
 ) => {
   const [cafeShops, setCafeShops] = useState<Cafe[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -195,12 +199,10 @@ const useCafeShops = (
 
   const fetchCafeShops = useCallback(
     async (location: google.maps.LatLngLiteral) => {
-      // 取消之前的請求
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
       }
 
-      // 檢查是否需要重新獲取
       if (
         lastFetchPos.current &&
         getDistance(lastFetchPos.current, location) < FETCH_RADIUS
@@ -213,8 +215,37 @@ const useCafeShops = (
       abortControllerRef.current = new AbortController()
 
       try {
-        // 使用 mock 數據（在生產環境中替換為實際的 Google Places API 調用）
-        const formatData = mockCafeShop
+        const { Place } = (await google.maps.importLibrary(
+          'places'
+        )) as google.maps.PlacesLibrary
+        const { places } = await Place.searchNearby({
+          locationRestriction: { center: location, radius: FETCH_RADIUS },
+          includedTypes: ['cafe'],
+          fields: [
+            'id',
+            'location',
+            'displayName',
+            'businessStatus',
+            'formattedAddress',
+            'googleMapsURI',
+            'shortFormattedAddress',
+          ],
+        })
+        lastFetchPos.current = location
+        const formatData = places.map(d => ({
+          id: d.id,
+          googleMapsURI: d.googleMapsURI,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          shortFormattedAddress: (d as any).shortFormattedAddress,
+          displayName: d.displayName,
+          businessStatus: d.businessStatus,
+          formattedAddress: d.formattedAddress,
+          location: {
+            lat: d.location?.lat(),
+            lng: d.location?.lng(),
+          },
+        }))
+        console.log(formatData)
 
         const response = await fetch('/api/cafe/query', {
           method: 'POST',
@@ -224,7 +255,7 @@ const useCafeShops = (
         })
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch cafes: ${response.statusText}`)
+          throw new Error(`${errorMessage}: ${response.statusText}`)
         }
 
         const dbCafes: Cafe[] = await response.json()
@@ -232,16 +263,15 @@ const useCafeShops = (
         lastFetchPos.current = location
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
-          // 請求被取消，不做處理
           return
         }
         console.error('Error fetching cafe shops:', err)
-        setError('Failed to load nearby cafes. Please try again.')
+        setError(errorMessage)
       } finally {
         setIsLoading(false)
       }
     },
-    []
+    [errorMessage]
   )
 
   useEffect(() => {
@@ -249,7 +279,7 @@ const useCafeShops = (
 
     const timer = setTimeout(() => {
       fetchCafeShops(currentPosition)
-    }, 300) // 添加防抖
+    }, 300)
 
     return () => {
       clearTimeout(timer)
@@ -259,7 +289,7 @@ const useCafeShops = (
     }
   }, [map, currentPosition, hasGeolocation, fetchCafeShops])
 
-  return { cafeShops, isLoading, error, refetch: fetchCafeShops }
+  return { cafeShops, isLoading, error, fetchCafeShops }
 }
 
 const Map: React.FC<{
@@ -271,6 +301,7 @@ const Map: React.FC<{
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries: ['places'],
   })
+  const { t } = useTranslation()
 
   const { user } = useAuth()
   const favList = useMemo(
@@ -290,14 +321,19 @@ const Map: React.FC<{
     position: userPosition,
     error: geoError,
     isLoading: isGeoLoading,
-    handlePosition,
-  } = useGeolocation()
+    renewPostion,
+  } = useGeolocation(t)
 
   const {
     cafeShops,
-    isLoading: isCafesLoading,
     error: cafesError,
-  } = useCafeShops(map, userPosition, !isGeoLoading)
+    fetchCafeShops,
+  } = useCafeShops(
+    map,
+    userPosition,
+    !isGeoLoading,
+    t.map.error.fetchCafesFailed
+  )
 
   const handleMapLoad = useCallback((mapInstance: google.maps.Map) => {
     setMap(mapInstance)
@@ -327,13 +363,13 @@ const Map: React.FC<{
           const data = await response.json()
           setShopInfo(data)
         } else {
-          console.error('Failed to fetch shop info:', response.statusText)
+          console.error(t.map.error.fetchShopInfoFailed, response.statusText)
         }
       } catch (error) {
-        console.error('Error fetching shop info:', error)
+        console.error(t.map.error.fetchShopInfoFailed, error)
       }
     },
-    [setShopInfo]
+    [setShopInfo, t]
   )
 
   const cafeMarkers = useMemo(() => {
@@ -362,17 +398,20 @@ const Map: React.FC<{
         return false
       })
       .map(shop => {
+        const isClosed = shop.businessStatus !== 'OPERATIONAL'
+        const ariaLabel = `${t.map.aria.cafeLocation}${isClosed ? t.map.aria.closed : ''}`
         return (
           <CafeLocationDot
             key={shop.id}
             onClick={() => clickMapDot(shop)}
             position={shop.location!}
-            close={shop.businessStatus !== 'OPERATIONAL'}
+            close={isClosed}
             fav={favList && favList[shop.id]}
+            ariaLabel={ariaLabel}
           />
         )
       })
-  }, [cafeShops, clickMapDot, favList, filters])
+  }, [cafeShops, clickMapDot, favList, filters, t])
 
   const filterList: {
     key: keyof typeof initialFilters
@@ -382,35 +421,54 @@ const Map: React.FC<{
     {
       key: 'hasSmokingArea',
       icon: <Cigarette />,
-      label: '吸菸室',
+      label: t.map.filter.smokingArea,
     },
-    {
-      key: 'hasWifi',
-      icon: <Wifi />,
-      label: 'WIFI',
-    },
+    { key: 'hasWifi', icon: <Wifi />, label: t.map.filter.wifi },
     {
       key: 'hasPowerOutlets',
       icon: <Plug />,
-      label: '插座',
+      label: t.map.filter.powerOutlets,
     },
-
-    {
-      key: 'timeLimit',
-      icon: <Infinity />,
-      label: '無時限',
-    },
+    { key: 'timeLimit', icon: <Infinity />, label: t.map.filter.timeLimit },
     {
       key: 'isBookingRequired',
       icon: <CalendarOffIcon />,
-      label: '無預約',
+      label: t.map.filter.noBookingRequired,
     },
     {
       key: 'minConsumption',
       icon: <Coffee />,
-      label: '一杯飲料',
+      label: t.map.filter.minConsumption,
     },
   ]
+
+  const [hasGetCafes, setHasGetCafes] = useState(false)
+  const [isOutOfView, setIsOutOfView] = useState(false)
+  const checkPositionInView = useCallback(() => {
+    if (!map || !userPosition) return
+    setHasGetCafes(false)
+    const currentZoom = map.getZoom() || 0
+    const bounds = map.getBounds()
+    if (!bounds) return
+
+    if (currentZoom < ZOOM_THRESHOLD) {
+      setIsOutOfView(false)
+    } else if (bounds) {
+      const inView = bounds.contains(userPosition)
+      setIsOutOfView(!inView)
+    }
+  }, [map, userPosition])
+
+  const getCurrentCenterCafes = useCallback(async () => {
+    if (!map) return
+
+    const center = map.getCenter()
+
+    if (!!center?.lat && !!center?.lng) {
+      await fetchCafeShops({ lat: center.lat(), lng: center.lng() })
+      setHasGetCafes(true)
+    }
+  }, [map, fetchCafeShops])
 
   if (!isLoaded) return <Loading />
 
@@ -439,14 +497,26 @@ const Map: React.FC<{
             className="hidden"
           />
         </ScrollArea>
+
+        {isOutOfView && !isGeoLoading && !hasGetCafes && (
+          <div className="w-screen flex justify-center">
+            <Button
+              variant="outline"
+              onClick={() => getCurrentCenterCafes()}
+            >
+              {t.map.button.searchThisArea}
+            </Button>
+          </div>
+        )}
       </nav>
 
-      <section className=" absolute bottom-0 right-0 z-10 p-2">
+      <section className="absolute bottom-0 right-0 z-10 p-2">
         <Button
           variant="outline"
           size="icon-lg"
-          className="rounded-full "
-          onClick={() => handlePosition()}
+          className="rounded-full"
+          onClick={() => renewPostion()}
+          aria-label={t.map.button.relocate}
         >
           <Navigation />
         </Button>
@@ -458,12 +528,13 @@ const Map: React.FC<{
         mapContainerStyle={{ width: '100%', height: '100%' }}
         zoom={15}
         options={MAP_OPTIONS}
+        onDragEnd={checkPositionInView}
+        onZoomChanged={checkPositionInView}
       >
         {!isGeoLoading && <UserLocationDot position={userPosition} />}
         {cafeMarkers}
       </GoogleMap>
 
-      {/* 錯誤提示 */}
       {(geoError || cafesError) && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-10 max-w-md text-center">
           {geoError || cafesError}

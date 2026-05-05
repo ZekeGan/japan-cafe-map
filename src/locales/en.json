@@ -1,0 +1,210 @@
+{
+  "common": {
+    "noData": "No data",
+    "yes": "Yes",
+    "no": "No",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "map": "Map",
+    "favorite": "Favorite",
+    "profile": "Profile",
+    "login": "Login",
+    "loading": "Loading..."
+  },
+  "map": {
+    "filter": {
+      "smokingArea": "Smoking Area",
+      "wifi": "Wi-Fi",
+      "powerOutlets": "Outlets",
+      "timeLimit": "No Time Limit",
+      "noBookingRequired": "No Booking",
+      "minConsumption": "One Drink"
+    },
+    "error": {
+      "geolocationNotSupported": "Geolocation is not supported by your browser",
+      "fetchCafesFailed": "Failed to load nearby cafes. Please try again.",
+      "fetchShopInfoFailed": "Failed to fetch shop info"
+    },
+    "aria": {
+      "cafeLocation": "Cafe location",
+      "closed": "(closed)"
+    },
+    "button": {
+      "searchThisArea": "Search This Area",
+      "relocate": "Relocate"
+    }
+  },
+  "shopInfo": {
+    "error": {
+      "toggleFavoriteFailed": "Operation failed"
+    },
+    "button": {
+      "editInfo": "Help edit shop info"
+    },
+    "wifi": {
+      "available": "Wi-Fi available",
+      "unavailable": "No Wi-Fi"
+    },
+    "outlet": {
+      "EVERY": "Outlets at every seat",
+      "MOST": "Outlets at most seats",
+      "SOME": "Outlets at some seats",
+      "NONE": "No outlets"
+    },
+    "seat": {
+      "MINIMAL": "1-5 seats",
+      "LIMITED": "6-15 seats",
+      "STANDARD": "16-30 seats",
+      "GENEROUS": "31+ seats"
+    },
+    "noise": {
+      "label": "Noise Level",
+      "SILENT": "Silent",
+      "QUIET": "Quiet",
+      "MODERATE": "Moderate",
+      "VIBRANT": "Loud"
+    },
+    "minConsumption": {
+      "required": "Package purchase required",
+      "oneDrink": "One drink minimum"
+    },
+    "timeLimit": {
+      "unlimited": "No time limit",
+      "limited": "Time limited"
+    },
+    "booking": {
+      "required": "Booking required",
+      "notRequired": "No booking required"
+    },
+    "smoking": {
+      "INDOOR_SEPARATED": "Designated indoor smoking area",
+      "INDOOR_TABLE": "Smoking at table",
+      "OUTDOOR": "Outdoor smoking allowed",
+      "NONE": "No smoking"
+    },
+    "cigaretteType": {
+      "TRADITIONAL": "Cigarettes",
+      "ELECTRONIC": "Heated tobacco",
+      "VAPE": "Vape",
+      "OTHER": "Other"
+    },
+    "businessStatus": {
+      "OPERATIONAL": "Operational",
+      "CLOSED_TEMPORARILY": "Closed Temporarily",
+      "CLOSED_PERMANENTLY": "Closed Permanently"
+    },
+    "form": {
+      "section": {
+        "facility": "Facilities",
+        "environment": "Environment",
+        "consumption": "Consumption",
+        "smoking": "Smoking"
+      },
+      "field": {
+        "hasWifi": "Wi-Fi available",
+        "outletCoverage": "Outlet coverage",
+        "seatCapacity": "Seat capacity",
+        "noiseLevel": "Noise level",
+        "isBookingRequired": "Booking required",
+        "timeLimit": "Time limit",
+        "minConsumption": "Minimum consumption",
+        "smokingAreaType": "Smoking area type",
+        "allowCigaretteType": "Allowed tobacco types"
+      },
+      "outlet": {
+        "NONE": "None",
+        "SOME": "Some",
+        "MOST": "Most",
+        "EVERY": "All"
+      },
+      "timeLimit": {
+        "unlimited": "Unlimited",
+        "limited": "Limited"
+      },
+      "minConsumption": {
+        "required": "Package required",
+        "oneDrink": "One drink only"
+      },
+      "smokingAreaType": {
+        "NONE": "No smoking",
+        "INDOOR_TABLE": "At table",
+        "INDOOR_SEPARATED": "Indoor zone",
+        "OUTDOOR": "Outdoor"
+      },
+      "cigaretteType": {
+        "TRADITIONAL": "Traditional",
+        "ELECTRONIC": "Heated tobacco",
+        "VAPE": "Vape"
+      }
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "usernameLabel": "Username",
+    "defaultName": "Name not set",
+    "emailLabel": "Email",
+    "logout": "Log Out"
+  },
+  "auth": {
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "emailPlaceholder": "Please enter your email address",
+      "successMessage": "Reset link has been sent to your inbox",
+      "errorMessage": "An error occurred, please try again later"
+    },
+    "login": {
+      "title": "Welcome Back",
+      "email": "Email",
+      "password": "Password",
+      "forgotPassword": "Forgot Password?",
+      "submitting": "Logging in...",
+      "noAccount": "Don't have an account?",
+      "registerNow": "Register Now",
+      "error": {
+        "invalid": "Invalid email or password, please try again",
+        "system": "System connection error, please try again later",
+        "failed": "Login failed"
+      }
+    },
+    "register": {
+      "title": "Create an Account",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "checking": "Checking...",
+      "backToLogin": "Back to Login",
+      "success": "Registration successful!",
+      "error": {
+        "emailExists": "This email is already registered. Please login or use another account.",
+        "system": "System error"
+      }
+    },
+    "resetPassword": {
+      "title": "Set New Password",
+      "passwordPlaceholder": "Enter new password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "success": "Password reset successful, redirecting to login...",
+      "error": "Link expired or invalid"
+    },
+    "passwordRule": {
+      "title": "Password Requirements:",
+      "length": "At least 8 characters",
+      "complexity": "Include uppercase, lowercase letters and numbers"
+    }
+  },
+  "favorite": {
+    "title": "Favorites",
+    "wifi": "Wi-Fi",
+    "smoking": "Smoking Area",
+    "outlet": "Outlets",
+    "noData": "No favorite cafes yet"
+  },
+  "error": {
+    "notFound": {
+      "title": "404",
+      "description": "Oops! Page not found...",
+      "backHome": "Back to Home",
+      "goMap": "Go to Map"
+    }
+  }
+}

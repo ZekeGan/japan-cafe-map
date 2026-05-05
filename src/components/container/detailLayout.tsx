@@ -23,9 +23,10 @@ const DetailLayout = ({
         </Button>
       </section>
 
-      <section className="flex-1">{children}</section>
+      <section className="flex-1 ">{children}</section>
 
-      <section className="fixed bottom-0 left-0 w-full">
+      <div className="min-h-14" />
+      <section className="fixed bottom-0 left-0 w-screen">
         <Footer />
       </section>
     </main>

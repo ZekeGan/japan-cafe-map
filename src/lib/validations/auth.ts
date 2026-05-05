@@ -25,3 +25,26 @@ export const loginSchema = z.object({
   password: z.string().min(1, { message: '請輸入密碼' }),
 })
 export type LoginInput = z.infer<typeof loginSchema>
+
+// 3. 忘記密碼用 (與重設密碼相同)
+export const forgotPasswordSchema = z.object({
+  email: z.string().email({ message: '請輸入有效的電子郵件' }),
+})
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
+
+// reset password
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, { message: '密碼至少需 8 個字元' })
+      .regex(/[A-Z]/, { message: '需包含大寫字母' })
+      .regex(/[a-z]/, { message: '需包含小寫字母' })
+      .regex(/[0-9!@#$%^&*]/, { message: '需包含數字或特殊符號' }),
+    confirmPassword: z.string(),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: '密碼不一致',
+    path: ['confirmPassword'],
+  })
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
