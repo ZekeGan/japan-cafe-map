@@ -1,0 +1,210 @@
+{
+  "common": {
+    "noData": "データがありません",
+    "yes": "はい",
+    "no": "いいえ",
+    "submit": "送信",
+    "cancel": "キャンセル",
+    "map": "マップ",
+    "favorite": "お気に入り",
+    "profile": "プロフィール",
+    "login": "ログイン",
+    "loading": "読み込み中..."
+  },
+  "map": {
+    "filter": {
+      "smokingArea": "喫煙所あり",
+      "wifi": "Wi-Fiあり",
+      "powerOutlets": "コンセントあり",
+      "timeLimit": "時間制限なし",
+      "noBookingRequired": "予約不要",
+      "minConsumption": "ワンドリンク制"
+    },
+    "error": {
+      "geolocationNotSupported": "お使いのブラウザは位置情報をサポートしていません",
+      "fetchCafesFailed": "周辺のカフェ情報の取得に失敗しました。後でもう一度お試しください",
+      "fetchShopInfoFailed": "店舗情報の取得に失敗しました"
+    },
+    "aria": {
+      "cafeLocation": "カフェの場所",
+      "closed": "（閉店）"
+    },
+    "button": {
+      "searchThisArea": "このエリアを検索",
+      "relocate": "現在地を取得"
+    }
+  },
+  "shopInfo": {
+    "error": {
+      "toggleFavoriteFailed": "操作に失敗しました"
+    },
+    "button": {
+      "editInfo": "店舗情報の編集を助ける"
+    },
+    "wifi": {
+      "available": "Wi-Fiあり",
+      "unavailable": "Wi-Fiなし"
+    },
+    "outlet": {
+      "EVERY": "全席にコンセントあり",
+      "MOST": "ほとんどの席にコンセントあり",
+      "SOME": "一部の席にコンセントあり",
+      "NONE": "コンセントなし"
+    },
+    "seat": {
+      "MINIMAL": "1-5 席",
+      "LIMITED": "6-15 席",
+      "STANDARD": "16-30 席",
+      "GENEROUS": "31+ 席"
+    },
+    "noise": {
+      "label": "騒音レベル",
+      "SILENT": "非常に静か",
+      "QUIET": "静か",
+      "MODERATE": "普通",
+      "VIBRANT": "賑やか"
+    },
+    "minConsumption": {
+      "required": "セットメニューの注文が必要",
+      "oneDrink": "ワンドリンクでOK"
+    },
+    "timeLimit": {
+      "unlimited": "制限なし",
+      "limited": "制限あり"
+    },
+    "booking": {
+      "required": "要予約",
+      "notRequired": "予約不要"
+    },
+    "smoking": {
+      "INDOOR_SEPARATED": "分煙（喫煙専用室あり）",
+      "INDOOR_TABLE": "全席喫煙可",
+      "OUTDOOR": "テラス席のみ可",
+      "NONE": "全席禁煙"
+    },
+    "cigaretteType": {
+      "TRADITIONAL": "紙巻きタバコ",
+      "ELECTRONIC": "加熱式タバコ",
+      "VAPE": "電子タバコ",
+      "OTHER": "その他"
+    },
+    "businessStatus": {
+      "OPERATIONAL": "営業中",
+      "CLOSED_TEMPORARILY": "一時休業中",
+      "CLOSED_PERMANENTLY": "廃業"
+    },
+    "form": {
+      "section": {
+        "facility": "設備",
+        "environment": "環境",
+        "consumption": "利用条件",
+        "smoking": "喫煙情報"
+      },
+      "field": {
+        "hasWifi": "Wi-Fiの有無",
+        "outletCoverage": "コンセント設置率",
+        "seatCapacity": "座席数",
+        "noiseLevel": "騒音レベル",
+        "isBookingRequired": "予約の要否",
+        "timeLimit": "利用時間制限",
+        "minConsumption": "最低注文条件",
+        "smokingAreaType": "喫煙エリアのタイプ",
+        "allowCigaretteType": "利用可能なタバコの種類"
+      },
+      "outlet": {
+        "NONE": "なし",
+        "SOME": "少なめ",
+        "MOST": "多め",
+        "EVERY": "全席"
+      },
+      "timeLimit": {
+        "unlimited": "制限なし",
+        "limited": "制限あり"
+      },
+      "minConsumption": {
+        "required": "セット注文",
+        "oneDrink": "ワンドリンク"
+      },
+      "smokingAreaType": {
+        "NONE": "禁煙",
+        "INDOOR_TABLE": "喫煙可",
+        "INDOOR_SEPARATED": "喫煙専用室",
+        "OUTDOOR": "屋外のみ"
+      },
+      "cigaretteType": {
+        "TRADITIONAL": "紙巻き",
+        "ELECTRONIC": "加熱式",
+        "VAPE": "電子タバコ"
+      }
+    }
+  },
+  "profile": {
+    "title": "プロフィール",
+    "usernameLabel": "ユーザー名",
+    "defaultName": "名前未設定",
+    "emailLabel": "メールアドレス",
+    "logout": "ログアウト"
+  },
+  "auth": {
+    "forgotPassword": {
+      "title": "パスワードをお忘れの方",
+      "emailPlaceholder": "メールアドレスを入力してください",
+      "successMessage": "リセット用のリンクをメールで送信しました",
+      "errorMessage": "エラーが発生しました。後でもう一度お試しください"
+    },
+    "login": {
+      "title": "おかえりなさい",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "forgotPassword": "パスワードをお忘れですか？",
+      "submitting": "ログイン中...",
+      "noAccount": "アカウントをお持ちでないですか？",
+      "registerNow": "今すぐ登録",
+      "error": {
+        "invalid": "メールアドレスまたはパスワードが正しくありません",
+        "system": "システム接続エラーが発生しました。後でお試しください",
+        "failed": "ログインに失敗しました"
+      }
+    },
+    "register": {
+      "title": "新規アカウント作成",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "confirmPassword": "パスワード（確認用）",
+      "checking": "確認中...",
+      "backToLogin": "ログインに戻る",
+      "success": "登録が完了しました！",
+      "error": {
+        "emailExists": "このメールアドレスは既に登録されています",
+        "system": "システムエラーが発生しました"
+      }
+    },
+    "resetPassword": {
+      "title": "新しいパスワードの設定",
+      "passwordPlaceholder": "新しいパスワードを入力",
+      "confirmPasswordPlaceholder": "もう一度入力してください",
+      "success": "パスワードをリセットしました。ログイン画面に戻ります...",
+      "error": "リンクが無効か、期限が切れています"
+    },
+    "passwordRule": {
+      "title": "パスワード設定ルール：",
+      "length": "8文字以上",
+      "complexity": "英大文字、小文字、数字を組み合わせる"
+    }
+  },
+  "favorite": {
+    "title": "お気に入りリスト",
+    "wifi": "Wi-Fiあり",
+    "smoking": "喫煙所あり",
+    "outlet": "コンセントあり",
+    "noData": "お気に入りのカフェはまだありません"
+  },
+  "error": {
+    "notFound": {
+      "title": "404",
+      "description": "お探しのページは見つかりませんでした...",
+      "backHome": "ホームに戻る",
+      "goMap": "マップに戻る"
+    }
+  }
+}

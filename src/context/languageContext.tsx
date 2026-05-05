@@ -3,13 +3,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import zh from '../locales/zh.json'
 import en from '../locales/en.json'
+import ja from '../locales/ja.json'
 
-const translations = { zh, en }
-type Locale = 'zh' | 'en'
+const translations = { zh, en, ja }
+type Locale = 'zh' | 'en' | 'ja'
 
 const LanguageContext = createContext({
-  locale: 'zh' as Locale,
-  t: zh,
+  locale: 'en' as Locale,
+  t: en,
   setLocale: (_l: Locale) => {},
 })
 
@@ -18,7 +19,7 @@ export const LanguageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const [locale, setLocale] = useState<Locale>('zh')
+  const [locale, setLocale] = useState<Locale>('en')
 
   useEffect(() => {
     const saved = localStorage.getItem('lang') as Locale
@@ -30,6 +31,8 @@ export const LanguageProvider = ({
 
     // 依序嘗試 navigator.languages（完整清單）或 navigator.language（單一值）
     const preferred = [...(navigator.languages ?? []), navigator.language]
+    console.log(preferred)
+
     for (const lang of preferred) {
       const code = lang?.split('-')[0] as Locale
       if (code in translations) {
@@ -38,7 +41,6 @@ export const LanguageProvider = ({
         return
       }
     }
-    // 全部不符合則維持預設 'zh'
   }, [])
 
   const changeLocale = (l: Locale) => {
