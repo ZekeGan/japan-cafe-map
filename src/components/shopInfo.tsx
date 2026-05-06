@@ -1,7 +1,7 @@
 'use client'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Cafe } from '@prisma/client'
+import type { Cafe } from '@prisma/client'
 import {
   Armchair,
   Calendar,
