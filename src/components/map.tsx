@@ -447,12 +447,8 @@ const Map: React.FC<{
     const bounds = map.getBounds()
     if (!bounds) return
 
-    if (currentZoom < ZOOM_THRESHOLD) {
-      setIsOutOfView(false)
-    } else if (bounds) {
-      const inView = bounds.contains(userPosition)
-      setIsOutOfView(!inView)
-    }
+    if (currentZoom < ZOOM_THRESHOLD) setIsOutOfView(false)
+    else setIsOutOfView(true)
   }, [map, userPosition])
 
   const getCurrentCenterCafes = useCallback(async () => {
@@ -505,7 +501,6 @@ const Map: React.FC<{
           </ScrollArea>
 
           <div className="w-screen flex justify-center px-4">
-            {/* <div /> */}
             {isOutOfView && !isGeoLoading && !hasGetCafes && (
               <Button
                 variant="outline"
