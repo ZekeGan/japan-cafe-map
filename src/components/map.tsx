@@ -289,7 +289,7 @@ const useCafeShops = (
 }
 
 const Map: React.FC<{
-  setShopInfo: (shopInfo: Cafe) => void
+  setShopInfo: (shopInfo: CafeWithReports) => void
 }> = ({ setShopInfo }) => {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map',

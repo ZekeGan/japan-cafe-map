@@ -1,7 +1,6 @@
 'use client'
 
 import { Favorite, Report, User } from '@prisma/client'
-import { warn } from 'console'
 import {
   createContext,
   useContext,
@@ -38,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null)
       }
     } catch (err) {
-      warn('Failed to fetch user data:', err)
+      console.warn('Failed to fetch user data:', err)
       setUser(null)
     } finally {
       setIsLoading(false)

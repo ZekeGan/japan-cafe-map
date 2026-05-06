@@ -300,11 +300,7 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
   )
 }
 
-const ShopInfo = ({
-  shopInfo,
-}: {
-  shopInfo: (Cafe & { _count: { reports: number } }) | null
-}) => {
+const ShopInfo = ({ shopInfo }: { shopInfo: CafeWithReports | null }) => {
   const { user, refreshUser } = useAuth()
   const { t } = useTranslation()
   const s = t.shopInfo

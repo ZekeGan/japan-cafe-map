@@ -3,12 +3,11 @@
 import Map from '@/components/map'
 import ShopInfo from '@/components/shopInfo'
 import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer'
-import { Cafe } from '@prisma/client'
 import { VisuallyHidden } from 'radix-ui'
 import { useState } from 'react'
 
 export default function Page() {
-  const [shopInfo, setShopInfo] = useState<Cafe | null>(null)
+  const [shopInfo, setShopInfo] = useState<CafeWithReports | null>(null)
 
   return (
     <main className="flex h-screen flex-col">
