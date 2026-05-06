@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CafeStatsAggregator } from '@/lib/cafeStats'
 import prisma from '@/lib/db'
 import { NextResponse } from 'next/server'
@@ -47,8 +46,7 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({ message: '成功', data: result }, { status: 201 })
-  } catch (error) {
-    console.error('API Error:', error)
+  } catch {
     return NextResponse.json({ error: '伺服器內部錯誤' }, { status: 500 })
   }
 }

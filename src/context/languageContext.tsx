@@ -6,6 +6,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 const LanguageContext = createContext({
   locale: 'en' as Locale,
   t: translations.en,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setLocale: (_l: Locale) => {},
 })
 

@@ -35,6 +35,9 @@
     }
   },
   "shopInfo": {
+    "report": {
+      "report_count": "{count} people have reported"
+    },
     "error": {
       "toggleFavoriteFailed": "Operation failed"
     },

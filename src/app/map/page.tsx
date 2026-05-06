@@ -1,6 +1,5 @@
 'use client'
 
-import Footer from '@/components/footer'
 import Map from '@/components/map'
 import ShopInfo from '@/components/shopInfo'
 import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer'

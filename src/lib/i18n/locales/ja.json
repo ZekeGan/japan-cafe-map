@@ -35,6 +35,9 @@
     }
   },
   "shopInfo": {
+    "report": {
+      "report_count": "{count} 人が報告しています"
+    },
     "error": {
       "toggleFavoriteFailed": "操作に失敗しました"
     },

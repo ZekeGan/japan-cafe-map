@@ -14,6 +14,11 @@ export async function GET(
       where: {
         id,
       },
+      include: {
+        _count: {
+          select: { reports: true }, // 這裡的 reports 對應 Cafe model 中的欄位名
+        },
+      },
     })
 
     if (!cafe) {

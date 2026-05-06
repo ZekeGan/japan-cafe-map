@@ -12,7 +12,7 @@ export async function POST() {
     })
 
     return NextResponse.json({ message: '登出成功' }, { status: 200 })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: '登出失敗' }, { status: 500 })
   }
 }

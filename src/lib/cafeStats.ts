@@ -6,7 +6,7 @@ export class CafeStatsAggregator {
   private minValid: number
   private total: number
 
-  constructor(reports: Report[], minValid = 2) {
+  constructor(reports: Report[], minValid = 1) {
     this.reports = reports
     this.minValid = minValid
     this.total = reports.length

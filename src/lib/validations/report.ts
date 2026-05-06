@@ -2,7 +2,6 @@ import {
   CigaratteType,
   NoiseLevel,
   OutletCoverage,
-  Report,
   SeatCapacity,
   SmokingAreaType,
 } from '@prisma/client'

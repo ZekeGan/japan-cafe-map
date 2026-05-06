@@ -300,11 +300,16 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
   )
 }
 
-const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
+const ShopInfo = ({
+  shopInfo,
+}: {
+  shopInfo: (Cafe & { _count: { reports: number } }) | null
+}) => {
   const { user, refreshUser } = useAuth()
   const { t } = useTranslation()
   const s = t.shopInfo
   const f = s.form
+  console.log(shopInfo)
 
   const hasUser = Boolean(user?.id)
   const hasReported =
@@ -426,6 +431,15 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
       {shopInfo && (
         <>
           <Divider />
+          <div className="p-4 pb-0">
+            <Badge variant="outline">
+              {t.shopInfo.report.report_count.replace(
+                '{count}',
+                String(shopInfo._count.reports)
+              )}
+            </Badge>
+          </div>
+
           <ShopDetail shopInfo={shopInfo} />
         </>
       )}

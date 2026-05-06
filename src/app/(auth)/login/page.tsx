@@ -53,7 +53,7 @@ export default function LoginPage() {
 
       await refreshUser()
       router.push(MAP)
-    } catch (err) {
+    } catch {
       setError('root', { message: t.auth.login.error.system })
     }
   }

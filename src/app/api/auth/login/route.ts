@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     })
 
     return response
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: '伺服器錯誤' }, { status: 500 })
   }
 }
