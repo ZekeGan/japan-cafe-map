@@ -1,21 +1,22 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import bcrypt from 'bcryptjs'
 
 export async function POST(
-  req: Request,
-  { params }: { params: { token: string } }
+  req: NextRequest,
+  context: { params: Promise<{ token: string }> } // params 必須定義為 Promise
 ) {
   try {
-    const { token } = params
+    // 1. 必須先 await 才能解構 params
+    const { token } = await context.params
     const { password } = await req.json()
 
-    // 1. 尋找權杖符合且尚未過期的用戶
+    // 2. 尋找權杖符合且尚未過期的用戶
     const user = await prisma.user.findFirst({
       where: {
         resetPasswordToken: token,
         resetPasswordExpires: {
-          gt: new Date(), // 必須大於當前時間
+          gt: new Date(),
         },
       },
     })
@@ -27,10 +28,10 @@ export async function POST(
       )
     }
 
-    // 2. 加密新密碼
+    // 3. 加密新密碼
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // 3. 更新密碼並清空重設相關欄位
+    // 4. 更新密碼並清空重設相關欄位
     await prisma.user.update({
       where: { id: user.id },
       data: {
