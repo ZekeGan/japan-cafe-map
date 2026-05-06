@@ -206,5 +206,11 @@
       "backHome": "Back to Home",
       "goMap": "Go to Map"
     }
+  },
+  "mail": {
+    "resetPassword": {
+      "subject": "Reset Your Password",
+      "body": "Click the link below to reset your password:"
+    }
   }
 }

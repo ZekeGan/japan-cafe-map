@@ -1,10 +1,7 @@
 import DetailLayout from '@/components/container/detailLayout'
 import ShopInfo from '@/components/shopInfo'
-import { Button } from '@/components/ui/button'
-import { MAP } from '@/constant/router'
 import prisma from '@/lib/db'
-import { ArrowLeftFromLine, ChevronLeft, MoveLeft } from 'lucide-react'
-import Link from 'next/link'
+
 import { notFound } from 'next/navigation'
 
 export default async function CafePage({
@@ -27,7 +24,7 @@ export default async function CafePage({
   }
 
   return (
-    <DetailLayout href={MAP}>
+    <DetailLayout>
       <ShopInfo shopInfo={data} />
     </DetailLayout>
   )

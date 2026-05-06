@@ -33,6 +33,8 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { useAuth } from '@/context/authContext'
 import { useTranslation } from '@/context/languageContext'
+import { toast } from 'sonner'
+import Footer from './footer'
 
 const ZOOM_THRESHOLD = 15
 const FETCH_RADIUS = 800 // meters
@@ -47,6 +49,7 @@ const MAP_OPTIONS: google.maps.MapOptions = {
   mapTypeControl: false,
   fullscreenControl: false,
   clickableIcons: false,
+  gestureHandling: 'greedy',
   styles: [
     {
       featureType: 'poi',
@@ -84,7 +87,7 @@ const CafeLocationDot: React.FC<{
   close?: boolean
   fav?: boolean
   ariaLabel: string
-}> = ({ position, close = false, fav = false, onClick, ariaLabel }) => {
+}> = ({ position, close = false, fav = false, onClick }) => {
   if (!position) return null
 
   return (
@@ -92,42 +95,35 @@ const CafeLocationDot: React.FC<{
       position={position}
       mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
     >
-      <div
+      <button
         onClick={onClick}
-        className="relative -translate-x-1/2 -translate-y-1/2 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
-        role="button"
-        tabIndex={0}
-        onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            onClick?.()
-          }
-        }}
-        aria-label={ariaLabel}
+        className="relative -translate-x-1/2 -translate-y-1/2 cursor-pointer "
       >
-        <div className="flex space-x-8 p-10">
-          <div className="relative">
-            <div
-              className={clsx(
-                close ? 'bg-gray-500' : fav ? 'bg-red-500' : 'bg-yellow-600',
-                'w-5 h-5 p-0.5 rounded-full rounded-bl-none -rotate-45 flex items-center justify-center shadow-md'
-              )}
-            >
-              {fav ? (
-                <Heart
-                  className="rotate-45 text-white"
-                  size={16}
-                />
-              ) : (
-                <Coffee
-                  className="rotate-45 text-white"
-                  size={16}
-                />
-              )}
-            </div>
-            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-1 bg-gray-700 rounded-[100%] blur-[1px]" />
-          </div>
+        <div
+          className={clsx(
+            'bg-white rounded-full rounded-bl-none -rotate-45 flex items-center justify-center shadow-sm'
+          )}
+        >
+          <span
+            className={clsx(
+              close ? 'bg-gray-500' : fav ? 'bg-rose-500' : 'bg-amber-900',
+              'w-6 h-6 rounded-full flex items-center justify-center m-0.5'
+            )}
+          >
+            {fav ? (
+              <Heart
+                className="rotate-45 text-white fill-white"
+                size={16}
+              />
+            ) : (
+              <Coffee
+                className="rotate-45 text-white ml-px mt-px "
+                size={16}
+              />
+            )}
+          </span>
         </div>
-      </div>
+      </button>
     </OverlayViewF>
   )
 }
@@ -151,7 +147,7 @@ const useGeolocation = (t: ReturnType<typeof useTranslation>['t']) => {
     }
 
     const errorHandler = (err: GeolocationPositionError) => {
-      setError(err.message)
+      toast.info(err.message, { position: 'top-right' })
       setIsLoading(false)
     }
 
@@ -470,77 +466,84 @@ const Map: React.FC<{
     }
   }, [map, fetchCafeShops])
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (geoError || cafesError) {
+        toast.info(geoError || cafesError, { position: 'top-right' })
+      }
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [cafesError, geoError])
+
   if (!isLoaded) return <Loading />
 
   return (
-    <main className="relative w-full h-full">
-      <nav className="absolute left-0 top-0 z-10">
-        <ScrollArea className="w-screen whitespace-nowrap">
-          <div className="flex gap-1 p-4">
-            {filterList.map(d => (
+    <>
+      <main className="relative w-full h-full">
+        <nav className="absolute left-0 top-0 z-10">
+          <ScrollArea className="w-screen whitespace-nowrap">
+            <div className="flex gap-1 p-4">
+              {filterList.map(d => (
+                <Button
+                  key={d.key}
+                  variant="ghost"
+                  className={clsx(
+                    'rounded-full transition active:scale-95',
+                    filters[d.key] ? 'bg-gray-200!' : 'bg-white!'
+                  )}
+                  onClick={() => toggleFilter(d.key)}
+                >
+                  {d.icon}
+                  <span>{d.label}</span>
+                </Button>
+              ))}
+            </div>
+            <ScrollBar
+              orientation="horizontal"
+              className="hidden"
+            />
+          </ScrollArea>
+
+          <div className="w-screen flex justify-center px-4">
+            {/* <div /> */}
+            {isOutOfView && !isGeoLoading && !hasGetCafes && (
               <Button
-                key={d.key}
                 variant="outline"
-                className={clsx(
-                  'rounded-full',
-                  filters[d.key] && 'bg-gray-300'
-                )}
-                onClick={() => toggleFilter(d.key)}
+                onClick={() => getCurrentCenterCafes()}
               >
-                {d.icon}
-                <span>{d.label}</span>
+                {t.map.button.searchThisArea}
               </Button>
-            ))}
+            )}
           </div>
-          <ScrollBar
-            orientation="horizontal"
-            className="hidden"
-          />
-        </ScrollArea>
+        </nav>
 
-        {isOutOfView && !isGeoLoading && !hasGetCafes && (
-          <div className="w-screen flex justify-center">
-            <Button
-              variant="outline"
-              onClick={() => getCurrentCenterCafes()}
-            >
-              {t.map.button.searchThisArea}
-            </Button>
-          </div>
-        )}
-      </nav>
-
-      <section className="absolute bottom-0 right-0 z-10 p-2">
-        <Button
-          variant="outline"
-          size="icon-lg"
-          className="rounded-full"
-          onClick={() => renewPostion()}
-          aria-label={t.map.button.relocate}
+        <GoogleMap
+          onLoad={handleMapLoad}
+          center={userPosition}
+          mapContainerStyle={{ width: '100%', height: '100%' }}
+          zoom={15}
+          options={MAP_OPTIONS}
+          onDragEnd={checkPositionInView}
+          onZoomChanged={checkPositionInView}
         >
-          <Navigation />
-        </Button>
-      </section>
-
-      <GoogleMap
-        onLoad={handleMapLoad}
-        center={userPosition}
-        mapContainerStyle={{ width: '100%', height: '100%' }}
-        zoom={15}
-        options={MAP_OPTIONS}
-        onDragEnd={checkPositionInView}
-        onZoomChanged={checkPositionInView}
-      >
-        {!isGeoLoading && <UserLocationDot position={userPosition} />}
-        {cafeMarkers}
-      </GoogleMap>
-
-      {(geoError || cafesError) && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-10 max-w-md text-center">
-          {geoError || cafesError}
+          {!isGeoLoading && <UserLocationDot position={userPosition} />}
+          {cafeMarkers}
+        </GoogleMap>
+      </main>
+      <footer className="fixed bottom-0 left-0 w-full">
+        <div className="m-4 flex justify-end">
+          <Button
+            variant="outline"
+            size="icon"
+            className="w-12 h-12 rounded-full transition active:scale-95"
+            onClick={() => renewPostion()}
+          >
+            <Navigation />
+          </Button>
         </div>
-      )}
-    </main>
+        <Footer />
+      </footer>
+    </>
   )
 }
 

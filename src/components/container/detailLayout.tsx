@@ -1,25 +1,21 @@
+'use client'
+
 import { ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
 import Footer from '@/components/footer'
+import { useRouter } from 'next/navigation'
 
-const DetailLayout = ({
-  children,
-  href,
-}: {
-  children: React.ReactNode
-  href: string
-}) => {
+const DetailLayout = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter()
   return (
     <main className="h-screen flex flex-col">
       <section className="border-b-2 px-4 py-1 flex align-middle">
         <Button
           variant="ghost"
           size="icon-lg"
+          onClick={() => router.back()}
         >
-          <Link href={href}>
-            <ChevronLeft />
-          </Link>
+          <ChevronLeft />
         </Button>
       </section>
 

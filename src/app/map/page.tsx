@@ -14,11 +14,9 @@ export default function Page() {
   return (
     <main className="flex h-screen flex-col">
       {/* 地圖區域 */}
-      <section className="flex-1 w-full relative">
+      <section className="h-full w-full relative">
         <Map setShopInfo={setShopInfo} />
       </section>
-
-      <Footer />
 
       <Drawer
         open={Boolean(shopInfo)}

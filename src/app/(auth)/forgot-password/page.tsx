@@ -22,7 +22,7 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 export default function ForgotPassword() {
-  const { t } = useTranslation() // 初始化翻譯函數
+  const { t, locale } = useTranslation()
   const [message, setMessage] = useState('')
 
   const {
@@ -31,22 +31,18 @@ export default function ForgotPassword() {
     formState: { errors },
   } = useForm<ForgotPasswordInput>({
     resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: '' },
   })
 
   const onSubmit = async (values: ForgotPasswordInput) => {
     const res = await fetch('/api/auth/forgot-password', {
       method: 'POST',
-      body: JSON.stringify({ email: values.email }),
+      body: JSON.stringify({ email: values.email, locale }),
       headers: { 'Content-Type': 'application/json' },
     })
 
-    if (res.ok) {
-      // 使用翻譯鍵值
-      setMessage(t.auth.forgotPassword.successMessage)
-    } else {
-      // 使用翻譯鍵值
-      setMessage(t.auth.forgotPassword.errorMessage)
-    }
+    if (res.ok) setMessage(t.auth.forgotPassword.successMessage)
+    else setMessage(t.auth.forgotPassword.errorMessage)
   }
 
   return (

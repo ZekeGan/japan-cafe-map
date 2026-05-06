@@ -57,7 +57,7 @@ const FavoriteCafe = () => {
   if (!user) return null
 
   return (
-    <DetailLayout href={MAP}>
+    <DetailLayout>
       <section className="p-2 flex flex-col gap-2">
         {cafeShops && cafeShops.length > 0 ? (
           cafeShops.map(shop => (

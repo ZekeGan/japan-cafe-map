@@ -58,7 +58,6 @@ export default function ProfilePage() {
 
       <CardFooter>
         <Button
-          variant="destructive"
           className="w-full flex items-center justify-center gap-2"
           onClick={() => handleLogout()}
         >

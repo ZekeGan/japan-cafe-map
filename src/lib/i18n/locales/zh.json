@@ -206,5 +206,11 @@
       "backHome": "回首頁",
       "goMap": "去地圖找找"
     }
+  },
+  "mail": {
+    "resetPassword": {
+      "subject": "重設您的密碼",
+      "body": "點擊以下連結重設您的密碼："
+    }
   }
 }

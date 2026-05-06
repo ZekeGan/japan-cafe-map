@@ -5,7 +5,7 @@ import { sendResetPasswordEmail } from '@/lib/mail' // 導入發信功能
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json()
+    const { email, locale } = await req.json()
     const user = await prisma.user.findUnique({ where: { email } })
 
     if (!user) {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     console.log('success')
 
     // --- 核心變更：發送真實郵件 ---
-    await sendResetPasswordEmail(email, token)
+    await sendResetPasswordEmail(email, token, locale)
     // ----------------------------
 
     return NextResponse.json({ message: '連結已發送至您的信箱' })

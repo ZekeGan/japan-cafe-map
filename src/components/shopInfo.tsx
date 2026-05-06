@@ -91,6 +91,41 @@ const FeatureItem = ({
   )
 }
 
+const ToggleButton = ({
+  children,
+  values,
+  onChange,
+  value,
+  className = '',
+}: {
+  children: React.ReactNode
+  values: string[]
+  onChange: (values: string[]) => void
+  value: string
+  className?: string
+}) => {
+  return (
+    <Button
+      variant="outline"
+      className={clsx(
+        'rounded-none shadow-none',
+        values.includes(value) ? 'bg-accent!' : 'bg-white!',
+        className
+      )}
+      type="button"
+      onClick={() => {
+        if (values.includes(value)) {
+          onChange(values.filter((v: string) => v !== value))
+        } else {
+          onChange([...values, value])
+        }
+      }}
+    >
+      {children}
+    </Button>
+  )
+}
+
 const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
   const { t } = useTranslation()
   const s = t.shopInfo
@@ -249,7 +284,7 @@ const ShopDetail = ({ shopInfo }: { shopInfo: Cafe }) => {
             {smokingAreaType &&
               smokingAreaType !== 'NONE' &&
               allowCigaretteType && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-end gap-1 flex-wrap ">
                   {allowCigaretteType.map(d => (
                     <Badge key={d}>
                       {s.cigaretteType[d as keyof typeof s.cigaretteType] ??
@@ -284,15 +319,15 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
     defaultValues: {
       cafeId: shopInfo?.id || '',
       userId: user?.id || '',
-      hasWifi: shopInfo?.hasWifi || null,
-      outletCoverage: shopInfo?.outletCoverage || null,
-      seatCapacity: shopInfo?.seatCapacity || null,
-      noiseLevel: shopInfo?.noiseLevel || null,
-      minConsumption: shopInfo?.minConsumption || null,
-      timeLimit: shopInfo?.timeLimit || null,
-      isBookingRequired: shopInfo?.isBookingRequired || null,
-      smokingAreaType: shopInfo?.smokingAreaType || null,
-      allowCigaretteType: shopInfo?.allowCigaretteType || [],
+      hasWifi: null,
+      outletCoverage: null,
+      seatCapacity: null,
+      noiseLevel: null,
+      minConsumption: null,
+      timeLimit: null,
+      isBookingRequired: null,
+      smokingAreaType: null,
+      allowCigaretteType: [],
     },
   })
 
@@ -711,22 +746,31 @@ const ShopInfo = ({ shopInfo }: { shopInfo: Cafe | null }) => {
                           name="allowCigaretteType"
                           control={form.control}
                           render={({ field }) => (
-                            <ToggleGroup
-                              type="multiple"
-                              variant="outline"
-                              value={field.value || []}
-                              onValueChange={field.onChange}
-                            >
-                              <ToggleGroupItem value="TRADITIONAL">
+                            <div className="flex ">
+                              <ToggleButton
+                                className="rounded-l-sm"
+                                values={field.value}
+                                onChange={field.onChange}
+                                value="TRADITIONAL"
+                              >
                                 <SmallLabel str={f.cigaretteType.TRADITIONAL} />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="ELECTRONIC">
+                              </ToggleButton>
+                              <ToggleButton
+                                values={field.value}
+                                onChange={field.onChange}
+                                value="ELECTRONIC"
+                              >
                                 <SmallLabel str={f.cigaretteType.ELECTRONIC} />
-                              </ToggleGroupItem>
-                              <ToggleGroupItem value="VAPE">
+                              </ToggleButton>
+                              <ToggleButton
+                                className="rounded-r-sm"
+                                values={field.value}
+                                onChange={field.onChange}
+                                value="VAPE"
+                              >
                                 <SmallLabel str={f.cigaretteType.VAPE} />
-                              </ToggleGroupItem>
-                            </ToggleGroup>
+                              </ToggleButton>
+                            </div>
                           )}
                         />
                       }

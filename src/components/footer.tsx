@@ -20,7 +20,7 @@ const Item = ({
   return (
     <Link
       href={href}
-      className="flex flex-col items-center gap-1"
+      className="flex flex-col items-center gap-1 active:scale-95 transition"
     >
       {cloneElement(icon, {
         className: 'w-5',
