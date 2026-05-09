@@ -16,14 +16,13 @@ import { toast } from 'sonner'
 
 const FavoriteCafe = () => {
   const { t } = useTranslation()
-  const { user, refreshUser } = useAuth()
+  const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [cafeShops, setCafeShops] = useState<Cafe[] | null>(null)
 
   const fetchCafeShop = useCallback(async () => {
     if (!user) return
     try {
-      setIsLoading(true)
       const res = await fetch(`/api/favorite?userId=${user.id}`, {
         method: 'GET',
       })
@@ -37,8 +36,6 @@ const FavoriteCafe = () => {
     } catch {
       toast.error(t.favorite.fetchError)
       setCafeShops([])
-    } finally {
-      setIsLoading(false)
     }
   }, [t.favorite.fetchError, user])
 
@@ -57,6 +54,8 @@ const FavoriteCafe = () => {
       fetchCafeShop()
     } catch {
       toast.error(t.favorite.fetchError)
+    } finally {
+      setIsLoading(false)
     }
   }
 
