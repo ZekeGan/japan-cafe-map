@@ -25,7 +25,7 @@ export default async function CafePage({
 
   return (
     <DetailLayout>
-      <ShopInfo shopInfo={data as CafeWithReports} />
+      <ShopInfo shopId={id} />
     </DetailLayout>
   )
 }

@@ -7,26 +7,26 @@ import { VisuallyHidden } from 'radix-ui'
 import { useState } from 'react'
 
 export default function Page() {
-  const [shopInfo, setShopInfo] = useState<CafeWithReports | null>(null)
+  const [shopId, setShopId] = useState<string | null>(null)
 
   return (
     <main className="flex h-screen flex-col">
       {/* 地圖區域 */}
       <section className="h-full w-full relative">
-        <Map setShopInfo={setShopInfo} />
+        <Map setShopId={setShopId} />
       </section>
 
       <Drawer
-        open={Boolean(shopInfo)}
+        open={Boolean(shopId)}
         onOpenChange={open => {
-          if (!open) setShopInfo(null)
+          if (!open) setShopId(null)
         }}
       >
         <DrawerContent className="h-[80%]">
           <VisuallyHidden.Root>
             <DrawerTitle className="sr-only">shopInfo</DrawerTitle>
           </VisuallyHidden.Root>
-          <ShopInfo shopInfo={shopInfo} />
+          <ShopInfo shopId={shopId} />
         </DrawerContent>
       </Drawer>
     </main>

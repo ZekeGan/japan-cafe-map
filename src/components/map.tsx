@@ -289,8 +289,8 @@ const useCafeShops = (
 }
 
 const Map: React.FC<{
-  setShopInfo: (shopInfo: CafeWithReports) => void
-}> = ({ setShopInfo }) => {
+  setShopId: (shopId: string | null) => void
+}> = ({ setShopId }) => {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map',
     version: 'beta',
@@ -352,20 +352,10 @@ const Map: React.FC<{
   }
 
   const clickMapDot = useCallback(
-    async (shop: Cafe) => {
-      try {
-        const response = await fetch(`/api/cafe/${shop.id}`)
-        if (response.ok) {
-          const data = await response.json()
-          setShopInfo(data)
-        } else {
-          console.error(t.map.error.fetchShopInfoFailed, response.statusText)
-        }
-      } catch (error) {
-        console.error(t.map.error.fetchShopInfoFailed, error)
-      }
+    (shop: Cafe) => {
+      setShopId(shop.id)
     },
-    [setShopInfo, t]
+    [setShopId]
   )
 
   const cafeMarkers = useMemo(() => {
