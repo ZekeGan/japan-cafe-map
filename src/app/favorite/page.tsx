@@ -80,7 +80,7 @@ const FavoriteCafe = () => {
               >
                 <ItemContent>
                   <ItemTitle>{shop.displayName}</ItemTitle>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     {shop.hasWifi && (
                       <Badge variant="secondary">{t.favorite.wifi}</Badge>
                     )}
