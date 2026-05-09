@@ -687,14 +687,14 @@ const ShopInfo = ({ shopId }: { shopId: string | null }) => {
   const { user, refreshUser } = useAuth()
   const { t } = useTranslation()
   const s = t.shopInfo
+  const [isEditing, setIsEditing] = useState(false)
 
   const hasUser = Boolean(user?.id)
+
   const hasReported =
     user?.reports.some(report => report.cafeId === shopInfo?.id) || false
   const hasFavorited =
     user?.favorites.some(fav => fav.cafeId === shopInfo?.id) || false
-
-  const [isEditing, setIsEditing] = useState(false)
 
   const toggleFavorite = async () => {
     if (!hasUser || !shopInfo) return
@@ -717,6 +717,7 @@ const ShopInfo = ({ shopId }: { shopId: string | null }) => {
     }
   }
 
+  // get detail data
   useEffect(() => {
     if (!shopId) return
 

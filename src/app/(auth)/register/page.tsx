@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/card'
 import { useTranslation } from '@/context/languageContext'
 import { toast } from 'sonner'
-import { set } from 'zod'
 
 export default function RegisterPage() {
   const { t } = useTranslation()

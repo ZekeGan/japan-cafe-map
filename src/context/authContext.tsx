@@ -1,6 +1,6 @@
 'use client'
 
-import { Favorite, Report, User } from '@prisma/client'
+import { Cafe, Favorite, Report, User } from '@prisma/client'
 import {
   createContext,
   useContext,
@@ -10,7 +10,7 @@ import {
 } from 'react'
 
 type UserData = Omit<User, 'password'> & {
-  favorites: Favorite[]
+  favorites: (Favorite & { cafe: Cafe })[]
   reports: Report[]
 }
 

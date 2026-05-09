@@ -38,6 +38,7 @@ import Footer from './footer'
 
 const ZOOM_THRESHOLD = 15
 const FETCH_RADIUS = 800 // meters
+const GOOGLE_MAP_LIBRARIES: 'places'[] = ['places']
 const GEOLOCATION_OPTIONS: PositionOptions = {
   enableHighAccuracy: true,
   timeout: 10000,
@@ -128,7 +129,7 @@ const CafeLocationDot: React.FC<{
   )
 }
 
-const useGeolocation = (t: ReturnType<typeof useTranslation>['t']) => {
+const useGeolocation = () => {
   const [position, setPosition] = useState<google.maps.LatLngLiteral>({
     lat: defaultLagitude,
     lng: defaultLongitude,
@@ -137,7 +138,7 @@ const useGeolocation = (t: ReturnType<typeof useTranslation>['t']) => {
   const [allowedGeo, setAllowedGeo] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
-  const handlePosition = useCallback(() => {
+  const renewPostion = useCallback(() => {
     const successHandler = (pos: GeolocationPosition) => {
       setPosition({
         lat: pos.coords.latitude,
@@ -163,43 +164,18 @@ const useGeolocation = (t: ReturnType<typeof useTranslation>['t']) => {
     )
   }, [])
 
-  const renewPostion = useCallback(() => {
-    setPosition({
-      lat: position.lat,
-      lng: position.lng,
-    })
-  }, [position.lat, position.lng])
-
-  useEffect(() => {
-    if (!navigator.geolocation) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setError(t.map.error.geolocationNotSupported)
-      setIsLoading(false)
-      return
-    }
-
-    const timer = setTimeout(() => {
-      handlePosition()
-    }, 0)
-    return () => clearTimeout(timer)
-  }, [handlePosition, t])
-
   return {
     position,
     error,
     isLoading,
-    handlePosition,
     renewPostion,
     allowedGeo,
   }
 }
 
-const useCafeShops = (
-  map: google.maps.Map | null | undefined,
-  currentPosition: google.maps.LatLngLiteral,
-  hasGeolocation: boolean,
-  errorMessage: string
-) => {
+const useCafeShops = () => {
+  const { user } = useAuth()
+  const { t } = useTranslation()
   const [cafeShops, setCafeShops] = useState<Cafe[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>('')
@@ -255,47 +231,53 @@ const useCafeShops = (
           },
         }))
 
-        const response = await fetch('/api/cafe/query', {
+        const res = await fetch('/api/cafe/query', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formatData),
           signal: abortControllerRef.current.signal,
         })
 
-        if (!response.ok) {
-          throw new Error(`${errorMessage}: ${response.statusText}`)
+        if (!res.ok) {
+          throw new Error()
         }
 
-        const dbCafes: Cafe[] = await response.json()
-        setCafeShops(dbCafes)
+        const dbCafes: Cafe[] = await res.json()
+        const uniqueItems = [...cafeShops, ...dbCafes].filter(
+          (i, idx, self) => idx === self.findIndex(x => x.id === i.id)
+        )
+
+        setCafeShops(uniqueItems)
         lastFetchPos.current = location
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
           return
         }
         console.error('Error fetching cafe shops:', err)
-        setError(errorMessage)
+        setError(t.map.error.fetchCafesFailed)
       } finally {
         setIsLoading(false)
       }
     },
-    [errorMessage]
+    [cafeShops, t.map.error.fetchCafesFailed]
   )
 
+  const updateFavCafe = useCallback(() => {
+    if (!user) return
+    const favCafes = user.favorites.map(i => i.cafe)
+    const uniqueItems = [...cafeShops, ...favCafes].filter(
+      (i, idx, self) => idx === self.findIndex(x => x.id === i.id)
+    )
+    setCafeShops(uniqueItems)
+  }, [cafeShops, user])
+
   useEffect(() => {
-    if (!map || !hasGeolocation) return
-
     const timer = setTimeout(() => {
-      fetchCafeShops(currentPosition)
-    }, 300)
-
-    return () => {
-      clearTimeout(timer)
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-    }
-  }, [map, currentPosition, hasGeolocation, fetchCafeShops])
+      updateFavCafe()
+    }, 0)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
   return { cafeShops, isLoading, error, fetchCafeShops }
 }
@@ -307,11 +289,20 @@ const Map: React.FC<{
     id: 'google-map',
     version: 'beta',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    libraries: ['places'],
+    libraries: GOOGLE_MAP_LIBRARIES,
   })
   const { t } = useTranslation()
-
   const { user } = useAuth()
+  const { cafeShops, error: cafesError, fetchCafeShops } = useCafeShops()
+  const {
+    position: userPosition,
+    error: geoError,
+    isLoading: isGeoLoading,
+    renewPostion,
+    allowedGeo,
+  } = useGeolocation()
+
+  const [map, setMap] = useState<google.maps.Map | null>()
   const favList = useMemo(
     () =>
       user?.favorites.reduce(
@@ -322,26 +313,6 @@ const Map: React.FC<{
         {} as Record<string, boolean>
       ),
     [user]
-  )
-
-  const [map, setMap] = useState<google.maps.Map | null>()
-  const {
-    position: userPosition,
-    error: geoError,
-    isLoading: isGeoLoading,
-    renewPostion,
-    allowedGeo,
-  } = useGeolocation(t)
-
-  const {
-    cafeShops,
-    error: cafesError,
-    fetchCafeShops,
-  } = useCafeShops(
-    map,
-    userPosition,
-    !isGeoLoading,
-    t.map.error.fetchCafesFailed
   )
 
   const handleMapLoad = useCallback((mapInstance: google.maps.Map) => {
@@ -364,12 +335,7 @@ const Map: React.FC<{
     }))
   }
 
-  const clickMapDot = useCallback(
-    (shop: Cafe) => {
-      setShopId(shop.id)
-    },
-    [setShopId]
-  )
+  const clickMapDot = useCallback((id: string) => setShopId(id), [setShopId])
 
   const cafeMarkers = useMemo(() => {
     const isNoFilterActive = Object.values(filters).every(
@@ -402,7 +368,7 @@ const Map: React.FC<{
         return (
           <CafeLocationDot
             key={shop.id}
-            onClick={() => clickMapDot(shop)}
+            onClick={() => clickMapDot(shop.id)}
             position={shop.location!}
             close={isClosed}
             fav={favList && favList[shop.id]}
@@ -442,7 +408,7 @@ const Map: React.FC<{
   ]
 
   const [hasGetCafes, setHasGetCafes] = useState(false)
-  const [isOutOfView, setIsOutOfView] = useState(false)
+  const [isOutOfView, setIsOutOfView] = useState(true)
   const checkPositionInView = useCallback(() => {
     if (!map || !userPosition) return
     setHasGetCafes(false)
@@ -455,22 +421,27 @@ const Map: React.FC<{
   }, [map, userPosition])
 
   const getCurrentCenterCafes = useCallback(async () => {
-    if (!map) return
+    try {
+      if (!map) return
 
-    const center = map.getCenter()
+      const center = map.getCenter()
 
-    if (!!center?.lat && !!center?.lng) {
-      await fetchCafeShops({ lat: center.lat(), lng: center.lng() })
-      setHasGetCafes(true)
+      if (!!center?.lat && !!center?.lng) {
+        await fetchCafeShops({ lat: center.lat(), lng: center.lng() })
+        setHasGetCafes(true)
+      }
+    } catch {
+      toast.error('Failed to get Cafe Shop')
     }
   }, [map, fetchCafeShops])
 
+  // 錯誤TOAST，避免多次呼叫
   useEffect(() => {
     const timer = setTimeout(() => {
       if (geoError || cafesError) {
         toast.info(geoError || cafesError, { position: 'top-right' })
       }
-    }, 500)
+    }, 0)
     return () => clearTimeout(timer)
   }, [cafesError, geoError])
 
