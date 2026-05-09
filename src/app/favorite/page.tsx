@@ -12,6 +12,7 @@ import { Item, ItemActions, ItemContent, ItemTitle } from '@/components/ui/item'
 import DetailLayout from '@/components/container/detailLayout'
 import { Badge } from '@/components/ui/badge'
 import { useTranslation } from '@/context/languageContext'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const FavoriteCafe = () => {
   const { t } = useTranslation() // 初始化翻譯函數
@@ -59,55 +60,67 @@ const FavoriteCafe = () => {
   return (
     <DetailLayout>
       <section className="p-2 flex flex-col gap-2">
-        {cafeShops && cafeShops.length > 0 ? (
-          cafeShops.map(shop => (
-            <Item
-              key={shop.id}
-              variant="outline"
-            >
-              <ItemContent>
-                <ItemTitle>{shop.displayName}</ItemTitle>
-                <div>
-                  <div className="flex gap-2">
-                    {shop.hasWifi && (
-                      <Badge variant="secondary">{t.favorite.wifi}</Badge>
-                    )}
-                    {shop.smokingAreaType &&
-                      shop.smokingAreaType !== 'NONE' && (
-                        <Badge variant="secondary">{t.favorite.smoking}</Badge>
+        {cafeShops ? (
+          cafeShops && cafeShops.length > 0 ? (
+            cafeShops.map(shop => (
+              <Item
+                key={shop.id}
+                variant="outline"
+              >
+                <ItemContent>
+                  <ItemTitle>{shop.displayName}</ItemTitle>
+                  <div>
+                    <div className="flex gap-2">
+                      {shop.hasWifi && (
+                        <Badge variant="secondary">{t.favorite.wifi}</Badge>
                       )}
-                    {shop.outletCoverage && shop.outletCoverage !== 'NONE' && (
-                      <Badge variant="secondary">{t.favorite.outlet}</Badge>
-                    )}
+                      {shop.smokingAreaType &&
+                        shop.smokingAreaType !== 'NONE' && (
+                          <Badge variant="secondary">
+                            {t.favorite.smoking}
+                          </Badge>
+                        )}
+                      {shop.outletCoverage &&
+                        shop.outletCoverage !== 'NONE' && (
+                          <Badge variant="secondary">{t.favorite.outlet}</Badge>
+                        )}
+                    </div>
                   </div>
-                </div>
-              </ItemContent>
+                </ItemContent>
 
-              <ItemActions>
-                <Button
-                  variant="ghost"
-                  size="icon-lg"
-                  asChild
-                >
-                  <Link href={`/map/${shop.id}`}>
-                    <Link2 />
-                  </Link>
-                </Button>
-                <Button
-                  onClick={() => removeFavorite(shop)}
-                  variant="ghost"
-                  size="icon-lg"
-                  className="text-red-500"
-                >
-                  <Trash />
-                </Button>
-              </ItemActions>
-            </Item>
-          ))
+                <ItemActions>
+                  <Button
+                    variant="ghost"
+                    size="icon-lg"
+                    asChild
+                  >
+                    <Link href={`/map/${shop.id}`}>
+                      <Link2 />
+                    </Link>
+                  </Button>
+                  <Button
+                    onClick={() => removeFavorite(shop)}
+                    variant="ghost"
+                    size="icon-lg"
+                    className="text-red-500"
+                  >
+                    <Trash />
+                  </Button>
+                </ItemActions>
+              </Item>
+            ))
+          ) : (
+            <div className="text-center py-10 text-muted-foreground">
+              {t.favorite.noData}
+            </div>
+          )
         ) : (
-          <div className="text-center py-10 text-muted-foreground">
-            {t.favorite.noData}
-          </div>
+          Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              className="w-full h-18"
+            />
+          ))
         )}
       </section>
     </DetailLayout>
