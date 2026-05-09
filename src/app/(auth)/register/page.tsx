@@ -19,6 +19,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { useTranslation } from '@/context/languageContext'
+import { toast } from 'sonner'
+import { set } from 'zod'
 
 export default function RegisterPage() {
   const { t } = useTranslation()
@@ -34,25 +36,28 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterInput) => {
     try {
-      const response = await fetch('/api/auth/register', {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify(data),
       })
 
-      if (!response.ok) {
-        const result = await response.json()
+      const result = await res.json()
+      if (!res.ok) {
         if (result.error === 'EMAIL_EXISTS') {
           setError('email', {
             type: 'manual',
-            message: t.auth.register.error.emailExists, // 語系化錯誤訊息
+            message: t.auth.register.error.emailExists,
           })
           return
         }
       }
 
-      alert(t.auth.register.success)
-      router.push(LOGIN)
+      toast.success(t.auth.register.success)
+      setTimeout(() => {
+        router.push(LOGIN)
+      }, 1000)
     } catch (err) {
+      toast.error(t.auth.register.error.system)
       console.error(t.auth.register.error.system, err)
     }
   }

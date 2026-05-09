@@ -1,6 +1,5 @@
 'use client'
 
-import Loading from '@/components/loading'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -18,10 +17,7 @@ import { useRouter } from 'next/navigation'
 export default function ProfilePage() {
   const { t } = useTranslation() // 初始化翻譯功能
   const router = useRouter()
-  const { user, isLoading, refreshUser } = useAuth()
-
-  // 處理載入狀態
-  if (isLoading) return <Loading />
+  const { user, refreshUser } = useAuth()
 
   const handleLogout = async () => {
     // 呼叫後端 API 清除 Cookie

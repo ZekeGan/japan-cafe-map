@@ -35,14 +35,21 @@ export default function ForgotPassword() {
   })
 
   const onSubmit = async (values: ForgotPasswordInput) => {
-    const res = await fetch('/api/auth/forgot-password', {
-      method: 'POST',
-      body: JSON.stringify({ email: values.email, locale }),
-      headers: { 'Content-Type': 'application/json' },
-    })
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email: values.email, locale }),
+        headers: { 'Content-Type': 'application/json' },
+      })
 
-    if (res.ok) setMessage(t.auth.forgotPassword.successMessage)
-    else setMessage(t.auth.forgotPassword.errorMessage)
+      if (!res.ok) {
+        throw new Error('Failed to send password reset request')
+      }
+
+      setMessage(t.auth.forgotPassword.successMessage)
+    } catch {
+      setMessage(t.auth.forgotPassword.errorMessage)
+    }
   }
 
   return (

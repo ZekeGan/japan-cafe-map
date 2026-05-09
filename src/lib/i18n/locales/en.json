@@ -200,7 +200,8 @@
     "wifi": "Wi-Fi",
     "smoking": "Smoking Area",
     "outlet": "Outlets",
-    "noData": "No favorite cafes yet"
+    "noData": "No favorite cafes yet",
+    "fetchError": "Failed to fetch favorite cafes"
   },
   "error": {
     "notFound": {

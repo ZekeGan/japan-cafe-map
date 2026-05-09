@@ -700,18 +700,20 @@ const ShopInfo = ({ shopId }: { shopId: string | null }) => {
     if (!hasUser || !shopInfo) return
 
     try {
-      const response = await fetch('/api/favorite', {
+      const res = await fetch('/api/favorite', {
         method: 'POST',
         body: JSON.stringify({ userId: user?.id, cafeId: shopInfo?.id }),
       })
 
-      if (response.ok) {
-        const result = await response.json()
-        console.log(result)
-        refreshUser()
+      if (!res.ok) {
+        throw new Error('Fail to add Favorite')
       }
-    } catch (error) {
-      console.error(s.error.toggleFavoriteFailed, error)
+
+      const result = await res.json()
+      console.log(result)
+      refreshUser()
+    } catch (err) {
+      console.error(s.error.toggleFavoriteFailed, err)
     }
   }
 

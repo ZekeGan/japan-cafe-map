@@ -241,7 +241,6 @@ const useCafeShops = (
             lng: d.location?.lng(),
           },
         }))
-        console.log(formatData)
 
         const response = await fetch('/api/cafe/query', {
           method: 'POST',

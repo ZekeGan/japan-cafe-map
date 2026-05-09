@@ -11,41 +11,60 @@ import DetailLayout from '@/components/container/detailLayout'
 import { Badge } from '@/components/ui/badge'
 import { useTranslation } from '@/context/languageContext'
 import { Skeleton } from '@/components/ui/skeleton'
+import Loading from '@/components/loading'
+import { toast } from 'sonner'
 
 const FavoriteCafe = () => {
   const { t } = useTranslation()
   const { user, refreshUser } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
   const [cafeShops, setCafeShops] = useState<Cafe[] | null>(null)
 
   const fetchCafeShop = useCallback(async () => {
     if (!user) return
+    try {
+      setIsLoading(true)
+      const res = await fetch(`/api/favorite?userId=${user.id}`, {
+        method: 'GET',
+      })
 
-    const res = await fetch(`/api/favorite?userId=${user.id}`, {
-      method: 'GET',
-    })
+      if (!res.ok) {
+        throw new Error('Failed to get Favorite list')
+      }
 
-    if (res.ok) {
       const data = await res.json()
       setCafeShops(data)
+    } catch {
+      toast.error(t.favorite.fetchError)
+      setCafeShops([])
+    } finally {
+      setIsLoading(false)
     }
-  }, [user])
+  }, [t.favorite.fetchError, user])
 
   const removeFavorite = async (shop: Cafe) => {
-    const response = await fetch('/api/favorite', {
-      method: 'POST',
-      body: JSON.stringify({ userId: user?.id, cafeId: shop.id }),
-    })
+    try {
+      setIsLoading(true)
+      const res = await fetch('/api/favorite', {
+        method: 'POST',
+        body: JSON.stringify({ userId: user?.id, cafeId: shop.id }),
+      })
 
-    if (response.ok) {
-      refreshUser()
-      // 移除後重新取得清單以更新 UI
+      if (!res.ok) {
+        throw new Error('Fail to remove Favorite')
+      }
+
       fetchCafeShop()
+    } catch {
+      toast.error(t.favorite.fetchError)
     }
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchCafeShop()
+    const timer = setTimeout(() => {
+      fetchCafeShop()
+    }, 0)
+    return () => clearTimeout(timer)
   }, [fetchCafeShop])
 
   if (!user) return null
@@ -62,22 +81,17 @@ const FavoriteCafe = () => {
               >
                 <ItemContent>
                   <ItemTitle>{shop.displayName}</ItemTitle>
-                  <div>
-                    <div className="flex gap-2">
-                      {shop.hasWifi && (
-                        <Badge variant="secondary">{t.favorite.wifi}</Badge>
+                  <div className="flex gap-2">
+                    {shop.hasWifi && (
+                      <Badge variant="secondary">{t.favorite.wifi}</Badge>
+                    )}
+                    {shop.smokingAreaType &&
+                      shop.smokingAreaType !== 'NONE' && (
+                        <Badge variant="secondary">{t.favorite.smoking}</Badge>
                       )}
-                      {shop.smokingAreaType &&
-                        shop.smokingAreaType !== 'NONE' && (
-                          <Badge variant="secondary">
-                            {t.favorite.smoking}
-                          </Badge>
-                        )}
-                      {shop.outletCoverage &&
-                        shop.outletCoverage !== 'NONE' && (
-                          <Badge variant="secondary">{t.favorite.outlet}</Badge>
-                        )}
-                    </div>
+                    {shop.outletCoverage && shop.outletCoverage !== 'NONE' && (
+                      <Badge variant="secondary">{t.favorite.outlet}</Badge>
+                    )}
                   </div>
                 </ItemContent>
 
@@ -115,6 +129,7 @@ const FavoriteCafe = () => {
             />
           ))
         )}
+        {isLoading && <Loading />}
       </section>
     </DetailLayout>
   )

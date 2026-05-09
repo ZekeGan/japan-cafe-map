@@ -200,7 +200,8 @@
     "wifi": "有Wi-Fi",
     "smoking": "有吸菸區",
     "outlet": "有插座",
-    "noData": "尚無收藏的咖啡廳"
+    "noData": "尚無收藏的咖啡廳",
+    "fetchError": "取得收藏的咖啡廳失敗"
   },
   "error": {
     "notFound": {
