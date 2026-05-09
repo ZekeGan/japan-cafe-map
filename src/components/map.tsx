@@ -134,6 +134,7 @@ const useGeolocation = (t: ReturnType<typeof useTranslation>['t']) => {
     lng: defaultLongitude,
   })
   const [error, setError] = useState<string>('')
+  const [allowedGeo, setAllowedGeo] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   const handlePosition = useCallback(() => {
@@ -143,11 +144,13 @@ const useGeolocation = (t: ReturnType<typeof useTranslation>['t']) => {
         lng: pos.coords.longitude,
       })
       setError('')
+      setAllowedGeo(true)
       setIsLoading(false)
     }
 
     const errorHandler = (err: GeolocationPositionError) => {
       toast.info(err.message, { position: 'top-right' })
+      setAllowedGeo(false)
       setIsLoading(false)
     }
 
@@ -175,10 +178,20 @@ const useGeolocation = (t: ReturnType<typeof useTranslation>['t']) => {
       return
     }
 
-    handlePosition()
+    const timer = setTimeout(() => {
+      handlePosition()
+    }, 0)
+    return () => clearTimeout(timer)
   }, [handlePosition, t])
 
-  return { position, error, isLoading, handlePosition, renewPostion }
+  return {
+    position,
+    error,
+    isLoading,
+    handlePosition,
+    renewPostion,
+    allowedGeo,
+  }
 }
 
 const useCafeShops = (
@@ -317,6 +330,7 @@ const Map: React.FC<{
     error: geoError,
     isLoading: isGeoLoading,
     renewPostion,
+    allowedGeo,
   } = useGeolocation(t)
 
   const {
@@ -510,7 +524,9 @@ const Map: React.FC<{
           onDragEnd={checkPositionInView}
           onZoomChanged={checkPositionInView}
         >
-          {!isGeoLoading && <UserLocationDot position={userPosition} />}
+          {!isGeoLoading && allowedGeo && (
+            <UserLocationDot position={userPosition} />
+          )}
           {cafeMarkers}
         </GoogleMap>
       </main>
