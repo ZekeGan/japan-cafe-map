@@ -9,6 +9,7 @@
 - [] 最愛咖啡店持續顯示
 - [] 取回店家資料時，用GOOGLEMAP順便更新店家資料
 
+- [x] favorite skeleton
 - [x] 打開咖啡廳時drawer先開 skeleton代替資料的加載
 - [x] 移動到沒有資料的地方時，點擊按鈕顯示該區域的咖啡店
 - [x] 更改PROFILE UI

@@ -3,8 +3,6 @@
 import { Cafe } from '@prisma/client'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '@/context/authContext'
-import { useRouter } from 'next/navigation'
-import { MAP } from '@/constant/router'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Link2, Trash } from 'lucide-react'
@@ -15,8 +13,7 @@ import { useTranslation } from '@/context/languageContext'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const FavoriteCafe = () => {
-  const { t } = useTranslation() // 初始化翻譯函數
-  const router = useRouter()
+  const { t } = useTranslation()
   const { user, refreshUser } = useAuth()
   const [cafeShops, setCafeShops] = useState<Cafe[] | null>(null)
 
@@ -47,13 +44,9 @@ const FavoriteCafe = () => {
   }
 
   useEffect(() => {
-    if (!user) {
-      router.push(MAP)
-      return
-    }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCafeShop()
-  }, [fetchCafeShop, router, user])
+  }, [fetchCafeShop])
 
   if (!user) return null
 

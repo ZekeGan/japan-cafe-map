@@ -146,7 +146,7 @@ const ShopDetail = ({ shopInfo }: { shopInfo: CafeWithReports }) => {
   return (
     <>
       {shopInfo._count.reports > 0 && (
-        <div className="p-4 pb-0">
+        <div>
           <Badge variant="outline">
             {t.shopInfo.report.report_count.replace(
               '{count}',
@@ -156,7 +156,7 @@ const ShopDetail = ({ shopInfo }: { shopInfo: CafeWithReports }) => {
         </div>
       )}
 
-      <section className="p-4 grid grid-cols-2 gap-2">
+      <section className="pt-4 grid grid-cols-2 gap-2">
         {/* WIFI */}
         <FeatureItem
           isEmpty={hasWifi === null}
