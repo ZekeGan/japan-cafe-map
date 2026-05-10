@@ -1,10 +1,17 @@
 # ☕ Japan Cafe Map
 
+<p align="center">
+  <img src="./public/preview1.png" height='500px'/>
+  <img src="./public/preview2.png" height='500px' />
+</p>
+
 > A crowdsourced map application for discovering **engineer-friendly cafes** across Japan — with real-time Google Maps data and community-driven amenity ratings.
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
 ![Google Maps API](https://img.shields.io/badge/Google%20Maps%20API-4285F4?style=flat&logo=googlemaps&logoColor=white)
+
+[🌐 Live Demo](https://japan-cafe-map.vercel.app/)
 
 ---
 
@@ -13,6 +20,19 @@
 Japan Cafe Map solves a real problem for remote workers and developers in Japan: **finding cafes where you can actually work**. While Google Maps tells you where a cafe is, it doesn't tell you whether it has outlets, Wi-Fi, or a noise level you can tolerate for a 3-hour deep work session.
 
 This app bridges that gap by pulling cafe data directly from Google Maps and layering it with **community-submitted, engineer-focused ratings** — so you can find the perfect spot before you leave home.
+
+---
+
+## Why I Built This
+
+As a remote developer living in Japan, We often struggled to find cafes
+with reliable Wi-Fi, power outlets, and a comfortable working environment.
+
+Most map applications optimize for food and popularity —
+not productivity.
+
+Japan Cafe Map was built to help developers and remote workers
+discover cafes designed for deep work.
 
 ---
 
@@ -27,6 +47,13 @@ This app bridges that gap by pulling cafe data directly from Google Maps and lay
   - ⏱️ Time limit policy
 - 🔍 **Filter & Discover** — Browse and filter cafes by amenity scores to find spots that match your working style
 - 📍 **Location-aware** — Centers the map on your current location for quick nearby searches
+
+---
+
+## Roadmap
+
+- Community comments
+- AI cafe recommendations
 
 ---
 

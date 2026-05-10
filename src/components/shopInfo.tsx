@@ -156,7 +156,7 @@ const ShopDetail = ({ shopInfo }: { shopInfo: CafeWithReports }) => {
         </div>
       )}
 
-      <section className="pt-4 grid grid-cols-2 gap-2">
+      <section className="py-4 grid grid-cols-2 gap-2">
         {/* WIFI */}
         <FeatureItem
           isEmpty={hasWifi === null}
