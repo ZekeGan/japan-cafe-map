@@ -2,6 +2,7 @@
 
 - [] 使用者留言功能
 - [] 取回店家資料時，用GOOGLEMAP順便更新店家資料
+- [x] 進入畫面時不管怎樣不顯示搜尋咖啡廳按鈕
 
 - [x] 最愛咖啡店持續顯示
 - [x] 如果不提供位置資訊 不顯示藍色當前指示圓圈
@@ -24,9 +25,6 @@
 ### 如果未來考慮擴展該專案 可以進行的點子
 
 - 拉遠地圖時顯示該範圍咖啡廳，用數字顯示該範圍數量，參考 cafe nomad，(MarkerClusterer)
-- 如果該店家GOOGLE MAP顯示停業，如何同步資料的一致性
-  - 最方便: 使用者點擊後，同步把GOOGLE資料抓下來，我的資料則靜態
-  - 最省錢: 使用者點擊後，GOOGLE資料同步到我的資料內，每天更新一次
 
 ### 技術
 
@@ -41,79 +39,3 @@
 - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 - DATABASE_URL=
 - JWT_SECRET=
-
-### other
-
-Place.fields = [
-'id',
-'resourceName',
-'accessibilityOptions',
-'addressComponents',
-'adrFormatAddress',
-'attributions',
-'businessStatus',
-'displayName',
-'displayNameLanguageCode',
-'formattedAddress',
-'shortFormattedAddress',
-'googleMapsURI',
-'hasCurbsidePickup',
-'hasDelivery',
-'hasDineIn',
-'hasTakeout',
-'isReservable',
-'servesBreakfast',
-'servesLunch',
-'servesDinner',
-'servesBeer',
-'servesWine',
-'servesBrunch',
-'servesVegetarianFood',
-'iconBackgroundColor',
-'svgIconMaskURI',
-'internationalPhoneNumber',
-'location',
-'nationalPhoneNumber',
-'regularOpeningHours',
-'parkingOptions',
-'paymentOptions',
-'photos',
-'plusCode',
-'postalAddress',
-'priceLevel',
-'rating',
-'reviews',
-'types',
-'userRatingCount',
-'utcOffsetMinutes',
-'viewport',
-'websiteURI',
-'editorialSummary',
-'editorialSummaryLanguageCode',
-'generativeSummary',
-'reviewSummary',
-'evChargeAmenitySummary',
-'neighborhoodSummary',
-'allowsDogs',
-'hasLiveMusic',
-'hasMenuForChildren',
-'hasOutdoorSeating',
-'hasRestroom',
-'hasWiFi',
-'isGoodForChildren',
-'isGoodForGroups',
-'isGoodForWatchingSports',
-'servesCocktails',
-'servesCoffee',
-'servesDessert',
-'primaryType',
-'primaryTypeDisplayName',
-'primaryTypeDisplayNameLanguageCode',
-'evChargeOptions',
-'fuelOptions',
-'priceRange',
-'googleMapsLinks',
-'consumerAlert',
-'timeZone',
-'isPureServiceAreaBusiness',
-]

@@ -65,6 +65,11 @@ const MAP_OPTIONS: google.maps.MapOptions = {
   ],
 }
 
+function getRadiusByZoom(zoom: number) {
+  if (zoom >= 17) return 500
+  return 1500
+}
+
 const UserLocationDot: React.FC<{ position: Cafe['location'] }> = ({
   position,
 }) => {
@@ -173,7 +178,7 @@ const useGeolocation = () => {
   }
 }
 
-const useCafeShops = () => {
+const useCafeShops = (map: google.maps.Map | null) => {
   const { user } = useAuth()
   const { t } = useTranslation()
   const [cafeShops, setCafeShops] = useState<Cafe[]>([])
@@ -195,16 +200,22 @@ const useCafeShops = () => {
         return
       }
 
+      if (!map) return
+
       setIsLoading(true)
       setError('')
       abortControllerRef.current = new AbortController()
+      console.log(map.getZoom())
 
       try {
         const { Place } = (await google.maps.importLibrary(
           'places'
         )) as google.maps.PlacesLibrary
         const { places } = await Place.searchNearby({
-          locationRestriction: { center: location, radius: FETCH_RADIUS },
+          locationRestriction: {
+            center: location,
+            radius: getRadiusByZoom(map.getZoom() || 15),
+          },
           includedTypes: ['cafe'],
           fields: [
             'id',
@@ -259,7 +270,7 @@ const useCafeShops = () => {
         setIsLoading(false)
       }
     },
-    [cafeShops, t.map.error.fetchCafesFailed]
+    [cafeShops, map, t.map.error.fetchCafesFailed]
   )
 
   const updateFavCafe = useCallback(() => {
@@ -293,7 +304,8 @@ const Map: React.FC<{
   })
   const { t } = useTranslation()
   const { user } = useAuth()
-  const { cafeShops, error: cafesError, fetchCafeShops } = useCafeShops()
+  const [map, setMap] = useState<google.maps.Map | null>(null)
+  const { cafeShops, error: cafesError, fetchCafeShops } = useCafeShops(map)
   const {
     position: userPosition,
     error: geoError,
@@ -302,7 +314,6 @@ const Map: React.FC<{
     allowedGeo,
   } = useGeolocation()
 
-  const [map, setMap] = useState<google.maps.Map | null>()
   const favList = useMemo(
     () =>
       user?.favorites.reduce(
@@ -446,6 +457,7 @@ const Map: React.FC<{
   }, [cafesError, geoError])
 
   if (!isLoaded) return <Loading />
+  console.log(isOutOfView, !isGeoLoading, !hasGetCafes)
 
   return (
     <>
@@ -475,7 +487,7 @@ const Map: React.FC<{
           </ScrollArea>
 
           <div className="w-screen flex justify-center px-4">
-            {isOutOfView && !isGeoLoading && !hasGetCafes && (
+            {isOutOfView && !hasGetCafes && (
               <Button
                 variant="outline"
                 onClick={() => getCurrentCenterCafes()}
