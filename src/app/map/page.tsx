@@ -2,8 +2,12 @@
 
 import Map from '@/components/map'
 import ShopInfo from '@/components/shopInfo'
-import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer'
-import { VisuallyHidden } from 'radix-ui'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import { useState } from 'react'
 
 export default function Page() {
@@ -23,9 +27,8 @@ export default function Page() {
         }}
       >
         <DrawerContent className="h-[80%]">
-          <VisuallyHidden.Root>
-            <DrawerTitle className="sr-only">shopInfo</DrawerTitle>
-          </VisuallyHidden.Root>
+          <DrawerTitle className="sr-only">shopInfo</DrawerTitle>
+          <DrawerDescription className="sr-only">shop detail</DrawerDescription>
           <ShopInfo shopId={shopId} />
         </DrawerContent>
       </Drawer>

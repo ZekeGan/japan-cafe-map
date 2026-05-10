@@ -18,7 +18,7 @@ This app bridges that gap by pulling cafe data directly from Google Maps and lay
 
 ## Features
 
-- 🗺️ **Google Maps Integration** — Fetches real cafe listings using the Google Places API, including name, address, photos, and opening hours
+- 🗺️ **Google Maps Integration** — Fetches real cafe listings using the Google Places API, including name, address
 - ⭐ **Community Ratings** — Users can rate cafes on attributes that matter to developers:
   - 🔌 Power outlets availability
   - 📶 Wi-Fi quality
@@ -38,7 +38,8 @@ This app bridges that gap by pulling cafe data directly from Google Maps and lay
 | Styling    | shadcn / Tailwind CSS                  |
 | Maps       | Google Maps JavaScript API, Places API |
 | Backend    | Next.js API Routes                     |
-| Database   | MongoDB / Prisma                       |
+| Database   | MongoDB                                |
+| ORM        | Prisma                                 |
 | Deployment | Vercel                                 |
 
 ---

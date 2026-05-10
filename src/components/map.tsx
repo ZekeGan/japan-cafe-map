@@ -51,6 +51,7 @@ const MAP_OPTIONS: google.maps.MapOptions = {
   fullscreenControl: false,
   clickableIcons: false,
   gestureHandling: 'greedy',
+  keyboardShortcuts: false,
   styles: [
     {
       featureType: 'poi',
@@ -205,7 +206,6 @@ const useCafeShops = (map: google.maps.Map | null) => {
       setIsLoading(true)
       setError('')
       abortControllerRef.current = new AbortController()
-      console.log(map.getZoom())
 
       try {
         const { Place } = (await google.maps.importLibrary(
@@ -457,7 +457,6 @@ const Map: React.FC<{
   }, [cafesError, geoError])
 
   if (!isLoaded) return <Loading />
-  console.log(isOutOfView, !isGeoLoading, !hasGetCafes)
 
   return (
     <>
