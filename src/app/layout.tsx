@@ -4,6 +4,7 @@ import './globals.css'
 import { AuthProvider } from '@/context/authContext'
 import { LanguageProvider } from '@/context/languageContext'
 import { Toaster } from 'sonner'
+import DatabaseGuard from '@/components/databaseGuard'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -37,12 +38,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <LanguageProvider>
-            {children}
-            <Toaster />
-          </LanguageProvider>
-        </AuthProvider>
+        <DatabaseGuard>
+          <AuthProvider>
+            <LanguageProvider>
+              {children}
+              <Toaster />
+            </LanguageProvider>
+          </AuthProvider>
+        </DatabaseGuard>
       </body>
     </html>
   )
