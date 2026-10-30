@@ -1,6 +1,6 @@
 'use client'
 
-import { Cafe, Favorite, Report, User } from '@prisma/client'
+import { Cafe, Report, User } from '@prisma/client'
 import {
   createContext,
   useContext,
@@ -9,9 +9,9 @@ import {
   ReactNode,
 } from 'react'
 
-type UserData = Omit<User, 'password'> & {
-  favorites: (Favorite & { cafe: Cafe })[]
-  reports: Report[]
+type UserData = Pick<User, 'id' | 'email' | 'name'> & {
+  favorites: { cafeId: string; cafe: Cafe }[]
+  reports: Pick<Report, 'id' | 'cafeId'>[]
 }
 
 interface AuthContextType {

@@ -11,12 +11,14 @@ export const sendResetPasswordEmail = async (
   const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password/${token}`
   const t = getServerTranslation(locale)
 
-  console.log(t, locale)
-
-  await resend.emails.send({
+  const { error } = await resend.emails.send({
     from: 'onboarding@resend.dev', // 驗證網域後可換成自訂信箱
     to: email,
     subject: t.mail.resetPassword.subject,
     html: `<p>${t.mail.resetPassword.body}<a href="${resetLink}">${resetLink}</a></p>`,
   })
+
+  if (error) {
+    throw new Error('Password reset email could not be sent')
+  }
 }

@@ -6,6 +6,8 @@ import { LanguageProvider } from '@/context/languageContext'
 import { Toaster } from 'sonner'
 import DatabaseGuard from '@/components/databaseGuard'
 
+export const dynamic = 'force-dynamic'
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],

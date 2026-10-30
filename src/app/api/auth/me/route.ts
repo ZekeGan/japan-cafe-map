@@ -25,6 +25,7 @@ export async function GET() {
         reports: {
           select: {
             id: true,
+            cafeId: true,
           },
         },
         favorites: {

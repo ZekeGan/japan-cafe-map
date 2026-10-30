@@ -7,13 +7,17 @@ export async function getAuthUser() {
     const cookieStore = await cookies()
     const token = cookieStore.get('auth-token')?.value
 
-    if (!token) return null
+    if (!token || !process.env.JWT_SECRET) return null
 
     const secret = new TextEncoder().encode(process.env.JWT_SECRET)
-    const { payload } = await jwtVerify(token, secret)
+    const { payload } = await jwtVerify(token, secret, { algorithms: ['HS256'] })
+
+    if (typeof payload.sub !== 'string' || !/^[a-f\d]{24}$/i.test(payload.sub)) {
+      return null
+    }
 
     // 返回 user ID，供 API 使用
-    return { id: payload.sub as string }
+    return { id: payload.sub }
   } catch {
     return null
   }

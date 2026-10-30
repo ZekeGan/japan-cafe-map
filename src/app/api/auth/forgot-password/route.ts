@@ -20,8 +20,6 @@ export async function POST(req: Request) {
       data: { resetPasswordToken: token, resetPasswordExpires: expires },
     })
 
-    console.log('success')
-
     // --- 核心變更：發送真實郵件 ---
     await sendResetPasswordEmail(email, token, locale)
     // ----------------------------

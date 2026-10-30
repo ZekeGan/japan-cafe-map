@@ -1,16 +1,30 @@
 import { CafeStatsAggregator } from '@/lib/cafeStats'
 import prisma from '@/lib/db'
+import { getAuthUser } from '@/lib/auth/authWrapper'
+import { reportSchema } from '@/lib/validations/report'
 import { NextResponse } from 'next/server'
+
+const reportRequestSchema = reportSchema.omit({ userId: true }).extend({
+  cafeId: reportSchema.shape.cafeId.regex(/^[a-f\d]{24}$/i),
+})
 
 export async function POST(request: Request) {
   try {
-    const { userId, cafeId, ...reportData } = await request.json()
-
-    if (!userId || !cafeId) {
-      return NextResponse.json({ error: '缺少必要欄位' }, { status: 400 })
+    const user = await getAuthUser()
+    if (!user) {
+      return NextResponse.json({ error: '請先登入' }, { status: 401 })
     }
 
-    const result = await prisma.$transaction(async tx => {
+    const result = reportRequestSchema.safeParse(
+      await request.json().catch(() => null)
+    )
+    if (!result.success) {
+      return NextResponse.json({ error: '資料格式不正確' }, { status: 400 })
+    }
+    const { cafeId, ...reportData } = result.data
+    const userId = user.id
+
+    const report = await prisma.$transaction(async tx => {
       // 1. 建立 Report
       const newReport = await tx.report.create({
         data: {
@@ -45,8 +59,16 @@ export async function POST(request: Request) {
       return newReport
     })
 
-    return NextResponse.json({ message: '成功', data: result }, { status: 201 })
-  } catch {
+    return NextResponse.json({ message: '成功', data: report }, { status: 201 })
+  } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'P2002'
+    ) {
+      return NextResponse.json({ error: '已回報過此店家' }, { status: 409 })
+    }
     return NextResponse.json({ error: '伺服器內部錯誤' }, { status: 500 })
   }
 }

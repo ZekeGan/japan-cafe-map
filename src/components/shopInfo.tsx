@@ -266,13 +266,13 @@ const ShopDetail = ({ shopInfo }: { shopInfo: CafeWithReports }) => {
         {/* 限時 */}
         <FeatureItem
           isEmpty={timeLimit === null}
-          icon={timeLimit ? <Infinity /> : <Clock />}
+          icon={timeLimit ? <Clock /> : <Infinity />}
           label={
             timeLimit === null
               ? t.common.noData
               : timeLimit
-                ? s.timeLimit.unlimited
-                : s.timeLimit.limited
+                ? s.timeLimit.limited
+                : s.timeLimit.unlimited
           }
         />
 
@@ -318,9 +318,11 @@ const ShopDetail = ({ shopInfo }: { shopInfo: CafeWithReports }) => {
 const ShopForm = ({
   shopInfo,
   setIsEditing,
+  onReported,
 }: {
   shopInfo: CafeWithReports
   setIsEditing: (isEditing: boolean) => void
+  onReported: (id: string) => Promise<void>
 }) => {
   const { user, refreshUser } = useAuth()
   const { t } = useTranslation()
@@ -345,12 +347,20 @@ const ShopForm = ({
   })
 
   const onSubmit = async (data: ReportFormValues) => {
-    await fetch('/api/report', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    })
-    await refreshUser()
+    try {
+      const response = await fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!response.ok) throw new Error('Report submission failed')
+
+      await onReported(shopInfo.id)
+      await refreshUser()
+      setIsEditing(false)
+    } catch {
+      toast.error(s.error.reportFailed)
+    }
   }
 
   useEffect(() => {
@@ -665,6 +675,7 @@ const ShopForm = ({
           <Button
             type="submit"
             className="w-full"
+            disabled={form.formState.isSubmitting}
           >
             {t.common.submit}
           </Button>
@@ -695,6 +706,13 @@ const ShopInfo = ({ shopId }: { shopId: string | null }) => {
     user?.reports.some(report => report.cafeId === shopInfo?.id) || false
   const hasFavorited =
     user?.favorites.some(fav => fav.cafeId === shopInfo?.id) || false
+
+  const refreshShop = async (id: string) => {
+    const response = await fetch(`/api/cafe/${id}`, { cache: 'no-store' })
+    if (!response.ok) throw new Error('Failed to refresh cafe')
+    const data: CafeWithReports = await response.json()
+    setShopInfo(current => (current?.id === id ? data : current))
+  }
 
   const toggleFavorite = async () => {
     if (!hasUser || !shopInfo) return
@@ -854,6 +872,7 @@ const ShopInfo = ({ shopId }: { shopId: string | null }) => {
                     <ShopForm
                       shopInfo={shopInfo}
                       setIsEditing={setIsEditing}
+                      onReported={refreshShop}
                     />
                   )}
                 </section>

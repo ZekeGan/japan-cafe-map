@@ -39,7 +39,8 @@
       "report_count": "{count} 人が報告しています"
     },
     "error": {
-      "toggleFavoriteFailed": "操作に失敗しました"
+      "toggleFavoriteFailed": "操作に失敗しました",
+      "reportFailed": "報告または店舗情報の更新に失敗しました。後でもう一度お試しください"
     },
     "button": {
       "editInfo": "店舗情報の編集を助ける"

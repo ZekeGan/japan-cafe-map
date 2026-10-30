@@ -1,15 +1,15 @@
 import prisma from '@/lib/db'
+import { getAuthUser } from '@/lib/auth/authWrapper'
 import { NextResponse } from 'next/server'
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    // 1. 從 URL 解析 userId (例如: /api/favorite?userId=xxx)
-    const { searchParams } = new URL(req.url)
-    const userId = searchParams.get('userId')
+    const user = await getAuthUser()
 
-    if (!userId) {
-      return NextResponse.json({ error: '請提供 userId' }, { status: 400 })
+    if (!user) {
+      return NextResponse.json({ error: '請先登入' }, { status: 401 })
     }
+    const userId = user.id
 
     // 2. 查詢該使用者的所有收藏，並關聯咖啡廳詳細資料
     const data = await prisma.favorite.findMany({
@@ -35,10 +35,16 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
-    const { userId, cafeId } = body
+    const user = await getAuthUser()
+    if (!user) {
+      return NextResponse.json({ error: '請先登入' }, { status: 401 })
+    }
 
-    if (!userId || !cafeId) {
+    const body = await req.json().catch(() => null)
+    const cafeId = body?.cafeId
+    const userId = user.id
+
+    if (typeof cafeId !== 'string' || !/^[a-f\d]{24}$/i.test(cafeId)) {
       return NextResponse.json({ error: '資訊不完整' }, { status: 400 })
     }
 

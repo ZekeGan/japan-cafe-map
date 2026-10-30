@@ -39,7 +39,8 @@
       "report_count": "共有 {count} 人進行回報"
     },
     "error": {
-      "toggleFavoriteFailed": "操作失敗"
+      "toggleFavoriteFailed": "操作失敗",
+      "reportFailed": "無法完成回報或更新店家資訊，請稍後再試"
     },
     "button": {
       "editInfo": "幫助編輯店家資訊"

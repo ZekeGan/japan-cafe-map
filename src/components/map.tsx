@@ -368,7 +368,7 @@ const Map: React.FC<{
           shop.outletCoverage !== 'NONE'
         )
           return true
-        if (filters.timeLimit && shop.timeLimit) return true
+        if (filters.timeLimit && shop.timeLimit === false) return true
         if (filters.isBookingRequired && shop.isBookingRequired) return true
         if (filters.minConsumption && shop.minConsumption) return true
         return false

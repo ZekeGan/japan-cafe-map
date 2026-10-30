@@ -13,24 +13,18 @@ export default async function DatabaseGuard({
     console.error('❌ MongoDB is unavailable:', error)
 
     return (
-      <html lang="en">
-        <body>
-          <main
-            style={{
-              minHeight: '100vh',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              gap: '12px',
-            }}
-          >
-            <p>
-              The database is currently unavailable. Please try again later.
-            </p>
-          </main>
-        </body>
-      </html>
+      <main
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '12px',
+        }}
+      >
+        <p>The database is currently unavailable. Please try again later.</p>
+      </main>
     )
   }
 

@@ -1,8 +1,9 @@
 // middleware.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { FAVOTITE, LOGIN, PROFILE } from './constant/router'
+import { jwtVerify } from 'jose'
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // 1. 取得 Cookie
   const token = request.cookies.get('auth-token')?.value
 
@@ -12,10 +13,18 @@ export function proxy(request: NextRequest) {
     request.nextUrl.pathname.startsWith(path)
   )
 
-  // 3. 如果是受保護路徑且沒有 token，直接重導向到登入頁
-  if (isProtected && !token) {
-    const loginUrl = new URL(LOGIN, request.url)
-    return NextResponse.redirect(loginUrl)
+  // 3. 受保護頁面必須具有有效的登入 token
+  if (isProtected) {
+    try {
+      if (!token || !process.env.JWT_SECRET) throw new Error('Missing session')
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET)
+      const { payload } = await jwtVerify(token, secret, { algorithms: ['HS256'] })
+      if (typeof payload.sub !== 'string' || !/^[a-f\d]{24}$/i.test(payload.sub)) {
+        throw new Error('Invalid session')
+      }
+    } catch {
+      return NextResponse.redirect(new URL(LOGIN, request.url))
+    }
   }
 
   // 繼續執行後續動作
@@ -24,5 +33,5 @@ export function proxy(request: NextRequest) {
 
 // 設定 Middleware 只在特定路徑執行，避免影響圖片或靜態檔案效能
 export const config = {
-  matcher: ['/profile/:path*', '/favorites/:path*'],
+  matcher: ['/profile/:path*', '/favorite/:path*'],
 }

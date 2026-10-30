@@ -39,7 +39,8 @@
       "report_count": "{count} people have reported"
     },
     "error": {
-      "toggleFavoriteFailed": "Operation failed"
+      "toggleFavoriteFailed": "Operation failed",
+      "reportFailed": "Could not submit the report or refresh cafe details. Please try again."
     },
     "button": {
       "editInfo": "Help edit shop info"
