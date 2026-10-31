@@ -7,7 +7,7 @@
   <img src="./public/preview2.png" height="500" alt="店家詳情" />
 </p>
 
-> 尋找日本**適合工作的咖啡店**的社群地圖：結合 Google Maps 資料與使用者回報的設施資訊。
+> 幫你在日本找到**適合工作的咖啡店**。店家資料來自 Google Maps，並加上使用者回報的實際設施資訊。
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
@@ -19,24 +19,24 @@
 
 ## 簡介
 
-Google Maps 能告訴你咖啡店在哪，卻不會說有沒有插座、Wi-Fi，或噪音是否能讓人專心工作三小時。Japan Cafe Map 從 Google Maps 取得店家，再疊加**使用者回報的資訊**，讓遠端工作者與工程師出門前就能挑到合適的店。
+Google Maps 只告訴你咖啡店在哪裡，卻不會告訴你有沒有插座、Wi-Fi 穩不穩，或是安靜到足以連續工作三小時。Japan Cafe Map 從 Google Maps 取得店家，再加上**使用者回報的資訊**，讓遠端工作者和工程師出門前就能找到適合工作的店。
 
-多數地圖應用以美食與人氣為主，不是為了工作效率。作者是住在日本的遠端工程師，常找不到 Wi-Fi 穩定、有插座、環境舒適的咖啡店，因此做了這個專案。
+大多數地圖應用著重在美食和人氣，不太在意能不能工作。作者是住在日本的遠端工程師，常常找不到 Wi-Fi 穩定、有插座、待起來舒服的咖啡店，所以做了這個專案。
 
 ---
 
 ## 功能
 
-- 🗺️ **Google Maps 整合**：以 Places API 搜尋附近咖啡店（名稱、地址、位置）
-- 📝 **社群回報**：登入使用者可回報與工作相關的資訊：
+- 🗺️ **Google Maps 整合**：用 Places API 搜尋附近的咖啡店（名稱、地址、位置）
+- 📝 **社群回報**：登入後可以回報和工作有關的資訊：
   - 🔌 插座
   - 📶 Wi-Fi
   - 🔇 噪音
   - 🪑 座位
   - ⏱️ 限時、低消、預約、吸菸規定
-- 🔍 **篩選與探索**：依回報的設施篩選（多個條件為「符合任一」）
-- ❤️ **收藏**：把店家存進自己的清單
-- 📍 **定位**：將地圖移到目前位置並搜尋周邊
+- 🔍 **篩選**：依回報的設施條件篩選店家（同時選多個條件時，符合其中任一個就會顯示）
+- ❤️ **收藏**：把喜歡的店家加入自己的清單
+- 📍 **定位**：把地圖移到你目前的位置，並搜尋附近的店家
 - 🌏 **三種語言**：English、日本語、繁體中文
 
 ---
@@ -64,10 +64,10 @@ Google Maps 能告訴你咖啡店在哪，卻不會說有沒有插座、Wi-Fi，
 
 ## 架構重點
 
-- **瀏覽器端 Places 搜尋**：由 Maps JavaScript API 找附近店家，再由 Next.js API 依 Google Place ID upsert。既有店家資料不會自動從 Google 更新。
-- **需登入的貢獻**：回報與收藏 API 以伺服器驗證的登入身分為準，不信任客戶端傳來的 userId；送出失敗會保留表單內容。
-- **社群聚合**：布林欄位採嚴格過半，類別採眾數，菸品類型採出現頻率門檻。「未知」與 false 分開處理；每位使用者對每間店只能回報一次。
-- **請求時檢查資料庫**：頁面為動態渲染，建置期間資料庫離線不會被固定成靜態畫面；資料庫恢復後重新整理即可。
+- **在瀏覽器搜尋店家**：前端用 Maps JavaScript API 搜尋附近的咖啡店，再交給 Next.js API 依 Google Place ID 寫入資料庫（已存在就不重複建立）。已存在的店家資料不會自動向 Google 重新同步。
+- **回報與收藏需要登入**：這兩個 API 只採用伺服器驗證過的登入身分，不會相信前端傳來的 userId。送出失敗時，表單內容會保留。
+- **社群回報的彙整方式**：是非欄位以過半數的結果為準，選項欄位取出現最多的，菸品類型則要出現達一定比例才保留。「未知」和「否」會分開處理，每位使用者對同一間店只能回報一次。
+- **每次請求都檢查資料庫**：頁面採動態渲染，因此建置時資料庫剛好離線，也不會把「資料庫無法使用」的畫面固定進網站。資料庫恢復後，重新整理頁面即可。
 
 ---
 
@@ -77,9 +77,9 @@ Google Maps 能告訴你咖啡店在哪，卻不會說有沒有插座、Wi-Fi，
 
 - 建議 Node.js 24（Next.js 16 至少需要 20.9）
 - pnpm（版本固定於 `package.json`）
-- 已啟用 **Maps JavaScript API** 與 **Places API** 的 [Google Cloud](https://console.cloud.google.com/) 專案
-- 支援交易的 MongoDB（replica set 或 MongoDB Atlas）
-- 用於密碼重設郵件的 Resend 帳號
+- 一個 [Google Cloud](https://console.cloud.google.com/) 專案，並已啟用 **Maps JavaScript API** 和 **Places API**
+- 支援交易（transaction）的 MongoDB，例如 replica set 或 MongoDB Atlas
+- Resend 帳號，用來寄送密碼重設郵件
 
 ### 安裝
 
@@ -101,12 +101,12 @@ RESEND_API_KEY=your_resend_key
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-- 在 Google Cloud 為瀏覽器 Maps 金鑰限制網站與 API。
-- `DATABASE_URL`、`JWT_SECRET`、`RESEND_API_KEY` 只能放在伺服器端。
-- `NEXT_PUBLIC_APP_URL` 會用於密碼重設連結，請設為實際網址；修改設定後需重啟伺服器。
-- 寄件者為 `onboarding@resend.dev`（`src/lib/mail.ts`），只能寄給 Resend 帳號本身的信箱。若要寄給其他人，須在 Resend 驗證網域並更換寄件者。
+- 請在 Google Cloud 限制瀏覽器用的 Maps 金鑰，只允許你的網站和需要的 API 使用。
+- `DATABASE_URL`、`JWT_SECRET`、`RESEND_API_KEY` 只能在伺服器端使用，不要公開。
+- `NEXT_PUBLIC_APP_URL` 用來組成密碼重設連結，請填入實際的網站網址。修改設定後要重新啟動伺服器。
+- 寄件者目前是 `onboarding@resend.dev`（見 `src/lib/mail.ts`），只能寄到你註冊 Resend 時使用的信箱。想寄給其他人，需要先在 Resend 驗證自己的網域，再更換寄件者。
 
-第一次執行前先產生 Prisma client（不會變更資料庫結構或索引）：
+第一次執行前，先產生 Prisma client（這個動作不會更動資料庫的結構或索引）：
 
 ```bash
 pnpm exec prisma generate
@@ -122,21 +122,21 @@ pnpm dev
 
 ### 指令
 
-| 指令                 | 用途                                        |
-| -------------------- | ------------------------------------------- |
-| `pnpm dev`           | 開發伺服器                                  |
-| `pnpm check`         | lint、型別檢查與測試（不需資料庫或寄信）    |
-| `pnpm build`         | 產生 Prisma client 並建置；字型可能需要網路 |
-| `pnpm start`         | 啟動正式建置                                |
-| `pnpm format <檔案>` | 用 Prettier 格式化指定檔案                  |
+| 指令                 | 用途                                              |
+| -------------------- | ------------------------------------------------- |
+| `pnpm dev`           | 開發伺服器                                        |
+| `pnpm check`         | lint、型別檢查與測試（不需資料庫或寄信）          |
+| `pnpm build`         | 產生 Prisma client 並建置；下載字型時可能需要網路 |
+| `pnpm start`         | 啟動建置好的正式版本                              |
+| `pnpm format <檔案>` | 用 Prettier 格式化指定的檔案                      |
 
-正式環境請在代管平台設定環境變數。
+部署到正式環境時，請在代管平台上設定這些環境變數。
 
 ---
 
 ## 維護文件
 
-這是依需求維護的小型個人展示作品，以下文件以繁體中文撰寫：
+這是一個小型的個人展示作品，有需要時才會維護。以下文件以繁體中文撰寫：
 [維護指南](docs/maintenance.md) · [架構](docs/architecture.md) · [目前問題](docs/project-status.md) · [變更紀錄](CHANGELOG.md)
 
 ---

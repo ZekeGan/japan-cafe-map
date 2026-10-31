@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.11 — 2026-11-01
+
+### Documentation
+
+- Rewrite the Traditional Chinese README in more natural wording.
+
 ## 0.1.10 — 2026-11-01
 
 ### Documentation
