@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.7 — 2026-11-01
+
+### Fixed
+
+- `POST /api/cafe/query` now returns 400 for entries that are not objects with a string `id` instead of failing with 500.
+
+### Tests
+
+- Add cafe query validation/upsert tests and a `todo` test documenting the M04 concurrent-favorite duplicate (needs a unique constraint).
+
 ## 0.1.6 — 2026-11-01
 
 ### Tooling

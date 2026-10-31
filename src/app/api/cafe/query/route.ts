@@ -8,7 +8,10 @@ export async function POST(request: Request) {
   try {
     const places: Cafe[] = await request.json()
 
-    if (!Array.isArray(places)) {
+    if (
+      !Array.isArray(places) ||
+      places.some(p => !p || typeof p !== 'object' || typeof p.id !== 'string')
+    ) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
     }
 

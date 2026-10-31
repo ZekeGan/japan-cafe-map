@@ -17,7 +17,7 @@
 
 - `Favorite` 沒有 userId/cafeId 複合唯一約束；API 用 findFirst 後 create/delete，併發可能重複。
 - `src/app/favorite/page.tsx` 刪除後未呼叫 refreshUser，地圖與 ShopInfo 的收藏狀態可能過期。尚未重現。
-- 建議：先確認並清理既有重複資料，再設計唯一約束與狀態同步（schema 變更須先說明備份與回復）。
+- `tests/api.test.mjs` 有 todo 測試記錄此併發問題。建議：先確認並清理既有重複資料，再設計唯一約束與狀態同步（schema 變更須先說明備份與回復）。
 
 ### M06：搜尋與詳情非同步狀態（待重現）
 
@@ -27,7 +27,7 @@
 
 ### 其他殘留
 
-- M01：公開 `cafe/query` 的逐筆 schema、流量限制。
+- M01：公開 `cafe/query` 已檢查 `id`，仍缺完整逐筆 schema、流量限制。
 - M03：帳號存在資訊揭露、請求頻率限制、自訂網域寄信、token 儲存策略。
 - 地圖「無預約／一杯飲料」篩選可能有與限時相同的布林方向問題，待確認需求。
 - DB 離線畫面採逐請求渲染，每次請求多一次 DB ping；低流量下接受。

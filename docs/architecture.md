@@ -72,7 +72,7 @@ Google Places 搜尋目前直接在瀏覽器執行，並非 README 所描述的�
 | GET `/api/auth/me` | 取得目前會員與關聯 | JWT 驗證 |
 | POST `/api/auth/forgot-password` | 建立 token 並寄信 | 查詢 email；未套用 forgotPasswordSchema |
 | POST `/api/auth/reset-password/[token]` | 更新密碼 | 檢查 token 與期限；使用 resetPasswordSchema 的 password 欄位規則，保留只送 password 的請求格式 |
-| POST `/api/cafe/query` | 批次建檔／取回店家 | 只確認 body 是陣列，無逐筆 schema 或登入驗證 |
+| POST `/api/cafe/query` | 批次建檔／取回店家 | 確認 body 是陣列且每筆為含字串 `id` 的物件，無完整逐筆 schema 或登入驗證 |
 | GET `/api/cafe/[id]` | 店家詳情與回報數 | 不存在時 404；未預先驗證 ID 格式 |
 | POST `/api/report` | 建立回報與更新聚合 | JWT 身分、回報 schema、ObjectId 格式 cafeId；重複回報 409 |
 | GET `/api/favorite` | 查詢目前會員收藏 | JWT 身分；忽略客戶端 userId |

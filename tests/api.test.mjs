@@ -80,3 +80,38 @@ test('me returns cafeId so the existing UI can recognize reported cafes', async 
   const { user } = await response.json()
   assert.equal(user.reports.some(report => report.cafeId === cafeId), true)
 })
+
+
+test('cafe query rejects non-array and malformed place entries before database access', async () => {
+  const db = new Proxy({}, { get() { assert.fail('database accessed for invalid input') } })
+  const handler = load('src/app/api/cafe/query/route.ts', db)
+  for (const body of [{}, 'x', null, [null], [{}], [{ id: 1 }], [{ id: 'ok' }, 'bad']]) {
+    assert.equal((await handler.POST(request(body))).status, 400, JSON.stringify(body))
+  }
+})
+
+test('cafe query upserts by googlePlaceId without overwriting existing data', async () => {
+  const calls = []
+  const handler = load('src/app/api/cafe/query/route.ts', { cafe: {
+    upsert: async args => { calls.push(args); return { id: cafeId } },
+  } })
+  const response = await handler.POST(request([{ id: 'place-1', displayName: 'A' }]))
+  assert.equal(response.status, 200)
+  assert.equal(calls.length, 1)
+  assert.deepEqual(calls[0].where, { googlePlaceId: 'place-1' })
+  assert.deepEqual(calls[0].update, {})
+  assert.equal(calls[0].create.googlePlaceId, 'place-1')
+  assert.equal(typeof calls[0].create.location.lat, 'number')
+})
+
+// M04 (docs/project-status.md): no unique (userId, cafeId) constraint, so concurrent toggles can duplicate.
+test('concurrent favorite toggles create at most one record', { todo: 'M04: needs a unique constraint' }, async () => {
+  const rows = []
+  const handler = load('src/app/api/favorite/route.ts', { favorite: {
+    findFirst: async () => { await new Promise(r => setImmediate(r)); return rows[0] ?? null },
+    create: async ({ data }) => { rows.push(data); return data },
+    delete: async () => { rows.length = 0 },
+  } }, await signedToken())
+  await Promise.all([handler.POST(request({ cafeId })), handler.POST(request({ cafeId }))])
+  assert.ok(rows.length <= 1)
+})
