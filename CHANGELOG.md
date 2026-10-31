@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3 — 2026-11-01
+
+### Documentation
+
+- Archive the one-off test record and historical plan under `docs/archive/`; condense project-status to open issues only.
+
+
 ## 0.1.2 — 2026-11-01
 
 ### Changed
