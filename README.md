@@ -132,9 +132,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 ### Checks and Production Build
 
 ```bash
-pnpm lint
-pnpm exec tsc --noEmit --incremental false
-node --test tests/maintenance.test.mjs
+pnpm check
 pnpm build
 pnpm start
 ```

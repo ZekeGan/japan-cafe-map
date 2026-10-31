@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 — 2026-11-01
+
+### Changed
+
+- Add `typecheck`, `test`, and `check` scripts; update maintenance docs to use them.
+
 ## 0.1.1 — 2026-10-30
 
 ### Fixed

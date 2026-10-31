@@ -29,9 +29,9 @@ Japan Cafe Map 是尋找適合工作的日本咖啡店地圖，已完成功能�
 - MongoDB + Prisma；Google Maps JavaScript / Places；Resend 密碼重設郵件。
 - 套件管理使用 pnpm，版本依 `package.json` 與 `pnpm-lock.yaml`，不要順手更換管理工具或升級依賴。
 - 開發：`pnpm dev`；lint：`pnpm lint`。
-- 型別檢查：`pnpm exec tsc --noEmit --incremental false`（尚未設定專用 script）。
+- 型別檢查：`pnpm typecheck`；一次跑 lint、型別與測試：`pnpm check`。
 - 建置：`pnpm build`，會執行 Prisma client 產生與 Next.js 建置；需要環境設定，字型可能需網路。已驗證 DB 離線可建置，頁面執行階段才檢查連線。
-- 針對性回歸：`node --test tests/maintenance.test.mjs`（使用既有依賴及 Node 內建測試，不連資料庫）。目前無測試 script 或專案內 CI，完整測試留待後續。
+- 針對性回歸：`pnpm test`（Node 內建測試，不連資料庫）；改 API 只需跑它，改元件跑 `pnpm typecheck`。目前無專案內 CI。
 
 ## 修改原則
 

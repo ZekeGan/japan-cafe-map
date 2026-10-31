@@ -29,8 +29,9 @@ README 已補齊上述變數，建議本機使用被 Git 忽略的 `.env`，讓 
 | `pnpm dev` | 啟動開發服務，會產生 `.next`；頁面渲染會透過 DatabaseGuard 存取資料庫 |
 | `pnpm dev:https` | 啟動實驗性本機 HTTPS，可能產生憑證 |
 | `pnpm lint` | 執行 ESLint；script 沒有 `--fix` |
-| `pnpm exec tsc --noEmit --incremental false` | 型別檢查，避免產生 tsbuildinfo；未建立專用 script |
-| `node --test tests/maintenance.test.mjs` | 針對三項修補的隔離回歸；以既有 TypeScript 編譯實際 handler，只替換 DB 與 request cookie 邊界，不需密鑰、啟動網站或連接服務；目前在 Node 24 驗證 |
+| `pnpm typecheck` | `tsc --noEmit --incremental false`，避免產生 tsbuildinfo |
+| `pnpm check` | 依序執行 lint、typecheck、test |
+| `pnpm test`（`node --test "tests/*.test.mjs"`） | 針對三項修補的隔離回歸；以既有 TypeScript 編譯實際 handler，只替換 DB 與 request cookie 邊界，不需密鑰、啟動網站或連接服務；目前在 Node 24 驗證 |
 | `pnpm build` | `prisma generate && next build`，會寫入產物，需要環境設定與可能的 Google 字型網路連線；已驗證無法連 DB 仍可建置 |
 | `pnpm start` | 啟動已建置的正式模式服務 |
 | `pnpm prettier` | `pnpm dlx prettier --write .`，可能下載工具並改寫整個專案，不作為唯讀檢查 |
