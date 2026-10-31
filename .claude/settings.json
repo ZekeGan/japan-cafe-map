@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.next/**)",
+      "Read(./pnpm-lock.yaml)",
+      "Read(./public/*.png)",
+      "Read(./graphify-out/**)",
+      "Read(./docs/archive/**)"
+    ]
+  }
+}

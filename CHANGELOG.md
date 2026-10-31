@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5 — 2026-11-01
+
+### Tooling
+
+- Add project `.claude/settings.json` denying reads of lockfile, build output, images, and archived docs to save AI context; tell agents to read docs by section.
+
 ## 0.1.4 — 2026-11-01
 
 ### Tests
