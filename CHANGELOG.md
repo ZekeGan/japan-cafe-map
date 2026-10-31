@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4 — 2026-11-01
+
+### Tests
+
+- Split `maintenance.test.mjs` into `api`, `auth`, `infra`, and `ui` test files with shared `helpers.mjs`; no behavior change (21 tests).
+
 ## 0.1.3 — 2026-11-01
 
 ### Documentation
