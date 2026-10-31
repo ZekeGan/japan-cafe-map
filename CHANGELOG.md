@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.8 — 2026-11-01
+
+### Tooling
+
+- Add GitHub Actions workflow running `pnpm check` (lint, typecheck, tests); it has not run yet because nothing has been pushed.
+
 ## 0.1.7 — 2026-11-01
 
 ### Fixed
