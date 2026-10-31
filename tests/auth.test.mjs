@@ -1,5 +1,5 @@
 import { test } from 'node:test'
-import { assert, readFileSync, path, ts, SignJWT, bcrypt, React, renderToStaticMarkup, NextRequest, unstable_doesMiddlewareMatch, loadPackage, root, userId, otherId, cafeId, secret, load, signedToken, request } from './helpers.mjs'
+import { assert, bcrypt, userId, load, request } from './helpers.mjs'
 
 test('reset rejects weak, missing and invalid passwords before database access', async () => {
   const db = new Proxy({}, { get() { assert.fail('invalid password reached database') } })

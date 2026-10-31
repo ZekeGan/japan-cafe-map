@@ -1,5 +1,5 @@
 import { test } from 'node:test'
-import { assert, readFileSync, path, ts, SignJWT, bcrypt, React, renderToStaticMarkup, NextRequest, unstable_doesMiddlewareMatch, loadPackage, root, userId, otherId, cafeId, secret, load, signedToken, request } from './helpers.mjs'
+import { assert, renderToStaticMarkup, NextRequest, unstable_doesMiddlewareMatch, userId, load, signedToken } from './helpers.mjs'
 
 test('database guard has valid body markup and recovers on a later request', async context => {
   context.mock.method(console, 'error', () => {})

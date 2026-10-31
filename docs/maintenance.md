@@ -34,7 +34,7 @@ README 已補齊上述變數，建議本機使用被 Git 忽略的 `.env`，讓 
 | `pnpm test`（`node --test "tests/*.test.mjs"`） | 針對三項修補的隔離回歸；以既有 TypeScript 編譯實際 handler，只替換 DB 與 request cookie 邊界，不需密鑰、啟動網站或連接服務；目前在 Node 24 驗證 |
 | `pnpm build` | `prisma generate && next build`，會寫入產物，需要環境設定與可能的 Google 字型網路連線；已驗證無法連 DB 仍可建置 |
 | `pnpm start` | 啟動已建置的正式模式服務 |
-| `pnpm prettier` | `pnpm dlx prettier --write .`，可能下載工具並改寫整個專案，不作為唯讀檢查 |
+| `pnpm format:check <檔案>` / `pnpm format <檔案>` | 本機 prettier 局部檢查／格式化；必須指定檔案，不要對整個專案執行 |
 
 沒有測試 script 或已找到的專案內 CI，但已提供上述針對性測試。後續程式碼變更依影響執行檢查，不預設每次完整 build；文件變更只需事實、連結與差異檢查。將未執行、環境阻擋和實際失敗分開記錄。
 

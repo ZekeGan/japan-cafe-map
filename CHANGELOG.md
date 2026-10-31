@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.6 — 2026-11-01
+
+### Tooling
+
+- Install prettier locally; replace the project-wide `pnpm prettier` with file-scoped `format` / `format:check`.
+- Declare `packageManager` (pnpm 10.33.3) and `engines.node` (>=20.9.0).
+- Remove 48 unused-import lint warnings introduced by the test split.
+
 ## 0.1.5 — 2026-11-01
 
 ### Tooling

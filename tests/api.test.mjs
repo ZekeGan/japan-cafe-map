@@ -1,5 +1,5 @@
 import { test } from 'node:test'
-import { assert, readFileSync, path, ts, SignJWT, bcrypt, React, renderToStaticMarkup, NextRequest, unstable_doesMiddlewareMatch, loadPackage, root, userId, otherId, cafeId, secret, reportBody, load, signedToken, request } from './helpers.mjs'
+import { assert, userId, otherId, cafeId, reportBody, load, signedToken, request } from './helpers.mjs'
 
 for (const tokenKind of ['missing', 'forged', 'expired', 'empty-subject']) {
   test(`protected endpoints reject ${tokenKind} JWT without accessing database`, async () => {
@@ -80,4 +80,3 @@ test('me returns cafeId so the existing UI can recognize reported cafes', async 
   const { user } = await response.json()
   assert.equal(user.reports.some(report => report.cafeId === cafeId), true)
 })
-
