@@ -7,7 +7,7 @@ const shopOverrides = {
 }
 
 test('shop details display the same time-limit semantics as the report form', () => {
-  const { ShopDetail } = load('src/components/shopInfo.tsx', {}, undefined, shopOverrides, '\nexports.ShopDetail = ShopDetail;')
+  const { ShopDetail } = load('src/components/shop/shopDetail.tsx', {}, undefined, shopOverrides)
   for (const [timeLimit, expected, absent] of [[false, 'No time limit', 'Time limited'], [true, 'Time limited', 'No time limit']]) {
     const markup = renderToStaticMarkup(React.createElement(ShopDetail, {shopInfo: {
       ...reportBody, timeLimit, allowCigaretteType: [], _count: { reports: 1 },
@@ -22,13 +22,13 @@ test('report form retains failed input and refreshes details after success', asy
   const originalFetch = globalThis.fetch
   globalThis.fetch = async () => new Response('{}', {status: succeeded ? 201 : 500})
   try {
-    const { ShopForm } = load('src/components/shopInfo.tsx', {}, undefined, {
+    const { ShopForm } = load('src/components/shop/shopForm.tsx', {}, undefined, {
       ...shopOverrides,
       react: {...React, useEffect: () => {}},
       '@/context/authContext': { useAuth: () => ({user: {id: userId}, refreshUser: async () => {refreshes++} }) },
       'react-hook-form': { useForm: () => ({ control: {}, formState: {isSubmitting: false}, handleSubmit: fn => fn }) },
       sonner: { toast: { error: () => {errors++} } },
-    }, '\nexports.ShopForm = ShopForm;')
+    })
     const element = ShopForm({shopInfo: {id: cafeId}, setIsEditing: () => {closed++}, onReported: async id => {assert.equal(id, cafeId); detailRefreshes++} })
     await element.props.children.props.onSubmit(reportBody)
     assert.equal(errors, 1)

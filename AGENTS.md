@@ -16,8 +16,8 @@ Japan Cafe Map 是尋找適合工作的日本咖啡店地圖，已完成功能�
 | 架構與資料流 | [docs/architecture.md](docs/architecture.md) |
 | 執行、部署、故障與回歸 | [docs/maintenance.md](docs/maintenance.md) |
 | 已知問題、檢查結果、下一步 | [docs/project-status.md](docs/project-status.md) |
-| 地圖、搜尋、篩選、定位 | `src/components/map.tsx`、`src/app/api/cafe/query/route.ts` |
-| 店家詳情與社群回報 | `src/components/shopInfo.tsx`、`src/app/api/report/route.ts`、`src/lib/cafeStats.ts` |
+| 地圖、搜尋、篩選、定位 | `src/components/map.tsx`、`mapHooks.ts`（定位與搜尋 hook）、`src/app/api/cafe/query/route.ts` |
+| 店家詳情與社群回報 | `src/components/shopInfo.tsx`（容器）、`src/components/shop/`（`shopDetail`、`shopForm`、`shopParts`）、`src/app/api/report/route.ts`、`src/lib/cafeStats.ts` |
 | 登入與權限 | `src/app/api/auth/`、`src/context/authContext.tsx`、`src/proxy.ts`、`src/lib/auth/authWrapper.ts` |
 | 收藏 | `src/app/favorite/page.tsx`、`src/app/api/favorite/route.ts` |
 | 資料模型 | `prisma/schema.prisma`、`src/lib/db.ts` |

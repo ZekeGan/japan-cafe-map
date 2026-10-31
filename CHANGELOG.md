@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.9 — 2026-11-01
+
+### Refactor
+
+- Split `shopInfo.tsx` (892 lines) into container + `shop/{shopDetail,shopForm,shopParts}.tsx`, and move map hooks to `mapHooks.ts`. No behavior change; UI tests now load the new modules directly.
+
 ## 0.1.8 — 2026-11-01
 
 ### Tooling

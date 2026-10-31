@@ -18,8 +18,10 @@ Google Places 搜尋目前直接在瀏覽器執行，並非 README 所描述的�
 | `src/app/favorite/page.tsx` | `/favorite` 收藏清單與移除操作 |
 | `src/app/(auth)/` | 登入、註冊、個人頁、忘記與重設密碼；路由群組不出現在 URL |
 | `src/app/api/` | HTTP API，見下表 |
-| `src/components/map.tsx` | 地圖呈現、定位 hook、Places 搜尋、搜尋結果合併與篩選 |
-| `src/components/shopInfo.tsx` | 詳情呈現、回報表單、收藏切換 |
+| `src/components/map.tsx` | 地圖呈現、標記與篩選 |
+| `src/components/mapHooks.ts` | `useGeolocation`、`useCafeShops`（Places 搜尋、結果合併） |
+| `src/components/shopInfo.tsx` | 詳情容器：載入資料、收藏切換、詳情／編輯切換 |
+| `src/components/shop/` | `shopDetail`（詳情呈現）、`shopForm`（回報表單）、`shopParts`（共用小元件） |
 | `src/components/ui/` | 共用 UI 元件 |
 | `src/lib/validations/` | Zod 表單／會員驗證定義；不代表所有 API 都已套用 |
 | `src/constant/` | 路由名稱、預設座標 |
