@@ -1,11 +1,13 @@
 # ☕ Japan Cafe Map
 
+**English** | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md)
+
 <p align="center">
-  <img src="./public/preview1.png" height='500px'/>
-  <img src="./public/preview2.png" height='500px' />
+  <img src="./public/preview1.png" height="500" alt="Map view" />
+  <img src="./public/preview2.png" height="500" alt="Cafe details" />
 </p>
 
-> A crowdsourced map application for discovering **engineer-friendly cafes** across Japan — with real-time Google Maps data and community-driven amenity ratings.
+> A crowdsourced map for finding **work-friendly cafes** across Japan — Google Maps data plus community-reported amenities.
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
@@ -17,36 +19,25 @@
 
 ## Overview
 
-Japan Cafe Map solves a real problem for remote workers and developers in Japan: **finding cafes where you can actually work**. While Google Maps tells you where a cafe is, it doesn't tell you whether it has outlets, Wi-Fi, or a noise level you can tolerate for a 3-hour deep work session.
+Google Maps tells you where a cafe is, but not whether it has outlets, Wi-Fi, or a noise level you can tolerate for a three-hour work session. Japan Cafe Map pulls cafes from Google Maps and layers **community-submitted reports** on top, so remote workers and developers can pick a spot before leaving home.
 
-This app bridges that gap by pulling cafe data directly from Google Maps and layering it with **community-submitted, engineer-focused ratings** — so you can find the perfect spot before you leave home.
-
----
-
-## Why I Built This
-
-As a remote developer living in Japan, We often struggled to find cafes
-with reliable Wi-Fi, power outlets, and a comfortable working environment.
-
-Most map applications optimize for food and popularity —
-not productivity.
-
-Japan Cafe Map was built to help developers and remote workers
-discover cafes designed for deep work.
+Most map apps optimize for food and popularity, not productivity. This one was built by a remote developer in Japan who kept struggling to find cafes with reliable Wi-Fi, power outlets, and a comfortable place to work.
 
 ---
 
 ## Features
 
-- 🗺️ **Google Maps Integration** — Fetches real cafe listings using the Google Places API, including name, address
-- ⭐ **Community Ratings** — Users can rate cafes on attributes that matter to developers:
-  - 🔌 Power outlets availability
-  - 📶 Wi-Fi quality
+- 🗺️ **Google Maps integration** — nearby cafes found with the Places API (name, address, location)
+- 📝 **Community reports** — signed-in users report the attributes that matter for working:
+  - 🔌 Power outlets
+  - 📶 Wi-Fi
   - 🔇 Noise level
-  - 🪑 Seating comfort
-  - ⏱️ Time limit policy
-- 🔍 **Filter & Discover** — Browse and filter cafes by amenity scores to find spots that match your working style
-- 📍 **Location-aware** — Centers the map on your current location for quick nearby searches
+  - 🪑 Seating
+  - ⏱️ Time limit, minimum order, booking, smoking policy
+- 🔍 **Filter and discover** — filter cafes by reported amenities (multiple filters match any selected condition)
+- ❤️ **Favorites** — save cafes to your own list
+- 📍 **Location-aware** — center the map on your current location and search the area
+- 🌏 **Three languages** — English, 日本語, 繁體中文
 
 ---
 
@@ -59,24 +50,24 @@ discover cafes designed for deep work.
 
 ## Tech Stack
 
-| Layer      | Technology                             |
-| ---------- | -------------------------------------- |
-| Frontend   | Next.js, TypeScript, React             |
-| Styling    | shadcn / Tailwind CSS                  |
-| Maps       | Google Maps JavaScript API, Places API |
-| Backend    | Next.js API Routes                     |
-| Database   | MongoDB                                |
-| ORM        | Prisma                                 |
-| Deployment | Vercel                                 |
+| Layer      | Technology                              |
+| ---------- | --------------------------------------- |
+| Frontend   | Next.js (App Router), React, TypeScript |
+| Styling    | Tailwind CSS, shadcn/ui (Radix)         |
+| Maps       | Google Maps JavaScript API, Places API  |
+| Backend    | Next.js Route Handlers                  |
+| Database   | MongoDB with Prisma                     |
+| Email      | Resend (password reset)                 |
+| Deployment | Vercel                                  |
 
 ---
 
 ## Architecture Highlights
 
-- **Browser-side Places search** — the Maps JavaScript API finds nearby cafes, then a Next.js API upserts them by Google Place ID. Existing cafe records are not automatically refreshed from Google.
-- **Authenticated contributions** — report and favorite APIs use the verified session identity. Successful reports refresh cafe details and member state; failed submissions retain the form input.
-- **Community aggregation** — boolean fields use a strict majority, categories use the mode, and tobacco types use a frequency threshold. Unknown values remain distinct from false; each user can report a cafe once.
-- **Request-time database checks** — pages render dynamically so an outage during build does not permanently bake the database-unavailable screen into static output. Reload after database recovery to retry.
+- **Browser-side Places search** — the Maps JavaScript API finds nearby cafes, then a Next.js API upserts them by Google Place ID. Existing records are not refreshed from Google automatically.
+- **Authenticated contributions** — report and favorite APIs use the verified session identity, never a client-supplied user ID. A failed submission keeps the form input.
+- **Community aggregation** — boolean fields use a strict majority, categories use the mode, and tobacco types use a frequency threshold. Unknown stays distinct from false; each user can report a cafe once.
+- **Request-time database checks** — pages render dynamically, so a database outage during build is never baked into static output. Reload after recovery to retry.
 
 ---
 
@@ -84,10 +75,11 @@ discover cafes designed for deep work.
 
 ### Prerequisites
 
-- Node.js 24 recommended (checked with 24.13.0); the installed Next.js 16.1.4 requires at least Node.js 20.9
-- pnpm, using the committed `pnpm-lock.yaml`
-- A [Google Cloud](https://console.cloud.google.com/) project with the **Maps JavaScript API** and **Places API** enabled
-- MongoDB supporting transactions (for example, a replica set or MongoDB Atlas), plus a Resend account for password-reset emails
+- Node.js 24 recommended (Next.js 16 requires at least 20.9)
+- pnpm (version pinned in `package.json`)
+- A [Google Cloud](https://console.cloud.google.com/) project with **Maps JavaScript API** and **Places API** enabled
+- MongoDB with transaction support (replica set or MongoDB Atlas)
+- A Resend account for password-reset emails
 
 ### Installation
 
@@ -99,7 +91,7 @@ pnpm install --frozen-lockfile
 
 ### Environment Variables
 
-Create a `.env` file in the root directory so both Prisma CLI and Next.js can load the configuration. Environment files are ignored by Git; never commit actual credentials.
+Create a `.env` file in the project root (ignored by Git; never commit credentials):
 
 ```env
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_browser_maps_key
@@ -109,37 +101,43 @@ RESEND_API_KEY=your_resend_key
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-Restrict the browser Maps key by allowed websites and APIs in Google Cloud. Keep `DATABASE_URL`, `JWT_SECRET`, and `RESEND_API_KEY` server-only. Set `NEXT_PUBLIC_APP_URL` to the actual local origin/port or production HTTPS origin; it is used in password-reset links. Restart the local server after configuration changes.
+- Restrict the browser Maps key by website and API in Google Cloud.
+- Keep `DATABASE_URL`, `JWT_SECRET`, and `RESEND_API_KEY` server-only.
+- `NEXT_PUBLIC_APP_URL` is used in password-reset links; set it to the real origin. Restart the server after changing configuration.
+- The sender is `onboarding@resend.dev` (`src/lib/mail.ts`), which can only email the address of your Resend account. To email other recipients, verify a domain in Resend and change the sender.
 
-The current sender is `onboarding@resend.dev` in `src/lib/mail.ts`. This sender can send real mail only to the email associated with your Resend account. To support other recipients, verify a domain in Resend and change the sender to an address on that domain. A successful test to `delivered@resend.dev` does not verify delivery to a real inbox.
-
-Generate the database client before the first development run:
+Generate the Prisma client before the first run (this does not change the database schema or indexes):
 
 ```bash
 pnpm exec prisma generate
 ```
 
-Client generation does not synchronize database schema or indexes. For an existing installation, confirm the database is already provisioned; plan schema/index changes and backups separately.
-
 ### Run Locally
 
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app.
+Open [http://localhost:3000](http://localhost:3000).
 
-### Checks and Production Build
+### Scripts
 
-```bash
-pnpm check
-pnpm build
-pnpm start
-```
+| Command               | Purpose                                                      |
+| --------------------- | ------------------------------------------------------------ |
+| `pnpm dev`            | Development server                                           |
+| `pnpm check`          | Lint, type check, and tests (no database or email needed)    |
+| `pnpm build`          | Generate Prisma client and build; may need network for fonts |
+| `pnpm start`          | Serve the production build                                   |
+| `pnpm format <files>` | Format specific files with Prettier                          |
 
-Run the targeted regression tests with Node.js 24 (the verified runtime). They use isolated database/mail boundaries and do not send email. The build generates Prisma client and Next.js output and may require network access for Google fonts. Runtime page rendering needs an available database. In production, configure the environment variables in the hosting platform; do not use the local reset-link origin.
+In production, set the environment variables in your hosting platform.
 
-This is a small personal showcase maintained on demand. See [maintenance instructions](docs/maintenance.md), [architecture](docs/architecture.md), and [current issues](docs/project-status.md). Full refactoring, performance architecture changes, and a comprehensive automated test suite remain deferred.
+---
+
+## Maintenance Docs
+
+This is a small personal showcase maintained on demand. The docs below are written in Traditional Chinese:
+[maintenance](docs/maintenance.md) · [architecture](docs/architecture.md) · [current issues](docs/project-status.md) · [changelog](CHANGELOG.md)
 
 ---
 

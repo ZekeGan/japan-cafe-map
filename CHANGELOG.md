@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.10 — 2026-11-01
+
+### Documentation
+
+- Rewrite README (English default) and add Traditional Chinese (`README.zh-TW.md`) and Japanese (`README.ja.md`) versions with a language switcher, scripts table, and updated feature list.
+
 ## 0.1.9 — 2026-11-01
 
 ### Refactor
